@@ -1,35 +1,24 @@
-<!DOCTYPE html 5><html class="no-js"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Web.Log()</title><meta name="description" content=""><meta name="viewport" content="width=device-width"><!--Place favicon.ico and apple-touch-icon.png in the root directory
-    --><!--build:css styles/vendor.css
-    --><!--bower:css
-    --><link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css"><!--endbower
-    --><!--endbuild
-    --><!--build:css({.tmp,app}) styles/main.css
-    --><link rel="stylesheet" href="styles/532459a4.main.css"><!--
-    endbuild
-    
-    --><body ng-app="angularApp"><!--if lt IE 7
-    p.browsehappy
-      | You are using an
-      strong outdated
-      | browser. Please
-      a(href='http://browsehappy.com/') upgrade your browser
-      | to improve your experience.
-    --><!--Add your site or application content here
-    --><header id="mainHead" ng-hide="profileActive"><span>Web.log()</span></header><div id="sidebar" my-scroll-directive="my-scroll-directive"><div id="name" ng-mouseenter="myCssVar='hoverActive'" ng-mouseleave="myCssVar=''"><a href="/#/profile"><p ng-class="myCssVar">Rishabh Shukla</p></a></div><p id="fries">I like french fries and computers</p><nav><ul><li><a href="/#/main">Stream</a></li></ul></nav><div class="networks"><ul><li><a href="https://github.com/rishy" target="_blank"><img src="images/aa919d92.github.png"></a></li><li><a href="https://plus.google.com/+Rishabhshukla13/posts" target="_blank"><img src="images/a2587211.twitter.png"></a></li><li><a href="https://twitter.com/0_rishabh" target="_blank"><img src="images/c6b9b2cb.gplus.png"></a></li></ul></div></div><section id="wrapper"><div class="view-container"><div ng-view="" class="view-frame"></div></div></section><!--Google Analytics: change UA-XXXXX-X to be your site's ID
-    --><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-      ga('create', 'UA-XXXXX-X');
-      ga('send', 'pageview');</script><!--if lt IE 9
-    script(src='bower_components/es5-shim/es5-shim.js')
-    script(src='bower_components/json3/lib/json3.min.js')
-    --><!--build:js scripts/vendor.js
-    --><!--bower:js
-    --><script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><script src="bower_components/angular/angular.js"></script><script src="bower_components/bootstrap/dist/js/bootstrap.js"></script><script src="bower_components/angular-resource/angular-resource.js"></script><script src="bower_components/angular-cookies/angular-cookies.js"></script><script src="bower_components/angular-sanitize/angular-sanitize.js"></script><script src="bower_components/angular-route/angular-route.js"></script><script src="bower_components/angular-animate/angular-animate.js"></script><!--endbower
-    --><!--endbuild
-    --><!--build:js({.tmp,app}) scripts/scripts.js    
-    --><script src="scripts/e319e2c5.app.js"></script><script src="scripts/controllers/65e961ea.main.js"></script><script src="scripts/directives/93ff2a0a.myscrolldirective.js"></script><!--endbuild
-    -->
-  </body>
-  </html>
+---
+layout: default
+---
+
+<div class="home">
+
+  <div class="posts">
+    {% for post in paginator.posts %}
+      <div class="post">
+        <p class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</p>
+        <a href="{{ post.url | prepend: site.baseurl }}" class="post-link"><h3 class="h2 post-title">{{ post.title }}</h3></a>
+        <p class="post-summary">
+          {% if post.summary %}
+            {{ post.summary }}
+          {% else %}
+            {{ post.excerpt }}
+          {% endif %}
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% include pagination.html %}
+</div>

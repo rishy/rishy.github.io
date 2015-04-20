@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Rishabh Shukla</title>
+    <description>I pour out some of my random thoughts regarding Data Science and Machine Learning here</description>
+    <link>http://rishy.github.io//</link>
+    <atom:link href="http://rishy.github.io//feed.xml" rel="self" type="application/rss+xml" />
+    
+      <item>
+        <title>Normal/Gaussian Distributions</title>
+        <description>&lt;p&gt;Normal Distributions are the most common distributions in statistics primarily because they describe a lot of natural phenomena. Normal distributions are also known as &amp;lsquo;Gaussian distributions&amp;rsquo; or &amp;lsquo;bell curve&amp;rsquo;, because of the bell shaped curve.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../../../../images/normal_distributions.png&quot; alt=&quot;bell&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;Samples of heights of people, size of things produced by machines, errors in measurements, blood pressure, marks in an examination, wages payed to employees by a company, life span of a species, all of these follows a normal or nearly normal distribution.&lt;/p&gt;
+
+&lt;p&gt;I don&amp;rsquo;t intend to cover a lot of mathematical background regarding normal distributions, still it won&amp;rsquo;t hurt to know just a few simple mathematical properties of normal distributions:&lt;/p&gt;
+
+&lt;blockquote&gt;
+    &lt;ul&gt;
+        &lt;li&gt;Bell curve is symmetrical about mean(which lies at the center)
+        &lt;li&gt;mean = median = mode
+        &lt;li&gt;Only determining factors of normal distributions are its mean and standard deviation
+    &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;We can also get a normal distribution from a lot of datasets using &lt;a href=&quot;http://en.wikipedia.org/wiki/Central_limit_theorem&quot;&gt;Central Limit Theorem&lt;/a&gt;(CLT). In layman&amp;rsquo;s language CLT states that if we take a large number of samples from a population, multiple times and go on plotting these then it will result in a normal distribution(which can be used by a lot of statistical and machine learning models).&lt;/p&gt;
+
+&lt;p&gt;A lot of machine learning models assumes that data fed to these models follows a normal distribution. So, after you have got your data cleaned, you should definitely check what distribution it follows. Some of the machine learning and Statistical models which assumes a normally distributed input data are:&lt;/p&gt;
+
+&lt;blockquote&gt;
+    &lt;ul&gt;
+        &lt;li&gt;Gaussian naive Bayes
+        &lt;li&gt;Least Squares based (regression)models
+        &lt;li&gt;LDA
+        &lt;li&gt;QDA
+    &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;It is also quite common to transform non-normal data to normal form by applying log, square root or similar transormations. &lt;/p&gt;
+
+&lt;p&gt;If plotting the data results in a skewed plot, then it is probably a log-normal distribution(as shown in figure below), which you can transform into normal form, simply by applying a log function on all data points.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../../../../images/log-normal.png&quot; alt=&quot;log-normal&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;Once it is transformed into normal distributions, you are free to use this dataset with models assuming a normal input data(as listed in above section). &lt;/p&gt;
+
+&lt;p&gt;As a general approach, &lt;b&gt;Always look at the statistical/probability distiributions&lt;/b&gt; as your first step in data analysis.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 21 Apr 2015 09:30:01 +0530</pubDate>
+        <link>http://rishy.github.io//statistics/2015/04/21/normal-distributions/</link>
+        <guid isPermaLink="true">http://rishy.github.io//statistics/2015/04/21/normal-distributions/</guid>
+      </item>
+    
+      <item>
+        <title>Google Summer of Code 2014</title>
+        <description>&lt;p&gt;I have got selected for Google Summer of Code 2014 and from today onwards the Coding period for GSOC starts.&lt;/p&gt;
+
+&lt;p&gt;For next 3 months I&amp;rsquo;ll be working on developing a Batch API for an awesome community - &lt;a href=&quot;http://mifos.org/&quot;&gt;mifos&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Mifos is an organization that leverages the power of Open Source to fuel the functioning of micro-finance institutions and helps in fighting poverty, worldwide.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://mifosforge.jira.com/wiki/display/projects/GSOC+2014+-+Batch+API&quot;&gt;Batch API&lt;/a&gt; project is focused towards creating an API akin to &lt;a href=&quot;https://developers.facebook.com/docs/graph-api/making-multiple-requests/&quot;&gt;facebook-multiple-requests&lt;/a&gt; so that multiple HTTP requests can be handled by mifos platform. This provides an efficient way for clients based on mifos platform to send multiple HTTP requests as JSON string and get back a Batch HTTP response in JSON.&lt;/p&gt;
+
+&lt;p&gt;For this project I&amp;rsquo;ll be working with Java(Spring/Jersey/JPA) for developing the backend API and AngularJS and Bootstrap 3 for making all the UI changes. Development work regarding the Batch API can be followed at: &lt;a href=&quot;https://github.com/rishy/mifosx/tree/Batch-API&quot;&gt;Github - mifos X Batch API&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Mon, 19 May 2014 07:00:45 +0530</pubDate>
+        <link>http://rishy.github.io//gsoc'14/2014/05/19/gsoc-selection/</link>
+        <guid isPermaLink="true">http://rishy.github.io//gsoc'14/2014/05/19/gsoc-selection/</guid>
+      </item>
+    
+  </channel>
+</rss>

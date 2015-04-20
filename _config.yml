@@ -1,0 +1,53 @@
+# Site settings
+title:       Rishabh Shukla
+email:       rishy@gmail.com
+author:      Rishabh Shukla
+description: "I pour out some of my random thoughts regarding Data Science and Machine Learning here"
+baseurl:     ""
+url:         "http://rishy.github.io/"
+
+# Google analytics
+google_analytics:
+
+# Optional features
+animated:           true
+show_related_posts: true
+show_post_footers:  true
+
+# Disqus post comments
+# (leave blank to disable Disqus)
+disqus_shortname:
+
+# Social icons
+show_social_icons: true
+github_username: 'rishy'	
+stackoverflow_id: 
+twitter_username: '0_rishabh'
+google_plus_id:
+linkedin_username: 'rishabhshukla1'
+bitcoin_url:
+paypal_url:
+flattr_button:
+
+# Post sharing icons
+show_sharing_icons: true
+share_text: 'Share this post!'
+# Change to 'true' to enable individual icons
+share_facebook: true
+share_twitter: true
+share_googleplus: true
+share_linkedin: true
+share_digg: false
+share_tumblr: false
+share_reddit: false
+share_stumbleupon: false
+share_hackernews: true
+
+# Build settings
+markdown:     redcarpet
+redcarpet:
+  extensions: ['smart', 'tables', 'with_toc_data']
+permalink:    pretty
+paginate:     3
+sass:
+  compressed: true
