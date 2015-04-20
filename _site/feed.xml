@@ -46,6 +46,26 @@
 &lt;p&gt;Once it is transformed into normal distributions, you are free to use this dataset with models assuming a normal input data(as listed in above section). &lt;/p&gt;
 
 &lt;p&gt;As a general approach, &lt;b&gt;Always look at the statistical/probability distiributions&lt;/b&gt; as your first step in data analysis.&lt;/p&gt;
+
+&lt;!-- % if page.comments % --&gt;
+
+&lt;div id=&quot;disqus_thread&quot;&gt;&lt;/div&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = &#39;rishabhshukla&#39;;
+    
+    /* * * DON&#39;T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement(&#39;script&#39;); dsq.type = &#39;text/javascript&#39;; dsq.async = true;
+        dsq.src = &#39;//&#39; + disqus_shortname + &#39;.disqus.com/embed.js&#39;;
+        (document.getElementsByTagName(&#39;head&#39;)[0] || document.getElementsByTagName(&#39;body&#39;)[0]).appendChild(dsq);
+    })();
+&lt;/script&gt;
+
+&lt;noscript&gt;Please enable JavaScript to view the &lt;a href=&quot;https://disqus.com/?ref_noscript&quot; rel=&quot;nofollow&quot;&gt;comments powered by Disqus.&lt;/a&gt;&lt;/noscript&gt;
+
+&lt;!-- % endif % --&gt;
 </description>
         <pubDate>Tue, 21 Apr 2015 09:30:01 +0530</pubDate>
         <link>http://rishy.github.io//statistics/2015/04/21/normal-distributions/</link>
@@ -63,6 +83,26 @@
 &lt;p&gt;&lt;a href=&quot;https://mifosforge.jira.com/wiki/display/projects/GSOC+2014+-+Batch+API&quot;&gt;Batch API&lt;/a&gt; project is focused towards creating an API akin to &lt;a href=&quot;https://developers.facebook.com/docs/graph-api/making-multiple-requests/&quot;&gt;facebook-multiple-requests&lt;/a&gt; so that multiple HTTP requests can be handled by mifos platform. This provides an efficient way for clients based on mifos platform to send multiple HTTP requests as JSON string and get back a Batch HTTP response in JSON.&lt;/p&gt;
 
 &lt;p&gt;For this project I&amp;rsquo;ll be working with Java(Spring/Jersey/JPA) for developing the backend API and AngularJS and Bootstrap 3 for making all the UI changes. Development work regarding the Batch API can be followed at: &lt;a href=&quot;https://github.com/rishy/mifosx/tree/Batch-API&quot;&gt;Github - mifos X Batch API&lt;/a&gt;.&lt;/p&gt;
+
+&lt;!-- % if page.comments % --&gt;
+
+&lt;div id=&quot;disqus_thread&quot;&gt;&lt;/div&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = &#39;rishabhshukla&#39;;
+    
+    /* * * DON&#39;T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement(&#39;script&#39;); dsq.type = &#39;text/javascript&#39;; dsq.async = true;
+        dsq.src = &#39;//&#39; + disqus_shortname + &#39;.disqus.com/embed.js&#39;;
+        (document.getElementsByTagName(&#39;head&#39;)[0] || document.getElementsByTagName(&#39;body&#39;)[0]).appendChild(dsq);
+    })();
+&lt;/script&gt;
+
+&lt;noscript&gt;Please enable JavaScript to view the &lt;a href=&quot;https://disqus.com/?ref_noscript&quot; rel=&quot;nofollow&quot;&gt;comments powered by Disqus.&lt;/a&gt;&lt;/noscript&gt;
+
+&lt;!-- % endif % --&gt;
 </description>
         <pubDate>Mon, 19 May 2014 07:00:45 +0530</pubDate>
         <link>http://rishy.github.io//gsoc'14/2014/05/19/gsoc-selection/</link>
