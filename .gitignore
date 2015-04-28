@@ -1,1 +1,2 @@
 *.scssc
+ipy_notebooks/.ipynb_checkpoints/*
