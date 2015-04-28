@@ -34,7 +34,7 @@ $$
 
 &lt;p&gt;As a result, L1 loss function is more robust and is generally not affected by outliers. On the contrary L2 loss function will try to adjust the model according to these outlier values, even on the expense of other samples. Hence, L2 loss function is highly sensitive to outliers in the dataset. &lt;/p&gt;
 
-&lt;p&gt;We&amp;rsquo;ll see how outliers can affect the performance of a regression model. We are going to use pandas, scikit-learn and numpy to work through this. I&amp;rsquo;d highly recommend to have a look at the &lt;a href=&quot;&quot;&gt;ipython notebook&lt;/a&gt; containing the code on this post. &lt;/p&gt;
+&lt;p&gt;We&amp;rsquo;ll see how outliers can affect the performance of a regression model. We are going to use pandas, scikit-learn and numpy to work through this. I&amp;rsquo;d highly recommend to have a look at the &lt;a href=&quot;http://nbviewer.ipython.org/github/rishy/rishy.github.io/blob/master/ipy_notebooks/L1%20vs.%20L2%20Loss.ipynb&quot;&gt;ipython notebook&lt;/a&gt; containing the code on this post. &lt;/p&gt;
 
 &lt;p&gt;We&amp;rsquo;ll be using Boston Housing Prices dataset and will to try to predict the prices using Gradient Boosting Regressor from scikit-learn. You can downloaded the dataset directly from &lt;a href=&quot;https://archive.ics.uci.edu/ml/datasets/Housing&quot;&gt;UCI Datasets&lt;/a&gt; or from this &lt;a href=&quot;../../../../../ipy_notebooks/Datasets/Housing.csv&quot;&gt;csv&lt;/a&gt;.&lt;/p&gt;
 
