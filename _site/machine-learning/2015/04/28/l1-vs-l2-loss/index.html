@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>L1 vs. L2 Loss function &#8211; Rishabh Shukla</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Comparison of performances of L1 and L2 loss functions with and without outliers in a dataset.">
+    <meta name="author" content="Rishabh Shukla">
+    <meta name="keywords" content="machine-learning">
+    <link rel="canonical" href="http://rishy.github.io//machine-learning/2015/04/28/l1-vs-l2-loss/">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css" type="text/css">
+
+    <!-- Fonts -->
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    
+
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="L1 vs. L2 Loss function">
+    <meta property="og:description" content="I pour out some of my random thoughts regarding Data Science and Machine Learning here">
+    <meta property="og:url" content="http://rishy.github.io//machine-learning/2015/04/28/l1-vs-l2-loss/">
+    <meta property="og:site_name" content="Rishabh Shukla">
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="favicon-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+</head>
+
+<body class="animated fade-in-down">
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="http://rishy.github.io/" class="site-title">Rishabh Shukla</a>
+      <nav class="site-nav right">
+        <a href="/about/">About</a>
+<a href="/contact/">Contact</a>
+
+      </nav>
+      <div class="clearfix"></div>
+      
+        <div class="social-icons">
+  <div class="left">
+    
+      <a class="fa fa-github" href="https://github.com/rishy"></a>
+    
+    
+    
+      <a class="fa fa-twitter" href="https://twitter.com/0_rishabh"></a>
+    
+    
+    
+      <a class="fa fa-envelope" href="mailto:rishy@gmail.com"></a>
+    
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/rishabhshukla1"></a>
+    
+  </div>
+  <div class="right">
+    
+    
+    
+  </div>
+</div>
+<div class="clearfix"></div>
+
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        
+
+
+<div class="post-header mb2">
+  <h1>L1 vs. L2 Loss function</h1>
+  <span class="post-meta">Apr 28, 2015</span><br>
+  
+  <span class="post-meta small">9 minute read</span>
+</div>
+
+<article class="post-content">
+  <p>Least absolute deviations(L1) and Least square errors(L2) are the two standard loss functions, that decides what function should be minimized while learning from a dataset. </p>
+
+<p>L1 Loss function minimizes the <b>absolute differences</b> between the estimated values and the existing target values. So, summing up each target </span> value <span>\( y_i \)</span> and corresponding estimated value <span>\( h(x_i) \)</span>, where <span>\( x_i \)</span> denotes the feature set of a single sample, Sum of absolute differences for &lsquo;n&rsquo; samples can be calculated as,</p>
+
+<div>
+$$
+\begin{align*}
+  & S = \sum_{i=0}^n|y_i - h(x_i)|
+\end{align*}
+$$
+</div>
+
+<p>On the other hand, L2 loss function minimizes the <b>squared differences</b> between the estimated and existing target values.</p>
+
+<div>
+$$
+\begin{align*}
+  & S = \sum_{i=0}^n(y_i - h(x_i))^2
+\end{align*}
+$$
+</div>
+
+<p>As apparent from above formulae that L2 error will be much larger in the case of outliers compared to L1. Since, the difference between an incorrectly predicted target value and original target value will be quite large and squaring it will make it even larger. </p>
+
+<p>As a result, L1 loss function is more robust and is generally not affected by outliers. On the contrary L2 loss function will try to adjust the model according to these outlier values, even on the expense of other samples. Hence, L2 loss function is highly sensitive to outliers in the dataset. </p>
+
+<p>We&rsquo;ll see how outliers can affect the performance of a regression model. We are going to use pandas, scikit-learn and numpy to work through this. I&rsquo;d highly recommend to have a look at the <a href="">ipython notebook</a> containing the code on this post. </p>
+
+<p>We&rsquo;ll be using Boston Housing Prices dataset and will to try to predict the prices using Gradient Boosting Regressor from scikit-learn. You can downloaded the dataset directly from <a href="https://archive.ics.uci.edu/ml/datasets/Housing">UCI Datasets</a> or from this <a href="../../../../../ipy_notebooks/Datasets/Housing.csv">csv</a>.</p>
+
+<p>We are goint to start with reading the data from the csv file.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">GradientBoostingRegressor</span>
+<span class="kn">from</span> <span class="nn">statsmodels.tools.eval_measures</span> <span class="kn">import</span> <span class="n">rmse</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="c"># Make pylab inline and set the theme to &#39;ggplot&#39;</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s">&#39;ggplot&#39;</span><span class="p">)</span>
+<span class="o">%</span><span class="n">pylab</span> <span class="n">inline</span>
+
+<span class="c"># Read Boston Housing Data</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;Datasets/Housing.csv&#39;</span><span class="p">)</span>
+
+<span class="c"># Create a data frame with all the independent features</span>
+<span class="n">data_indep</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s">&#39;medv&#39;</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c"># Create a target vector(vector of dependent variable, i.e. &#39;medv&#39;)</span>
+<span class="n">data_dep</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;medv&#39;</span><span class="p">]</span>
+
+<span class="c"># Split data into training and test sets</span>
+<span class="n">train_X</span><span class="p">,</span> <span class="n">test_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">test_y</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+                                    <span class="n">data_indep</span><span class="p">,</span> <span class="n">data_dep</span><span class="p">,</span>
+                                    <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.20</span><span class="p">,</span>
+                                    <span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span><span class="p">)</span></code></pre></div>
+
+<h4 id="regression-without-any-outliers:">Regression without any Outliers:</h4>
+
+<p>At this moment, our housing dataset is pretty much clean and doesn&rsquo;t contain any outliers as such.
+So let&rsquo;s fit a GB regressor with L1 and L2 loss functions.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># GradientBoostingRegressor with a L1(Least Absolute Deviations) loss function</span>
+<span class="c"># Set a random seed so that we can reproduce the results</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">32767</span><span class="p">)</span>
+
+<span class="n">mod</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;lad&#39;</span><span class="p">)</span>
+
+<span class="n">fit</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
+<span class="n">predict</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_X</span><span class="p">)</span>
+
+<span class="c"># Root Mean Squared Error</span>
+<span class="k">print</span> <span class="s">&quot;RMSE -&gt; </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span></code></pre></div>
+
+<p>With a L1 loss function and no outlier we get a value of RMSE: 3.440147.
+Let&rsquo;s see what results we get with L2 loss function.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># GradientBoostingRegressor with L2(Least Square errors) loss function</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;ls&#39;</span><span class="p">)</span>
+
+<span class="n">fit</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
+<span class="n">predict</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_X</span><span class="p">)</span>
+
+<span class="c"># Root Mean Squared Error</span>
+<span class="k">print</span> <span class="s">&quot;RMSE -&gt; </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span></code></pre></div>
+
+<p>This prints out a mean squared value of RMSE -&gt; 2.542019.</p>
+
+<p>As apparent from RMSE errors of L1 and L2 loss functions, Least Squares(L2)
+outperform L1, when there are no outliers in the data.</p>
+
+<h4 id="regression-with-outliers:">Regression with Outliers:</h4>
+
+<p>After looking at the minimum and maximum values of &lsquo;medv&rsquo; column, we can see
+that the range of values in &lsquo;medv&rsquo; is [5, 50].<br/>
+Let&rsquo;s add a few Outliers in this Dataset, so that we can see some significant
+differences with <b>L1</b> and <b>L2</b> loss functions.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Get upper and lower bounds[min, max] of all the features</span>
+<span class="n">stats</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<span class="n">extremes</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s">&#39;min&#39;</span><span class="p">,</span> <span class="s">&#39;max&#39;</span><span class="p">],:]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s">&#39;medv&#39;</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">extremes</span></code></pre></div>
+
+<p>Now, we are going to generate 5 random samples, such that their values lies in
+the [min, max] range of respective features.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Set a random seed</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="c"># Create 5 random values </span>
+<span class="n">rands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">rands</span>
+
+<span class="c"># Get the &#39;min&#39; and &#39;max&#39; rows as numpy array</span>
+<span class="n">min_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">extremes</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s">&#39;min&#39;</span><span class="p">],</span> <span class="p">:])</span>
+<span class="n">max_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">extremes</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s">&#39;max&#39;</span><span class="p">],</span> <span class="p">:])</span>
+
+<span class="c"># Find the difference(range) of &#39;max&#39; and &#39;min&#39;</span>
+<span class="nb">range</span> <span class="o">=</span> <span class="n">max_array</span> <span class="o">-</span> <span class="n">min_array</span>
+
+<span class="c"># Generate 5 samples with &#39;rands&#39; value</span>
+<span class="n">outliers_X</span> <span class="o">=</span> <span class="p">(</span><span class="n">rands</span> <span class="o">*</span> <span class="nb">range</span><span class="p">)</span> <span class="o">+</span> <span class="n">min_array</span>
+<span class="n">outliers_X</span></code></pre></div>
+
+<p>array([[  17.04578252,   19.15194504,    5.68465061,    0.19151945,
+           0.47807845,    4.56054001,   21.49653863,    3.23572024,
+           5.40494736,  287.356192  ,   14.40028283,   76.27278363,
+           8.67066488],&hellip;,
+       [  69.40067405,   77.99758081,   21.73774005,    0.77997581,
+           0.76406824,    7.63169374,   78.63565097,    9.70691596,
+          18.93944359,  595.70732345,   19.9317726 ,  309.64280598,
+          29.99632329]])</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># We will also create some hard coded outliers</span>
+<span class="c"># for &#39;medv&#39;, i.e. our target</span>
+<span class="n">medv_outliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span> <span class="mi">600</span><span class="p">])</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Change the type of &#39;chas&#39;, &#39;rad&#39; and &#39;tax&#39; to rounded of Integers</span>
+<span class="n">outliers_X</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">outliers_X</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]]))</span>
+
+<span class="c"># Finally concatenate our existing &#39;train_X&#39; and</span>
+<span class="c"># &#39;train_y&#39; with these outliers</span>
+<span class="n">train_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_X</span><span class="p">,</span> <span class="n">outliers_X</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">train_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_y</span><span class="p">,</span> <span class="n">medv_outliers</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c"># Plot a histogram of &#39;medv&#39; in train_y</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">train_y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="nb">range</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s">&#39;medv Count&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;medv&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;count&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span></code></pre></div>
+
+<p><img src="../../../../../images/l1-l2-loss.png" alt="png"></p>
+
+<p>You can see there are some clear outliers at 600, 700 and even one or two &lsquo;medv&rsquo;
+values are 0.<br/>
+Since, our outliers are in place now, we will once again fit the
+GradientBoostingRegressor with L1 and L2 Loss functions to see the contrast in
+their performances with outliers.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># GradientBoostingRegressor with L1 loss function</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">9876</span><span class="p">)</span>
+
+<span class="n">mod</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;lad&#39;</span><span class="p">)</span>
+
+<span class="n">fit</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
+<span class="n">predict</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_X</span><span class="p">)</span>
+
+<span class="c"># Root Mean Squared Error</span>
+<span class="k">print</span> <span class="s">&quot;RMSE -&gt; </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span></code></pre></div>
+
+<p>We get a RMSE value of 7.055568, with L1 loss function and existing outliers.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># GradientBoostingRegressor with L2 loss function</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;ls&#39;</span><span class="p">)</span>
+
+<span class="n">fit</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
+<span class="n">predict</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_X</span><span class="p">)</span>
+
+<span class="c"># Root Mean Squared Error</span>
+<span class="k">print</span> <span class="s">&quot;RMSE -&gt; </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span></code></pre></div>
+
+<p>On the other hand, we get a RMSE value of 9.806251, with L2 loss function and existing outliers.</p>
+
+<p>With outliers in the dataset, a L2(Loss function) tries to adjust the
+model according to these outliers on the expense of other
+good-samples, since the squared-error is going to be huge for these outliers(for
+error &gt; 1). On the other hand L1(Least absolute deviation) is quite resistant to
+outliers.<br/>
+As a result, L2 loss function may result in huge deviations in some of the
+samples which results in reduced accuracy.</p>
+
+<p>So, if you can ignore the ouliers in your dataset or you need them to be there, then you should be using a L1 loss function, on the other hand if you don&rsquo;t want undesired outliers in the dataset and would like to use a stable solution then first of all you should try to remove the outliers and then use a L2 loss function. Or performance of a model with a L2 loss function may deteriorate badly due to the presence of outliers in the dataset. </p>
+
+<p>Whenever in doubt, prefer L2 loss function, it works pretty well in most of the situations. </p>
+
+<!-- % if page.comments % -->
+
+<div id="disqus_thread"></div>
+
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'rishabhshukla';
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+<!-- % endif % -->
+
+</article>
+
+
+  <div class="share-page">
+  Share this post!
+
+  <div class="share-links">
+    
+      <a class = "fa fa-facebook" href="https://facebook.com/sharer.php?u=http://rishy.github.io//machine-learning/2015/04/28/l1-vs-l2-loss/" rel="nofollow" target="_blank" title="Share on Facebook"></a>
+    
+
+    
+      <a class="fa fa-twitter" href="https://twitter.com/intent/tweet?text=L1 vs. L2 Loss function&url=http://rishy.github.io//machine-learning/2015/04/28/l1-vs-l2-loss/" rel="nofollow" target="_blank" title="Share on Twitter"></a>
+    
+
+    
+      <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://rishy.github.io//machine-learning/2015/04/28/l1-vs-l2-loss/" rel="nofollow" target="_blank" title="Share on Google+"></a>
+    
+
+    
+      <a class="fa fa-linkedin" href="http://www.linkedin.com/shareArticle?url=http://rishy.github.io//machine-learning/2015/04/28/l1-vs-l2-loss/&title=L1 vs. L2 Loss function" rel="nofollow" target="_blank" title="Share on LinkedIn"></a>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+      <a class = "fa fa-hacker-news" onclick="parent.postMessage('submit','*')" href="https://news.ycombinator.com/submitlink?u=http://rishy.github.io//machine-learning/2015/04/28/l1-vs-l2-loss/&t=L1 vs. L2 Loss function" rel="nofollow" target="_blank" title="Share on Hacker News"></a>
+    
+
+
+  </div>
+</div>
+
+
+
+
+  <div class="py2 post-footer">
+  <img src="/images/me.jpg" alt="Rishabh" class="avatar" />
+  <p>
+    This is a web-log by Rishabh. He Loves Data. When he is not coding, he loves to
+    listen to music, read books, trek and travel.
+  </p>
+  <p>
+    Follow him on <a href="https://twitter.com/0_rishabh">Twitter</a>.
+  </p>
+</div>
+
+
+
+
+
+
+  <h3 class="related-post-title">Related Posts</h3>
+  
+    <div class="post ml2">
+      <a href="/statistics/2015/04/21/normal-distributions/" class="post-link">
+        <h4 class="post-title">Normal/Gaussian Distributions</h4>
+        <p class="post-summary">This is first blog post of the series "Statistical Distributions". We are starting with the most commonly used Normal Distributions.</p>
+      </a>
+    </div>
+  
+    <div class="post ml2">
+      <a href="/gsoc'14/2014/05/19/gsoc-selection/" class="post-link">
+        <h4 class="post-title">Google Summer of Code 2014</h4>
+        <p class="post-summary">Got Selected for Google Summer of Code 2014, with Mifos as my mentoring organization.</p>
+      </a>
+    </div>
+  
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+  <div class="p2 wrap">
+    <div class="measure mt1 center">
+      <small>
+      	You are free to use the Source Code available at <a href="https://github.com/rishy/rishy.github.io">Github</a>.<br/>
+        Theme by <a href="http://johnotander.com">John Otander</a> (<a href="https://twitter.com/4lpine">@4lpine</a>).
+      </small>
+    </div>
+  </div>
+</footer>
+
+
+
+</body>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+</html>

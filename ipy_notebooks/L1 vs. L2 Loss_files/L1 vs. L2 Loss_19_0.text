@@ -1,0 +1,14 @@
+crim       float64
+zn         float64
+indus      float64
+chas         int64
+nox        float64
+rm         float64
+age        float64
+dis        float64
+rad          int64
+tax          int64
+ptratio    float64
+black      float64
+lstat      float64
+dtype: object

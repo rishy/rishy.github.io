@@ -1,0 +1,7 @@
+         crim   zn  indus  chas    nox     rm    age      dis  rad  tax  \
+min   0.00632    0   0.46     0  0.385  3.561    2.9   1.1296    1  187   
+max  88.97620  100  27.74     1  0.871  8.780  100.0  12.1265   24  711   
+
+     ptratio   black  lstat  
+min     12.6    0.32   1.73  
+max     22.0  396.90  37.97  

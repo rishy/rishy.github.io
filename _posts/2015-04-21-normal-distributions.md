@@ -43,6 +43,6 @@ If plotting the data results in a skewed plot, then it is probably a log-normal 
 
 Once it is transformed into normal distributions, you are free to use this dataset with models assuming a normal input data(as listed in above section). 
 
-As a general approach, <b>Always look at the statistical/probability distiributions</b> as your first step in data analysis.
+As a general approach, <b>Always look at the statistical/probability distributions</b> as your first step in data analysis.
 
 {% include disqus.html %}
