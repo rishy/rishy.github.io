@@ -3,7 +3,7 @@ layout:     post
 title:      Normal/Gaussian Distributions
 date:       2015-04-21 04:00:01
 summary:    This is first blog post of the series "Statistical Distributions". We are starting with the most commonly used Normal Distributions.
-categories: statistics
+categories: stats
 comments: true
 ---
 

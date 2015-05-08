@@ -7,6 +7,232 @@
     <atom:link href="http://rishy.github.io//feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
+        <title>Phishing Websites Detection</title>
+        <description>&lt;p&gt;Detection of phishing websites is a really important safety measure for most of the online platforms. So, as to save a platform with malicious requests from such websites, it is important to have a robust phishing detection system in place. &lt;/p&gt;
+
+&lt;p&gt;Thanks to people like, Rami M. Mohammad, Fadi Thabtah, and Lee McCluskey who have worked intensively in this area. In this post, we are going to use &lt;a href=&quot;http://archive.ics.uci.edu/ml/datasets/Phishing+Websites&quot;&gt;Phishing Websites Data&lt;/a&gt; from UCI Machine Learning Datasets. This dataset was donated by &lt;i&gt;Rami Mustafa A Mohammad&lt;/i&gt; for further analysis. Rami M. Mohammad, Fadi Thabtah, and Lee McCluskey have even used neural nets and various other models to create a really robust phishing detection system. I really encourage you to have a look at the original papers &lt;a href=&quot;http://eprints.hud.ac.uk/17994/3/RamiIntelligent_Rule_based_Phishing_Websites_Classification_IET_Journal.pdf&quot;&gt;here&lt;/a&gt; and &lt;a href=&quot;http://eprints.hud.ac.uk/18246/3/Predicting_Phishing_Websites_using_Neural_Network_trained_with_Back-Propagation.pdf&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;For this very basic analysis, we are going to use multiple models, and see which one fits the best with our &lt;a href=&quot;https://github.com/rishy/phishing-websites/blob/master/Datasets/phising.csv&quot;&gt;dataset&lt;/a&gt;. And finally, the most important part - a breakdown of most important features to detect a phishing website using a &lt;code&gt;randomForest&lt;/code&gt; Fit.&lt;/p&gt;
+
+&lt;p&gt;We&amp;rsquo;ll start with loading the &lt;a href=&quot;https://github.com/rishy/phishing-websites/blob/master/Datasets/phising.csv&quot;&gt;csv&lt;/a&gt; file, in our R Script and setting the new column names.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;kn&quot;&gt;library&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;caret&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;library&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;doMC&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Register 4 cores for parallel computing&lt;/span&gt;
+registerDoMC&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Read the data from csv file&lt;/span&gt;
+data &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; read.csv&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;Datasets/phising.csv&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; header &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;F&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                colClasses &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;factor&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Names list for the features&lt;/span&gt;
+names &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;has_ip&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;long_url&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;short_service&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;has_at&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+           &lt;span class=&quot;s&quot;&gt;&amp;quot;double_slash_redirect&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;pref_suf&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;has_sub_domain&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+           &lt;span class=&quot;s&quot;&gt;&amp;quot;ssl_state&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;long_domain&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;favicon&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;port&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+           &lt;span class=&quot;s&quot;&gt;&amp;quot;https_token&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;req_url&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;url_of_anchor&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;tag_links&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+           &lt;span class=&quot;s&quot;&gt;&amp;quot;SFH&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;submit_to_email&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;abnormal_url&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;redirect&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+           &lt;span class=&quot;s&quot;&gt;&amp;quot;mouseover&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;right_click&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;popup&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;iframe&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+           &lt;span class=&quot;s&quot;&gt;&amp;quot;domain_Age&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;dns_record&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;traffic&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;page_rank&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+           &lt;span class=&quot;s&quot;&gt;&amp;quot;google_index&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;links_to_page&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;stats_report&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;target&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; 
+
+&lt;span class=&quot;c1&quot;&gt;# Add column names&lt;/span&gt;
+&lt;span class=&quot;kp&quot;&gt;names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;names&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Here we are importing &lt;a href=&quot;caret.r-forge.r-project.org&quot;&gt;caret&lt;/a&gt; and &lt;a href=&quot;http://cran.r-project.org/web/packages/doMC/index.html&quot;&gt;doMC&lt;/a&gt; libraries and then registering &lt;b&gt;4 cores&lt;/b&gt; for parallel processing. You can set the number of cores according to your machine.&lt;/p&gt;
+
+&lt;p&gt;All of the features in this dataset are factors, that&amp;rsquo;s the reason I have used &lt;code&gt;colClasses = &amp;quot;factor&amp;quot;&lt;/code&gt; in &lt;code&gt;read.csv&lt;/code&gt; method. You can have a look at the &lt;code&gt;README.md&lt;/code&gt; file in &lt;a href=&quot;https://github.com/rishy/phishing-websites&quot;&gt;this&lt;/a&gt; Github Repo, to get an overview of the possible values of each feature.&lt;/p&gt;
+
+&lt;p&gt;Now, first thing first, let&amp;rsquo;s have a look at the &lt;code&gt;data&lt;/code&gt;,&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;str&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;pre&gt;
+&#39;data.frame&#39;:   2456 obs. of  31 variables:
+ $ has_ip               : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 1 1 ...
+ $ long_url             : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;-1&quot;: 2 2 1 ...
+ $ short_service        : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 ...
+ $ has_at               : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 ...
+ $ double_slash_redirect: Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 1 1 ...
+ $ pref_suf             : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;-1&quot;: 3 3 3 ...
+ $ has_sub_domain       : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;-1&quot;: 3 1 3 ...
+ $ ssl_state            : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;-1&quot;: 3 2 3 ...
+ $ long_domain          : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;-1&quot;: 1 1 1 ...
+ $ favicon              : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 ...
+ $ port                 : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 ...
+ $ https_token          : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 2 2 ...
+ $ req_url              : Factor w/ 2 levels &quot;1&quot;,&quot;-1&quot;: 1 1 1 ...
+ $ url_of_anchor        : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;-1&quot;: 3 1 1 ...
+ $ tag_links            : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;-1&quot;: 2 3 3 ...
+ $ SFH                  : Factor w/ 2 levels &quot;1&quot;,&quot;-1&quot;: 2 2 2 ...
+ $ submit_to_email      : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 1 2 ...
+ $ abnormal_url         : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 1 2 ...
+ $ redirect             : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 ...
+ $ mouseover            : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 ...
+ $ right_click          : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 ...
+ $ popup                : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 ...
+ $ iframe               : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 ...
+ $ domain_Age           : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;-1&quot;: 3 3 1 ...
+ $ dns_record           : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 2 2 ...
+ $ traffic              : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;-1&quot;: 3 1 2 ...
+ $ page_rank            : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;-1&quot;: 3 3 3 ...
+ $ google_index         : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 ...
+ $ links_to_page        : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;-1&quot;: 2 2 1 ...
+ $ stats_report         : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 1 2 ...
+ $ target               : Factor w/ 2 levels &quot;1&quot;,&quot;-1&quot;: 1 1 1 ...
+&lt;/pre&gt;
+
+&lt;p&gt;So, we have some &lt;b&gt;30&lt;/b&gt; features and a &lt;code&gt;target&lt;/code&gt; variable with two levels(1, -1), i.e. whether a website is a phishing website or not.&lt;/p&gt;
+
+&lt;p&gt;We&amp;rsquo;ll now create a training and test set using caret&amp;rsquo;s &lt;code&gt;createDataPartition&lt;/code&gt; method. We&amp;rsquo;ll use test set to validate the accuracy of our detection system.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# Set a random seed so we can reproduce the results&lt;/span&gt;
+&lt;span class=&quot;kp&quot;&gt;set.seed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1234&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Create training and testing partitions&lt;/span&gt;
+train_in &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; createDataPartition&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;y &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; data&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;target&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                        p &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0.75&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;list&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;FALSE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+training &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; data&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;train_in&lt;span class=&quot;p&quot;&gt;,]&lt;/span&gt;
+testing &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; data&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;train_in&lt;span class=&quot;p&quot;&gt;,]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now, we are ready to try a few models on the dataset. Starting with a &lt;code&gt;Boosted logistic Regression&lt;/code&gt; model. Let&amp;rsquo;s see how that perform on our quest for the nearly perfect phishing detection system ;).&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;c1&quot;&gt;################ Boosted Logistic Regression ################&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# trainControl for Boosted Logisitic Regression&lt;/span&gt;
+fitControl &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; trainControl&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;method &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;repeatedcv&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; repeats &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                           number &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; verboseIter &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Run a Boosted logisitic regression over the training set&lt;/span&gt;
+log.fit &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; train&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;target &lt;span class=&quot;o&quot;&gt;~&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  data &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; training&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
+                method &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;LogitBoost&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; trControl &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; fitControl&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                tuneLength &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Predict the testing target&lt;/span&gt;
+log.predict &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; predict&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;log.fit&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; testing&lt;span class=&quot;p&quot;&gt;[,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;-31&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+
+confusionMatrix&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;log.predict&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; testing&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;target&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We are using caret&amp;rsquo;s &lt;code&gt;trainControl&lt;/code&gt; method to find out the best performing parameters using repeated cross-validation. After creating a confusion Matrix of the predicted values and the real target values, I could get a prediction accuracy of &lt;b&gt;0.9357&lt;/b&gt;, which is actually pretty good for a Boosted Logistic Regression model.&lt;/p&gt;
+
+&lt;p&gt;But of course we have better choices for models, right? And there is no reason, for not using our one of the most favourite &lt;code&gt;SVM with an RBF Kernel&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;c1&quot;&gt;################## SVM - RBF Kernel ####################&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# trainControl for Radial SVM&lt;/span&gt;
+fitControl &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; trainControl&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;method &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;repeatedcv&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; repeats &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                         number &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; verboseIter &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Run a RBF - SVM over the training set&lt;/span&gt;
+rbfsvm.fit &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; train&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;target &lt;span class=&quot;o&quot;&gt;~&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  data &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; training&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                    method &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;svmRadial&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; trControl &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; fitControl&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                    tuneLength &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Predict the testing target&lt;/span&gt;
+rbfsvm.predict &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; predict&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;rbfsvm.fit&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; testing&lt;span class=&quot;p&quot;&gt;[,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;-31&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+
+confusionMatrix&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;rbfsvm.predict&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; testing&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;target&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Woah! I am getting a &lt;b&gt;0.9706&lt;/b&gt; accuracy with a SVM and RBF Kernel. Looks like there is almost no escape for phishing websites now :D.&lt;/p&gt;
+
+&lt;p&gt;But, since one of the most important reason I picked up this analysis was to find out the most important predictors, that can identify a phishing website, we&amp;rsquo;ll have to move to Tree-based models to get the variable importance.&lt;/p&gt;
+
+&lt;p&gt;So, let&amp;rsquo;s fit a Tree bagging model on our dataset.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;c1&quot;&gt;################## TreeBag ###################&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# trainControl for Treebag&lt;/span&gt;
+fitControl &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; trainControl&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;method &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;repeatedcv&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; repeats &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                         number &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; verboseIter &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Run a Treebag classification over the training set&lt;/span&gt;
+treebag.fit &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; train&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;target &lt;span class=&quot;o&quot;&gt;~&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  data &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; training&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                     method &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;treebag&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; importance &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Predict the testing target&lt;/span&gt;
+treebag.predict &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; predict&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;treebag.fit&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; testing&lt;span class=&quot;p&quot;&gt;[,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;-31&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+
+confusionMatrix&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;treebag.predict&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; testing&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;target&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now, this is something, an accuracy of &lt;b&gt;0.9739&lt;/b&gt; and we also get our variable importances :).
+But I am not going to show that, without fitting another tree model, the almighty(throw-anything-at-me) &lt;code&gt;Random Forests&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;c1&quot;&gt;####################### Random Forest ########################&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# trainControl for Random Forest&lt;/span&gt;
+fitControl &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; trainControl&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;method &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;repeatedcv&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; repeats &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                         number &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; verboseIter &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Run a Random Forest classification over the training set&lt;/span&gt;
+rf.fit &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; train&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;target &lt;span class=&quot;o&quot;&gt;~&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  data &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; training&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; method &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;rf&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                     importance &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; trControl &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; fitControl&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                     tuneLength &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Predict the testing target&lt;/span&gt;
+rf.predict &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; predict&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;rf.fit&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; testing&lt;span class=&quot;p&quot;&gt;[,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;-31&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+
+confusionMatrix&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;rf.predict&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; testing&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;target&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;That&amp;rsquo;s some coincidence(or-not), with mtry = 21, we are still getting an accuracy of &lt;b&gt;)0.9739&lt;/b&gt; with our &lt;code&gt;Random Forest&lt;/code&gt; model, which is actually pretty good, even for practical purposes. so, finally let&amp;rsquo;s have a look at the variable importances of different features,&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;plot&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;varImp&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;rf.fit&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/rishy/phishing-websites/master/varImp1.png&quot; alt=&quot;varImp&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;According to our Random Forest model, 10 of the most imporant features are:&lt;/p&gt;
+
+&lt;blockquote&gt;
+    &lt;pre&gt;
+        * pref_suf-1           100.00
+        * url_of_anchor-1       85.89
+        * ssl_state1            84.59
+        * has_sub_domain-1      69.18
+        * traffic1              64.39
+        * req_url-1             43.23
+        * url_of_anchor1        37.58
+        * long_domain-1         36.00
+        * domain_Age-1          34.68
+        * domain_Age1           29.54
+    &lt;/pre&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Numerical values suffixing the features name are just the level of the factor of that particular feature. As apparent from this variable importance plot and from our own intuition, features listed here are indeed some of the most important attributes to find out whether a given sample is a phishing website or not.&lt;/p&gt;
+
+&lt;p&gt;Like, if there is prefixes or suffixes being used in the url then there are very high chances that it&amp;rsquo;s a phishing website. Or a suspicious SSL state, having a sub domain in url, having a long domain url, etc. are actually really important features that can clearly identify a phishing website.&lt;/p&gt;
+
+&lt;p&gt;One can create a phishing detection system pretty easily if he/she can get the information about these predictors. Rami M. Mohammad, Fadi Thabtah, and Lee McCluskey have also mentioned in their original paper, how they did it. &lt;/p&gt;
+
+&lt;p&gt;I am sure that neural nets can further increase the accuracy of phishing detection system, but I tried to do a very basic analysis and it worked out pretty good. But of course getting and filtering out the data, creating factors out of different attributes is probably the most challanging task in phishing website detection.&lt;/p&gt;
+
+&lt;p&gt;You can further look at the Github repo with the above code at: &lt;a href=&quot;https://github.com/rishy/phishing-websites&quot;&gt;rishy/phishing-websites&lt;/a&gt;. Your feedbacks and comments are always welcomed. &lt;/p&gt;
+
+&lt;!-- % if page.comments % --&gt;
+
+&lt;div id=&quot;disqus_thread&quot;&gt;&lt;/div&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = &#39;rishabhshukla&#39;;
+    
+    /* * * DON&#39;T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement(&#39;script&#39;); dsq.type = &#39;text/javascript&#39;; dsq.async = true;
+        dsq.src = &#39;//&#39; + disqus_shortname + &#39;.disqus.com/embed.js&#39;;
+        (document.getElementsByTagName(&#39;head&#39;)[0] || document.getElementsByTagName(&#39;body&#39;)[0]).appendChild(dsq);
+    })();
+&lt;/script&gt;
+
+&lt;noscript&gt;Please enable JavaScript to view the &lt;a href=&quot;https://disqus.com/?ref_noscript&quot; rel=&quot;nofollow&quot;&gt;comments powered by Disqus.&lt;/a&gt;&lt;/noscript&gt;
+
+&lt;!-- % endif % --&gt;
+</description>
+        <pubDate>Tue, 28 Apr 2015 17:30:05 +0530</pubDate>
+        <link>http://rishy.github.io//projects/2015/04/28/phishing-websites-detection/</link>
+        <guid isPermaLink="true">http://rishy.github.io//projects/2015/04/28/phishing-websites-detection/</guid>
+      </item>
+    
+      <item>
         <title>L1 vs. L2 Loss function</title>
         <description>&lt;p&gt;Least absolute deviations(L1) and Least square errors(L2) are the two standard loss functions, that decides what function should be minimized while learning from a dataset. &lt;/p&gt;
 
@@ -226,8 +452,8 @@ samples which results in reduced accuracy.&lt;/p&gt;
 &lt;!-- % endif % --&gt;
 </description>
         <pubDate>Tue, 28 Apr 2015 17:30:05 +0530</pubDate>
-        <link>http://rishy.github.io//machine-learning/2015/04/28/l1-vs-l2-loss/</link>
-        <guid isPermaLink="true">http://rishy.github.io//machine-learning/2015/04/28/l1-vs-l2-loss/</guid>
+        <link>http://rishy.github.io//ml/2015/04/28/l1-vs-l2-loss/</link>
+        <guid isPermaLink="true">http://rishy.github.io//ml/2015/04/28/l1-vs-l2-loss/</guid>
       </item>
     
       <item>
@@ -292,8 +518,8 @@ samples which results in reduced accuracy.&lt;/p&gt;
 &lt;!-- % endif % --&gt;
 </description>
         <pubDate>Tue, 21 Apr 2015 09:30:01 +0530</pubDate>
-        <link>http://rishy.github.io//statistics/2015/04/21/normal-distributions/</link>
-        <guid isPermaLink="true">http://rishy.github.io//statistics/2015/04/21/normal-distributions/</guid>
+        <link>http://rishy.github.io//stats/2015/04/21/normal-distributions/</link>
+        <guid isPermaLink="true">http://rishy.github.io//stats/2015/04/21/normal-distributions/</guid>
       </item>
     
       <item>
@@ -329,8 +555,8 @@ samples which results in reduced accuracy.&lt;/p&gt;
 &lt;!-- % endif % --&gt;
 </description>
         <pubDate>Mon, 19 May 2014 07:00:45 +0530</pubDate>
-        <link>http://rishy.github.io//gsoc'14/2014/05/19/gsoc-selection/</link>
-        <guid isPermaLink="true">http://rishy.github.io//gsoc'14/2014/05/19/gsoc-selection/</guid>
+        <link>http://rishy.github.io//projects/2014/05/19/gsoc-selection/</link>
+        <guid isPermaLink="true">http://rishy.github.io//projects/2014/05/19/gsoc-selection/</guid>
       </item>
     
   </channel>

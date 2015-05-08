@@ -3,7 +3,7 @@ layout:     post
 title:      Google Summer of Code 2014
 date:       2014-05-19 01:30:45
 summary:    Got Selected for Google Summer of Code 2014, with Mifos as my mentoring organization.
-categories: GSOC'14
+categories: projects
 comments: true
 ---
 
