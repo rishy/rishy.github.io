@@ -713,12 +713,34 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 
 &lt;p&gt;One limitation is the number of features we have in this dataset, to learn new features a simple neural net could also be employed to get some hidden patterns here. &lt;/p&gt;
 
-&lt;p&gt;Further Reads:&lt;/p&gt;
+&lt;p&gt;You can further look at the Github repo with the above code at: &lt;a href=&quot;https://github.com/rishy/electricity-demand-analysis&quot;&gt;rishy/electricity-demand-analysis&lt;/a&gt;. Your feedbacks and comments are always welcomed. &lt;/p&gt;
+
+&lt;p&gt;Related Papers:&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;http://www.sciencedirect.com/science/article/pii/S037877881200151X&quot;&gt;http://www.sciencedirect.com/science/article/pii/S037877881200151X&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;http://cs.gmu.edu/%7Ejessica/publications/astronomy11.pdf&quot;&gt;http://cs.gmu.edu/~jessica/publications/astronomy11.pdf&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;!-- % if page.comments % --&gt;
+
+&lt;div id=&quot;disqus_thread&quot;&gt;&lt;/div&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = &#39;rishabhshukla&#39;;
+    
+    /* * * DON&#39;T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement(&#39;script&#39;); dsq.type = &#39;text/javascript&#39;; dsq.async = true;
+        dsq.src = &#39;//&#39; + disqus_shortname + &#39;.disqus.com/embed.js&#39;;
+        (document.getElementsByTagName(&#39;head&#39;)[0] || document.getElementsByTagName(&#39;body&#39;)[0]).appendChild(dsq);
+    })();
+&lt;/script&gt;
+
+&lt;noscript&gt;Please enable JavaScript to view the &lt;a href=&quot;https://disqus.com/?ref_noscript&quot; rel=&quot;nofollow&quot;&gt;comments powered by Disqus.&lt;/a&gt;&lt;/noscript&gt;
+
+&lt;!-- % endif % --&gt;
 </description>
         <pubDate>Wed, 10 Jun 2015 22:22:00 +0530</pubDate>
         <link>http://rishy.github.io//projects/2015/06/10/electricity-demand/</link>

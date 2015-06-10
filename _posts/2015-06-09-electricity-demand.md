@@ -734,7 +734,11 @@ Furthermore, this would also help during the classification task, since we would
 
 One limitation is the number of features we have in this dataset, to learn new features a simple neural net could also be employed to get some hidden patterns here. 
 
-Further Reads:
+You can further look at the Github repo with the above code at: [rishy/electricity-demand-analysis](https://github.com/rishy/electricity-demand-analysis). Your feedbacks and comments are always welcomed. 
+
+Related Papers:
 
 * [http://www.sciencedirect.com/science/article/pii/S037877881200151X](http://www.sciencedirect.com/science/article/pii/S037877881200151X)
 * [http://cs.gmu.edu/~jessica/publications/astronomy11.pdf](http://cs.gmu.edu/~jessica/publications/astronomy11.pdf)
+
+{% include disqus.html %}
