@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Electricity Demand Analysis and Appliance Detection &#8211; Rishabh Shukla</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Analysis of Electricity demand from a house on a time-series dataset. An appliance detection systems is also created using K-Means Clustering based on the electricity demand.">
+    <meta name="author" content="Rishabh Shukla">
+    <meta name="keywords" content="projects">
+    <link rel="canonical" href="http://rishy.github.io//projects/2015/06/10/electricity-demand/">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css" type="text/css">
+
+    <!-- Fonts -->
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    
+
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Electricity Demand Analysis and Appliance Detection">
+    <meta property="og:description" content="I pour out some of my random thoughts regarding Data Science and Machine Learning here">
+    <meta property="og:url" content="http://rishy.github.io//projects/2015/06/10/electricity-demand/">
+    <meta property="og:site_name" content="Rishabh Shukla">
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="favicon-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+</head>
+
+<body class="animated fade-in-down">
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="http://rishy.github.io/" class="site-title">Rishabh Shukla</a>
+      <nav class="site-nav right">
+        <a href="/about/">About</a>
+<a href="/contact/">Contact</a>
+
+      </nav>
+      <div class="clearfix"></div>
+      
+        <div class="social-icons">
+  <div class="left">
+    
+      <a class="fa fa-github" href="https://github.com/rishy"></a>
+    
+    
+    
+      <a class="fa fa-twitter" href="https://twitter.com/0_rishabh"></a>
+    
+    
+    
+      <a class="fa fa-envelope" href="mailto:rishy@gmail.com"></a>
+    
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/rishabhshukla1"></a>
+    
+  </div>
+  <div class="right">
+    
+    
+    
+  </div>
+</div>
+<div class="clearfix"></div>
+
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        
+
+
+<div class="post-header mb2">
+  <h1>Electricity Demand Analysis and Appliance Detection</h1>
+  <span class="post-meta">Jun 10, 2015</span><br>
+  
+  <span class="post-meta small">16 minute read</span>
+</div>
+
+<article class="post-content">
+  <p>In this post, we are going to analyze electricity consumption data from a house. We have a  time-series dataset which contains the power(kWh), Cost of electricity and Voltage at a particular time stamp. We are further provided with the temperature records during the same day for each hour. You can download the compressed dataset from <a href="https://github.com/rishy/electricity-demand-analysis/blob/master/data-science.gz">here</a>. I&rsquo;d further recommend you to have a look at the corresponding <a href="https://github.com/rishy/electricity-demand-analysis/blob/master/Electricity%20Demand.ipynb">ipython notebook</a>. </p>
+
+<p>First part is the Data Analysis Part where we will be doing the basic data cleaning and analysis regarding the power demand and cost incurred. The second part employs a KMeans clustering approach to identify which appliance might be the major cause for the power demand in a particular hour of the day.</p>
+
+<p>So let&rsquo;s start with basic imports and reading of data from the given dataset.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+
+<span class="c"># Read the sensor dataset into pandas dataframe</span>
+<span class="n">sensor_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;merged-sensor-files.csv&#39;</span><span class="p">,</span>
+                          <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;MTU&quot;</span><span class="p">,</span> <span class="s">&quot;Time&quot;</span><span class="p">,</span> <span class="s">&quot;Power&quot;</span><span class="p">,</span>
+                          <span class="s">&quot;Cost&quot;</span><span class="p">,</span> <span class="s">&quot;Voltage&quot;</span><span class="p">],</span> <span class="n">header</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+
+<span class="c"># Read the weather data in pandas series object</span>
+<span class="n">weather_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s">&#39;weather.json&#39;</span><span class="p">,</span> <span class="n">typ</span> <span class="o">=</span><span class="s">&#39;series&#39;</span><span class="p">)</span>
+
+
+<span class="c"># A quick look at the datasets</span>
+<span class="n">sensor_data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span></code></pre></div>
+
+
+
+<div style="max-height:1000px;max-width:1500px;overflow:auto;">
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>MTU</th>
+      <th>Time</th>
+      <th>Power</th>
+      <th>Cost</th>
+      <th>Voltage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>MTU1</td>
+      <td>05/11/2015 19:59:06</td>
+      <td>4.102</td>
+      <td>0.62</td>
+      <td>122.4</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>MTU1</td>
+      <td>05/11/2015 19:59:05</td>
+      <td>4.089</td>
+      <td>0.62</td>
+      <td>122.3</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>MTU1</td>
+      <td>05/11/2015 19:59:04</td>
+      <td>4.089</td>
+      <td>0.62</td>
+      <td>122.3</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>MTU1</td>
+      <td>05/11/2015 19:59:06</td>
+      <td>4.089</td>
+      <td>0.62</td>
+      <td>122.3</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>MTU1</td>
+      <td>05/11/2015 19:59:04</td>
+      <td>4.097</td>
+      <td>0.62</td>
+      <td>122.4</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p><br>
+Let&rsquo;s have a quick look at the weather dataset as well:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">weather_data
+</code></pre></div>
+<pre>
+2015-05-12 00:00:00    75.4
+2015-05-12 01:00:00    73.2
+2015-05-12 02:00:00    72.1
+2015-05-12 03:00:00    71.0
+2015-05-12 04:00:00    70.7
+.
+.
+dtype: float64
+</pre>
+
+<h2 id="task-1:-data-analysis">TASK 1: Data Analysis</h2>
+
+<h3 id="data-cleaning/munging:">Data Cleaning/Munging:</h3>
+
+<p>After having a look at the <b>merged-sensor-files.csv</b> I found out there are some inconsistent rows where header names are repeated and as a result &lsquo;pandas&rsquo; is converting all these columns to &lsquo;object&rsquo; type. This is quite a common problem, which arises while merging multiple csv files into a single file. </p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">sensor_data.dtypes
+</code></pre></div>
+<pre>
+MTU        object
+Time       object
+Power      object
+Cost       object
+Voltage    object
+dtype: object
+</pre>
+
+<p>Let&rsquo;s find out and remove these inconsistent rows so that all the columns can be converted to appropriate data types. </p>
+
+<p>The code below finds all the rows where &ldquo;Power&rdquo; column has a string value - &ldquo;Power&rdquo; and get the index of these rows. </p>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Get the inconsistent rows indexes</span>
+<span class="n">faulty_row_idx</span> <span class="o">=</span> <span class="n">sensor_data</span><span class="p">[</span><span class="n">sensor_data</span><span class="p">[</span><span class="s">&quot;Power&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot; Power&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">faulty_row_idx</span>
+</code></pre></div>
+<pre>
+[3784,
+ 7582,
+ 11385,
+ .
+ .
+ 81617,
+ 85327]
+</pre> 
+
+<p>and now we can drop these rows from the dataframe</p>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Drop these rows from sensor_data dataframe</span>
+<span class="n">sensor_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">faulty_row_idx</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># This should return an empty list now</span>
+<span class="n">sensor_data</span><span class="p">[</span><span class="n">sensor_data</span><span class="p">[</span><span class="s">&quot;Power&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot; Power&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+</code></pre></div>
+<pre>
+  []
+</pre>
+
+<p>We have cleaned up the sensor_data and now all the columns can be converted to more appropriate data types.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Type Conversion</span>
+<span class="n">sensor_data</span><span class="p">[[</span><span class="s">&quot;Power&quot;</span><span class="p">,</span> <span class="s">&quot;Cost&quot;</span><span class="p">,</span> <span class="s">&quot;Voltage&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">sensor_data</span><span class="p">[[</span><span class="s">&quot;Power&quot;</span><span class="p">,</span>
+                                <span class="s">&quot;Cost&quot;</span><span class="p">,</span> <span class="s">&quot;Voltage&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+
+<span class="n">sensor_data</span><span class="p">[[</span><span class="s">&quot;Time&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">sensor_data</span><span class="p">[</span><span class="s">&quot;Time&quot;</span><span class="p">])</span>
+
+<span class="c"># Also add an &#39;Hour&#39; column in sensor_data</span>
+<span class="n">sensor_data</span><span class="p">[</span><span class="s">&#39;Hour&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">(</span><span class="n">sensor_data</span><span class="p">[</span><span class="s">&quot;Time&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">hour</span>
+
+<span class="n">sensor_data</span><span class="o">.</span><span class="n">dtypes</span></code></pre></div>
+
+
+<pre>
+MTU                object
+Time       datetime64[ns]
+Power             float64
+Cost              float64
+Voltage           float64
+Hour                int32
+dtype: object
+</pre>
+
+<p>
+This is better now. We have got clearly defined datatypes of different columns now. Next step is to convert the weather_data Series to a dataframe so that we can work with it with more ease.
+</p>
+
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Create a dataframe out of weather dataset as well</span>
+<span class="n">temperature_data</span> <span class="o">=</span> <span class="n">weather_data</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
+
+<span class="c"># Reindex it so as to create a two column dataframe</span>
+<span class="n">temperature_data</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">temperature_data</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Time&quot;</span><span class="p">,</span> <span class="s">&quot;Temperature&quot;</span><span class="p">]</span>
+
+<span class="c"># Add the &quot;Hour&quot; column in temperature_data</span>
+<span class="n">temperature_data</span><span class="p">[</span><span class="s">&quot;Hour&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">(</span>
+                            <span class="n">temperature_data</span><span class="p">[</span><span class="s">&quot;Time&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">hour</span>
+
+<span class="n">temperature_data</span><span class="o">.</span><span class="n">dtypes</span></code></pre></div>
+
+
+<pre>
+  Time           datetime64[ns]
+  Temperature           float64
+  Hour                    int32
+  dtype: object
+</pre>
+
+<p>
+Since now we have both of our dataframes in place, it&rsquo;d be a good point to have a look at sum of the basic statistics of both of these data frames.
+</p>
+
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">sensor_data</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span></code></pre></div>
+
+
+<div>
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Power</th>
+      <th>Cost</th>
+      <th>Voltage</th>
+      <th>Hour</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>88891.000000</td>
+      <td>88891.000000</td>
+      <td>88891.000000</td>
+      <td>88891.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>1.315980</td>
+      <td>0.202427</td>
+      <td>123.127744</td>
+      <td>11.531865</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>1.682181</td>
+      <td>0.252357</td>
+      <td>0.838768</td>
+      <td>6.921671</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>0.113000</td>
+      <td>0.020000</td>
+      <td>121.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>0.255000</td>
+      <td>0.040000</td>
+      <td>122.600000</td>
+      <td>6.000000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>0.367000</td>
+      <td>0.060000</td>
+      <td>123.100000</td>
+      <td>12.000000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>1.765000</td>
+      <td>0.270000</td>
+      <td>123.700000</td>
+      <td>18.000000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>6.547000</td>
+      <td>0.990000</td>
+      <td>125.600000</td>
+      <td>23.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p><br></p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">temperature_data</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span></code></pre></div>
+
+<div>
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Temperature</th>
+      <th>Hour</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>25.000000</td>
+      <td>25.00000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>76.272000</td>
+      <td>11.04000</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>6.635355</td>
+      <td>7.29429</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>67.900000</td>
+      <td>0.00000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>69.600000</td>
+      <td>5.00000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>75.400000</td>
+      <td>11.00000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>83.000000</td>
+      <td>17.00000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>87.000000</td>
+      <td>23.00000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p><br>
+As apparent from above statistics there is a good amount of variation in <b>Power</b> and corresponding <b>Cost</b> values in <b>sensor_data</b> dataframe, where average power is <b>1.315980kW</b> and minimum and maximum power used throughout the day is <b>0.11kW</b> and <b>6.54kW</b> respectively. Similarily there is an apparent variation in temperature in <b>temperature_data</b> dataset, most probably it attributes to day and night time. <br><br>
+To get a better understanding of these variations we&rsquo;ll be plotting power and temperatures with the timestamps, so as to find out the peak times for both.<br>
+But before moving to visualizations we&rsquo;ll have to create respective grouped datasets from <b>sensor_data</b> and <b>temperature_data</b>, grouping by the &ldquo;Hour&rdquo; column. This way we can work on hourly basis.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Group sensor_data by &#39;Hour&#39; Column</span>
+<span class="n">grouped_sensor_data</span> <span class="o">=</span> <span class="n">sensor_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span>
+                        <span class="p">[</span><span class="s">&quot;Hour&quot;</span><span class="p">],</span> <span class="n">as_index</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">grouped_sensor_data</span></code></pre></div>
+
+
+
+<div>
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Hour</th>
+      <th>Power</th>
+      <th>Cost</th>
+      <th>Voltage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0.173790</td>
+      <td>0.029468</td>
+      <td>124.723879</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>0.179594</td>
+      <td>0.033805</td>
+      <td>124.522469</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>0.185763</td>
+      <td>0.037013</td>
+      <td>123.929979</td>
+    </tr>
+    <tr>
+      <th>.</th>
+      <td>.</td>
+      <td>.</td>
+      <td>.</td>
+      <td>.</td>
+    </tr>    
+    <tr>
+      <th>22</th>
+      <td>22</td>
+      <td>2.542672</td>
+      <td>0.387109</td>
+      <td>123.542620</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>23</td>
+      <td>2.269941</td>
+      <td>0.346457</td>
+      <td>123.415791</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Group temperature_data by &quot;Hour&quot;</span>
+<span class="n">grouped_temperature_data</span> <span class="o">=</span> <span class="n">temperature_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span>
+                            <span class="p">[</span><span class="s">&quot;Hour&quot;</span><span class="p">],</span> <span class="n">as_index</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">grouped_temperature_data</span></code></pre></div>
+
+
+<div>
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Hour</th>
+      <th>Temperature</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>78.25</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>73.20</td>
+    </tr>
+    <tr>
+      <th>.</th>
+      <td>.</td>
+      <td>.</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>22</td>
+      <td>84.40</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>23</td>
+      <td>83.00</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="basic-visualizations:">Basic Visualizations:</h2>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Generates all the visualizations right inside the ipython notebook</span>
+<span class="o">%</span><span class="n">pylab</span> <span class="n">inline</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s">&#39;ggplot&#39;</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">sensor_data</span><span class="o">.</span><span class="n">Power</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s">&#39;Power Histogram&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Power&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Count&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+</code></pre></div>
+<p><img src="../../../../../images/power-histogram.png" alt="power-histogram"></p>
+
+<p>Looks like most of the time this house is consuming a limited amount of power. Although there is also a good amount of distribution in the range of <b>3.5kW - 5kW</b>, indicating a higher demand.<br/>
+Let&rsquo;s now plot the Power Distribution with the day hours.</p>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">grouped_sensor_data</span><span class="o">.</span><span class="n">Hour</span><span class="p">,</span> <span class="n">grouped_sensor_data</span><span class="o">.</span><span class="n">Power</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s">&#39;Power Distribution with Hours&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Hour&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Power&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img src="../../../../../images/power-time-distribution.png" alt="power-time-distribution"></p>
+
+<h4 id="some-of-the-inferences-we-can-get-from-this-bar-chart-are:">Some of the inferences we can get from this bar chart are:</h4>
+
+<ul>
+<li>Highest Demand is noticed during the evening hours. This is quite expected since most of the equipments would be in &lsquo;on&rsquo; state during this time like AC(during summers), room heaters(during winters), TV, Oven, Washing Machine, Lights, etc.</li>
+<li>Night hours(0000 - 0500) and office hours(0900 - 1600) have very low demand, since most of the appliances will be in &lsquo;off&rsquo; state during this period.</li>
+<li>There is a slight increase in Power during morning hours from 0600 - 0900, which should account for the power used by the appliances during morning activities, lights, geysers, etc.</li>
+</ul>
+
+<h4 id="steady-states:">Steady States:</h4>
+
+<ul>
+<li>In the time period <b>0000 - 0500</b>, demand is noticeably less and ranges between <b>0.17kW - 0.18kW</b></li>
+<li>Another steady period is from <b>1000 - 1500</b>, demand is pretty much steady between <b>0.373kW - 0.376kW</b></li>
+<li>Steady state with highest demand is from <b>1600 - 1900</b> having a range between <b>4.36kW - 4.25kW</b></li>
+</ul>
+
+<p>Some sudden changes in Demand during 0700 and 1800 can be attributed because of random events or the usage of certain appliances and may be counted as noise in the dataset. </p>
+
+<p>Similarily there is a slight oscillation in demand during 0900 which suddenly falls down from 0.38kW to 0.16kW and rises up again to about 0.37kW. Similar change in demand is seen at 2100.</p>
+
+<p>Let&rsquo;s further plot temperature with the Power to see if there is any correlation among these.</p>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">grouped_temperature_data</span><span class="o">.</span><span class="n">Temperature</span><span class="p">,</span>
+                    <span class="n">grouped_sensor_data</span><span class="o">.</span><span class="n">Power</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s">&#39;Power Distribution with Temperature&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Temperature in Fahrenheit&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Power&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><img src="../../../../../images/power-temp-distribution.png" alt="power-temp-distribution"></p>
+
+<p>There seems to be a direct correlation between temperature and the demand of power. This makes sense, since with our current dataset which is from May, this shows that cooling appliances like AC, refrigerator, etc. are consuming a lot of power during the peak hours(evening).</p>
+
+<h2 id="task-2:-machine-learning">Task 2: Machine Learning</h2>
+
+<p>We&rsquo;ll start with merging the <b>grouped_sensor_data</b> and <b>grouped_temperature_data</b> so that we can work on the complete dataset from a single dataframe.</p>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Merge grouped_sensor_data and grouped_temperature_data</span>
+<span class="c"># using &quot;Hour&quot; as the key</span>
+<span class="n">merged_data</span> <span class="o">=</span> <span class="n">grouped_sensor_data</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">grouped_temperature_data</span><span class="p">)</span>
+</code></pre></div>
+<p>In previous visualization we saw that when temperature is low generally there is less demand of power. But that mainly relates to the cooling appliances in the home. We&rsquo;ll consider the following appliances:</p>
+
+<ul>
+<li>Cooling Systems</li>
+<li>TV</li>
+<li>Geyser</li>
+<li>Lights</li>
+<li>Oven</li>
+<li>Home Security Systems</li>
+</ul>
+
+<p>and would try to identify there presence or on/off state using the merged dataset.<br></p>
+
+<h4 id="ac,-refrigerator-and-other-coooling-systems:">AC, Refrigerator and Other Coooling Systems:</h4>
+
+<p>As apparent from &ldquo;Power Distribution with Temperature&rdquo; figure, there is a sudden increase in power demand with the rise in temperature. This clearly indicates the <b>ON</b> state of one or more cooling systems in the home. Since these appliances takes a considerable amount of power, this sudden upsurge in the power is quite justified. Clearly <b>Power</b> and <b>Temperature</b> are the two features that indicates the &lsquo;ON&rsquo; state of these appliances. Although &lsquo;Cost&rsquo; feature is also correlated with &lsquo;Power&rsquo; we&rsquo;d leave it out, since it is more of a causation of Power demand, then a completely independent feature.</p>
+
+<h4 id="tv:">TV:</h4>
+
+<p>During the evening hours(1600 - 2300), an &lsquo;ON&rsquo; television set is probably another factor for increased power demand. It is quite apparent from the <b>Power</b> feature.</p>
+
+<h4 id="geyser,-oven:">Geyser, Oven:</h4>
+
+<p>Slight increase in power demand during morning hours can be related to the presence of these appliances and is justified again by the <b>Power</b> feature.</p>
+
+<h4 id="lights:">Lights:</h4>
+
+<p>It&rsquo;s quite obvious there is a small contribution(considering house owner was smart and installed LED bulbs ;) ) of lights in the house in the &lsquo;Power&rsquo; demand. And of course it only makes sense to switch &lsquo;ON&rsquo; the lights during <em>darker times</em> :D of the day, <b>Hour</b> and Low <b>Power</b> are the indicators of lights.</p>
+
+<h4 id="home-security-systems:">Home Security Systems:</h4>
+
+<p>During the office hours there&rsquo;s a very little increase in the Power demand, this can be attributed to home security systems or other automated devices.<br></p>
+
+<p>Now, we&rsquo;ll be using simple <b>K-Means clustering</b> using <b>scikit-learn</b>. We are going to consider <b>Hour, Power and Temperature</b> feature from the original dataset. For that first of all we&rsquo;ll have to merge the sensor_data dataframe with grouped_temperature_data dataframe.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Complete merged dataset</span>
+<span class="n">data</span> <span class="o">=</span><span class="n">sensor_data</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">grouped_temperature_data</span><span class="p">)</span>
+
+<span class="c"># Lets drop Time, MTU, Cost and Voltage features</span>
+<span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s">&quot;Time&quot;</span><span class="p">,</span> <span class="s">&quot;MTU&quot;</span><span class="p">,</span> <span class="s">&quot;Cost&quot;</span><span class="p">,</span> <span class="s">&quot;Voltage&quot;</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                                        <span class="n">inplace</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># Import required modules from scikit-learn</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+
+
+<span class="c"># Set a random seed, so we can reproduce the results</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="c"># Divide the merged dataset into train and test datasets</span>
+<span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span>
+                                              <span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span><span class="p">)</span>
+
+<span class="c"># Perform K-Means clustering over the train dataset</span>
+<span class="n">kmeans</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">n_jobs</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">kmeans_fit</span> <span class="o">=</span> <span class="n">kmeans</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_data</span><span class="p">)</span> 
+
+<span class="n">predict</span> <span class="o">=</span> <span class="n">kmeans_fit</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+
+<span class="n">test_data</span><span class="p">[</span><span class="s">&quot;Cluster&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">predict</span></code></pre></div>
+
+
+<div>
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Power</th>
+      <th>Hour</th>
+      <th>Temperature</th>
+      <th>Cluster</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>52595</th>
+      <td>0.114</td>
+      <td>8</td>
+      <td>69.2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>.</th>
+      <td>.</td>
+      <td>.</td>
+      <td>.</td>
+      <td>.</td>
+    </tr>
+    <tr>
+      <th>7834</th>
+      <td>1.094</td>
+      <td>21</td>
+      <td>84.2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>25231</th>
+      <td>0.125</td>
+      <td>1</td>
+      <td>73.2</td>
+      <td>2</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>This looks like a pretty reasonable clustering. We can further assign the labels to these clusters, as an appliance detection model. As apparent from the predicted result, We can set the labels for clusters as:</p>
+
+<ul>
+<li><b>0</b> - Cooling Systems</li>
+<li><b>1</b> - Oven, Geyser</li>
+<li><b>2</b> - Night Lights</li>
+<li><b>3</b> - Home Security Systems</li>
+</ul>
+
+<p>We&rsquo;ll create a data frame with these labels and merge it with predicted results.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Create a dataframe with appliance labels</span>
+<span class="n">label_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">&quot;Cluster&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+                         <span class="s">&quot;Appliances&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;Cooling System&quot;</span><span class="p">,</span>
+                                        <span class="s">&quot;Oven, Geyser&quot;</span><span class="p">,</span>
+                                        <span class="s">&quot;Night Lights&quot;</span><span class="p">,</span>
+                                        <span class="s">&quot;Home Security Systems&quot;</span><span class="p">]})</span>
+
+<span class="c"># Merge predicted cluster values for test data set</span>
+<span class="c"># with our label dataframe</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">test_data</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">label_df</span><span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code></pre></div>
+
+<br>
+
+<div>
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Power</th>
+      <th>Hour</th>
+      <th>Temperature</th>
+      <th>Cluster</th>
+      <th>Appliances</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.114</td>
+      <td>8</td>
+      <td>69.2</td>
+      <td>1</td>
+      <td>Oven, Geyser</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">result</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code></pre></div>
+
+<div>
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Power</th>
+      <th>Hour</th>
+      <th>Temperature</th>
+      <th>Cluster</th>
+      <th>Appliances</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>22218</th>
+      <td>0.306</td>
+      <td>15</td>
+      <td>80.7</td>
+      <td>3</td>
+      <td>Home Security Systems</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>I think this makes sense. As apparent from <em>result</em> dataframe, in hours like 8, 9, 10 there is a high possibility that a Oven or Geyser is being used. On the other hand during office hours(1000 - 1600), most probably Home Security Appliances are taking the power.<br></p>
+
+<p>Starting from the very beginning, i.e. the Data Analysis process, I think with more data we could group it according to the days(for a week&rsquo;s or month&rsquo;s data), or by months(for a year&rsquo;s data). That could&rsquo;ve significantly changed the predicted Power values, since the average values over these larger intervals would be smoother.<br></p>
+
+<p>We&rsquo;d also have to take care of the seasons and temperature, since different appliances would be taking power in different seasons, so clustering would turn into a bit complicated task compared to what we did with data of just one day.</p>
+
+<p>The most important data that could help in a more accurate analysis would be the power consumption amount of all the appliances in the house. That way it&rsquo;d be much easier to understand what appliance is taking more power in a certain period of time. </p>
+
+<p>Furthermore, this would also help during the classification task, since we would already know that certain appliances requires much power, hence we could more accurately classify a sample.<br></p>
+
+<p>One limitation is the number of features we have in this dataset, to learn new features a simple neural net could also be employed to get some hidden patterns here. </p>
+
+<p>Further Reads:</p>
+
+<ul>
+<li><a href="http://www.sciencedirect.com/science/article/pii/S037877881200151X">http://www.sciencedirect.com/science/article/pii/S037877881200151X</a></li>
+<li><a href="http://cs.gmu.edu/%7Ejessica/publications/astronomy11.pdf">http://cs.gmu.edu/~jessica/publications/astronomy11.pdf</a></li>
+</ul>
+
+</article>
+
+
+  <div class="share-page">
+  Share this post!
+
+  <div class="share-links">
+    
+      <a class = "fa fa-facebook" href="https://facebook.com/sharer.php?u=http://rishy.github.io//projects/2015/06/10/electricity-demand/" rel="nofollow" target="_blank" title="Share on Facebook"></a>
+    
+
+    
+      <a class="fa fa-twitter" href="https://twitter.com/intent/tweet?text=Electricity Demand Analysis and Appliance Detection&url=http://rishy.github.io//projects/2015/06/10/electricity-demand/" rel="nofollow" target="_blank" title="Share on Twitter"></a>
+    
+
+    
+      <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://rishy.github.io//projects/2015/06/10/electricity-demand/" rel="nofollow" target="_blank" title="Share on Google+"></a>
+    
+
+    
+      <a class="fa fa-linkedin" href="http://www.linkedin.com/shareArticle?url=http://rishy.github.io//projects/2015/06/10/electricity-demand/&title=Electricity Demand Analysis and Appliance Detection" rel="nofollow" target="_blank" title="Share on LinkedIn"></a>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+      <a class = "fa fa-hacker-news" onclick="parent.postMessage('submit','*')" href="https://news.ycombinator.com/submitlink?u=http://rishy.github.io//projects/2015/06/10/electricity-demand/&t=Electricity Demand Analysis and Appliance Detection" rel="nofollow" target="_blank" title="Share on Hacker News"></a>
+    
+
+
+  </div>
+</div>
+
+
+
+
+  <div class="py2 post-footer">
+  <img src="/images/me.jpg" alt="Rishabh" class="avatar" />
+  <p>
+    This is a web-log by Rishabh. He Loves Data. When he is not coding, he loves to
+    listen to music, read books, trek and travel.
+  </p>
+  <p>
+    Follow him on <a href="https://twitter.com/0_rishabh">Twitter</a>.
+  </p>
+</div>
+
+
+
+
+
+
+  <h3 class="related-post-title">Related Posts</h3>
+  
+    <div class="post ml2">
+      <a href="/projects/2015/05/08/phishing-websites-detection/" class="post-link">
+        <h4 class="post-title">Phishing Websites Detection</h4>
+        <p class="post-summary">Phishing Websites detection with Random Forest, along with the breakdown of most important features, while detecting a phishing website.</p>
+      </a>
+    </div>
+  
+    <div class="post ml2">
+      <a href="/ml/2015/04/28/l1-vs-l2-loss/" class="post-link">
+        <h4 class="post-title">L1 vs. L2 Loss function</h4>
+        <p class="post-summary">Comparison of performances of L1 and L2 loss functions with and without outliers in a dataset.</p>
+      </a>
+    </div>
+  
+    <div class="post ml2">
+      <a href="/stats/2015/04/21/normal-distributions/" class="post-link">
+        <h4 class="post-title">Normal/Gaussian Distributions</h4>
+        <p class="post-summary">This is first blog post of the series "Statistical Distributions". We are starting with the most commonly used Normal Distributions.</p>
+      </a>
+    </div>
+  
+    <div class="post ml2">
+      <a href="/projects/2014/05/19/gsoc-selection/" class="post-link">
+        <h4 class="post-title">Google Summer of Code 2014</h4>
+        <p class="post-summary">Got Selected for Google Summer of Code 2014, with Mifos as my mentoring organization.</p>
+      </a>
+    </div>
+  
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+  <div class="p2 wrap">
+    <div class="measure mt1 center">
+      <small>
+      	You are free to use the Source Code available at <a href="https://github.com/rishy/rishy.github.io">Github</a>.<br/>
+        Theme by <a href="http://johnotander.com">John Otander</a> (<a href="https://twitter.com/4lpine">@4lpine</a>).
+      </small>
+    </div>
+  </div>
+</footer>
+
+
+
+</body>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+</html>
