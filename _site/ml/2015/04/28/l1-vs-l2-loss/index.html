@@ -26,7 +26,7 @@
     <meta property="og:locale" content="en_US">
     <meta property="og:type" content="article">
     <meta property="og:title" content="L1 vs. L2 Loss function">
-    <meta property="og:description" content="I pour out some of my random thoughts regarding Data Science and Machine Learning here">
+    <meta property="og:description" content="A few reads about Machine Learning and Natural Language Processing">
     <meta property="og:url" content="http://localhost:4000/ml/2015/04/28/l1-vs-l2-loss/">
     <meta property="og:site_name" content="Rishabh Shukla">
 
@@ -104,14 +104,14 @@
 </div>
 
 <article class="post-content">
-  <p>Least absolute deviations(L1) and Least square errors(L2) are the two standard loss functions, that decides what function should be minimized while learning from a dataset. </p>
+  <p>Least absolute deviations(L1) and Least square errors(L2) are the two standard loss functions, that decides what function should be minimized while learning from a dataset.</p>
 
-<p>L1 Loss function minimizes the <b>absolute differences</b> between the estimated values and the existing target values. So, summing up each target </span> value <span>\( y_i \)</span> and corresponding estimated value <span>\( h(x_i) \)</span>, where <span>\( x_i \)</span> denotes the feature set of a single sample, Sum of absolute differences for &lsquo;n&rsquo; samples can be calculated as,</p>
+<p>L1 Loss function minimizes the <b>absolute differences</b> between the estimated values and the existing target values. So, summing up each target &lt;/span&gt; value <span>\( y_i \)</span> and corresponding estimated value <span>\( h(x_i) \)</span>, where <span>\( x_i \)</span> denotes the feature set of a single sample, Sum of absolute differences for ‘n’ samples can be calculated as,</p>
 
 <div>
 $$
 \begin{align*}
-  & S = \sum_{i=0}^n|y_i - h(x_i)|
+  &amp; S = \sum_{i=0}^n|y_i - h(x_i)|
 \end{align*}
 $$
 </div>
@@ -121,18 +121,18 @@ $$
 <div>
 $$
 \begin{align*}
-  & S = \sum_{i=0}^n(y_i - h(x_i))^2
+  &amp; S = \sum_{i=0}^n(y_i - h(x_i))^2
 \end{align*}
 $$
 </div>
 
-<p>As apparent from above formulae that L2 error will be much larger in the case of outliers compared to L1. Since, the difference between an incorrectly predicted target value and original target value will be quite large and squaring it will make it even larger. </p>
+<p>As apparent from above formulae that L2 error will be much larger in the case of outliers compared to L1. Since, the difference between an incorrectly predicted target value and original target value will be quite large and squaring it will make it even larger.</p>
 
-<p>As a result, L1 loss function is more robust and is generally not affected by outliers. On the contrary L2 loss function will try to adjust the model according to these outlier values, even on the expense of other samples. Hence, L2 loss function is highly sensitive to outliers in the dataset. </p>
+<p>As a result, L1 loss function is more robust and is generally not affected by outliers. On the contrary L2 loss function will try to adjust the model according to these outlier values, even on the expense of other samples. Hence, L2 loss function is highly sensitive to outliers in the dataset.</p>
 
-<p>We&rsquo;ll see how outliers can affect the performance of a regression model. We are going to use pandas, scikit-learn and numpy to work through this. I&rsquo;d highly recommend to have a look at the <a href="http://nbviewer.ipython.org/github/rishy/rishy.github.io/blob/master/ipy_notebooks/L1%20vs.%20L2%20Loss.ipynb">ipython notebook</a> containing the code on this post. </p>
+<p>We’ll see how outliers can affect the performance of a regression model. We are going to use pandas, scikit-learn and numpy to work through this. I’d highly recommend to have a look at the <a href="http://nbviewer.ipython.org/github/rishy/rishy.github.io/blob/master/ipy_notebooks/L1%20vs.%20L2%20Loss.ipynb">ipython notebook</a> containing the code on this post.</p>
 
-<p>We&rsquo;ll be using Boston Housing Prices dataset and will to try to predict the prices using Gradient Boosting Regressor from scikit-learn. You can downloaded the dataset directly from <a href="https://archive.ics.uci.edu/ml/datasets/Housing">UCI Datasets</a> or from this <a href="../../../../../ipy_notebooks/Datasets/Housing.csv">csv</a>.</p>
+<p>We’ll be using Boston Housing Prices dataset and will to try to predict the prices using Gradient Boosting Regressor from scikit-learn. You can downloaded the dataset directly from <a href="https://archive.ics.uci.edu/ml/datasets/Housing">UCI Datasets</a> or from this <a href="../../../../../ipy_notebooks/Datasets/Housing.csv">csv</a>.</p>
 
 <p>We are goint to start with reading the data from the csv file.</p>
 
@@ -189,8 +189,8 @@ $$
 
 <h4 id="regression-without-any-outliers">Regression without any Outliers:</h4>
 
-<p>At this moment, our housing dataset is pretty much clean and doesn&rsquo;t contain any outliers as such.
-So let&rsquo;s fit a GB regressor with L1 and L2 loss functions.</p>
+<p>At this moment, our housing dataset is pretty much clean and doesn’t contain any outliers as such.
+So let’s fit a GB regressor with L1 and L2 loss functions.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -216,7 +216,7 @@ So let&rsquo;s fit a GB regressor with L1 and L2 loss functions.</p>
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>With a L1 loss function and no outlier we get a value of RMSE: 3.440147.
-Let&rsquo;s see what results we get with L2 loss function.</p>
+Let’s see what results we get with L2 loss function.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -242,9 +242,9 @@ outperform L1, when there are no outliers in the data.</p>
 
 <h4 id="regression-with-outliers">Regression with Outliers:</h4>
 
-<p>After looking at the minimum and maximum values of &#39;medv&rsquo; column, we can see
-that the range of values in &#39;medv&rsquo; is [5, 50].<br/>
-Let&rsquo;s add a few Outliers in this Dataset, so that we can see some significant
+<p>After looking at the minimum and maximum values of ‘medv’ column, we can see
+that the range of values in ‘medv’ is [5, 50].<br />
+Let’s add a few Outliers in this Dataset, so that we can see some significant
 differences with <b>L1</b> and <b>L2</b> loss functions.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
@@ -297,7 +297,7 @@ the [min, max] range of respective features.</p>
 <p>array([[  17.04578252,   19.15194504,    5.68465061,    0.19151945,
            0.47807845,    4.56054001,   21.49653863,    3.23572024,
            5.40494736,  287.356192  ,   14.40028283,   76.27278363,
-           8.67066488],&hellip;,
+           8.67066488],…,
        [  69.40067405,   77.99758081,   21.73774005,    0.77997581,
            0.76406824,    7.63169374,   78.63565097,    9.70691596,
           18.93944359,  595.70732345,   19.9317726 ,  309.64280598,
@@ -339,10 +339,10 @@ the [min, max] range of respective features.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'count'</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
-<p><img src="../../../../../images/l1-l2-loss.png" alt="png"></p>
+<p><img src="../../../../../images/l1-l2-loss.png" alt="png" /></p>
 
-<p>You can see there are some clear outliers at 600, 700 and even one or two &#39;medv&rsquo;
-values are 0.<br/>
+<p>You can see there are some clear outliers at 600, 700 and even one or two ‘medv’
+values are 0.<br />
 Since, our outliers are in place now, we will once again fit the
 GradientBoostingRegressor with L1 and L2 Loss functions to see the contrast in
 their performances with outliers.</p>
@@ -393,18 +393,17 @@ their performances with outliers.</p>
 model according to these outliers on the expense of other
 good-samples, since the squared-error is going to be huge for these outliers(for
 error &gt; 1). On the other hand L1(Least absolute deviation) is quite resistant to
-outliers.<br/>
+outliers.<br />
 As a result, L2 loss function may result in huge deviations in some of the
 samples which results in reduced accuracy.</p>
 
-<p>So, if you can ignore the ouliers in your dataset or you need them to be there, then you should be using a L1 loss function, on the other hand if you don&rsquo;t want undesired outliers in the dataset and would like to use a stable solution then first of all you should try to remove the outliers and then use a L2 loss function. Or performance of a model with a L2 loss function may deteriorate badly due to the presence of outliers in the dataset. </p>
+<p>So, if you can ignore the ouliers in your dataset or you need them to be there, then you should be using a L1 loss function, on the other hand if you don’t want undesired outliers in the dataset and would like to use a stable solution then first of all you should try to remove the outliers and then use a L2 loss function. Or performance of a model with a L2 loss function may deteriorate badly due to the presence of outliers in the dataset.</p>
 
-<p>Whenever in doubt, prefer L2 loss function, it works pretty well in most of the situations. </p>
+<p>Whenever in doubt, prefer L2 loss function, it works pretty well in most of the situations.</p>
 
 <!-- % if page.comments % -->
 
 <div id="disqus_thread"></div>
-
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = 'rishabhshukla';

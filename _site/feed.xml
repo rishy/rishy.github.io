@@ -2,31 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Rishabh Shukla</title>
-    <description>I pour out some of my random thoughts regarding Data Science and Machine Learning here</description>
+    <description>A few reads about Machine Learning and Natural Language Processing</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
         <title>Dropout with Theano</title>
-        <description>&lt;p&gt;Almost everyone working with Deep Learning would have heard a smattering about &lt;strong&gt;Dropout&lt;/strong&gt;. Albiet a simple concept(&lt;a href=&quot;https://arxiv.org/pdf/1207.0580v1.pdf&quot;&gt;introduced&lt;/a&gt; a couple of years ago), which sounds like a pretty obvious way for model averaging, further resulting into a more generalized and regularized Neural Net; still when you actually get into the nitty-gritty details of implementing it in your favourite library(theano being mine), you might find some roadblocks there. Why? Because it&amp;rsquo;s not exactly straight-forward to randomly deactivate some neurons in a DNN.&lt;/p&gt;
+        <description>&lt;p&gt;Almost everyone working with Deep Learning would have heard a smattering about &lt;strong&gt;Dropout&lt;/strong&gt;. Albiet a simple concept(&lt;a href=&quot;https://arxiv.org/pdf/1207.0580v1.pdf&quot;&gt;introduced&lt;/a&gt; a couple of years ago), which sounds like a pretty obvious way for model averaging, further resulting into a more generalized and regularized Neural Net; still when you actually get into the nitty-gritty details of implementing it in your favourite library(theano being mine), you might find some roadblocks there. Why? Because it’s not exactly straight-forward to randomly deactivate some neurons in a DNN.&lt;/p&gt;
 
-&lt;p&gt;In this post, we&amp;rsquo;ll just recapitulate what has already been explained in detail about Dropout in lot of papers and online resources(some of these are provided at the end of the post). Our main focus will be on implementing a Dropout layer in &lt;a href=&quot;https://docs.scipy.org/doc/numpy-dev/user/quickstart.html&quot;&gt;Numpy&lt;/a&gt; and &lt;a href=&quot;http://deeplearning.net/software/theano/introduction.html&quot;&gt;Theano&lt;/a&gt;, while taking care of all the related caveats. You can find the Jupyter Notebook with the Dropout Class &lt;a href=&quot;http://nbviewer.ipython.org/github/rishy/rishy.github.io/blob/master/ipy_notebooks/Dropout-Theano.ipynb&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In this post, we’ll just recapitulate what has already been explained in detail about Dropout in lot of papers and online resources(some of these are provided at the end of the post). Our main focus will be on implementing a Dropout layer in &lt;a href=&quot;https://docs.scipy.org/doc/numpy-dev/user/quickstart.html&quot;&gt;Numpy&lt;/a&gt; and &lt;a href=&quot;http://deeplearning.net/software/theano/introduction.html&quot;&gt;Theano&lt;/a&gt;, while taking care of all the related caveats. You can find the Jupyter Notebook with the Dropout Class &lt;a href=&quot;http://nbviewer.ipython.org/github/rishy/rishy.github.io/blob/master/ipy_notebooks/Dropout-Theano.ipynb&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Regularization is a technique to prevent &lt;a href=&quot;https://en.wikipedia.org/wiki/Overfitting&quot;&gt;Overfitting&lt;/a&gt; in a machine learning model. Considering the fact that a DNN has a highly complex function to fit, it can easily overfit with a small/intermediate size of dataset.&lt;/p&gt;
 
-&lt;p&gt;In very simple terms - &lt;em&gt;Dropout is a highly efficient regularization technique, wherein, for each iteration we randomly remove some of the neurons in a DNN&lt;/em&gt;(along with their connections; have a look at Fig. 1). So how does this help in regularizing a DNN? Well, by randomly removing some of the cells in the computational graph(Neural Net), we are preventing some of the neurons(which are basically hidden features in a Neural Net) from overfitting on all of the training samples. So, this is more like just considering only a handful of features(neurons) for each training sample and producing the output based on these features only. This results into a completely different neural net(hopefully ;)) for each training sample, and eventually our output is the average of these different nets(any &lt;code&gt;Random Forests&lt;/code&gt;-phile here? :D).&lt;/p&gt;
+&lt;p&gt;In very simple terms - &lt;em&gt;Dropout is a highly efficient regularization technique, wherein, for each iteration we randomly remove some of the neurons in a DNN&lt;/em&gt;(along with their connections; have a look at Fig. 1). So how does this help in regularizing a DNN? Well, by randomly removing some of the cells in the computational graph(Neural Net), we are preventing some of the neurons(which are basically hidden features in a Neural Net) from overfitting on all of the training samples. So, this is more like just considering only a handful of features(neurons) for each training sample and producing the output based on these features only. This results into a completely different neural net(hopefully ;)) for each training sample, and eventually our output is the average of these different nets(any &lt;code class=&quot;highlighter-rouge&quot;&gt;Random Forests&lt;/code&gt;-phile here? :D).&lt;/p&gt;
 
 &lt;h2 id=&quot;graphical-overview&quot;&gt;Graphical Overview:&lt;/h2&gt;
 
-&lt;p&gt;In Fig. 1, we have a fully connected deep neural net on the left side, where each neuron is connected to neurons in its upper and lower layers. On the right side, we have randomly omitted some neurons along with their connections. For every learning step, Neural net in Fig. 2 will have a different representation. Consequently, only the connected neurons and their weights will be learned in a particular learning step. &lt;/p&gt;
+&lt;p&gt;In Fig. 1, we have a fully connected deep neural net on the left side, where each neuron is connected to neurons in its upper and lower layers. On the right side, we have randomly omitted some neurons along with their connections. For every learning step, Neural net in Fig. 2 will have a different representation. Consequently, only the connected neurons and their weights will be learned in a particular learning step.&lt;/p&gt;
 
 &lt;p style=&quot;display: flex;&quot;&gt;
-&lt;img src=&quot;../../../../../images/nn.png&quot; style=&quot;height: 45%; width: 45%&quot;&gt;
-&lt;img src=&quot;../../../../../images/dropout-nn.png&quot; style=&quot;height: 45%; width: 45%&quot;&gt;
+&lt;img src=&quot;../../../../../images/nn.png&quot; style=&quot;height: 45%; width: 45%&quot; /&gt;
+&lt;img src=&quot;../../../../../images/dropout-nn.png&quot; style=&quot;height: 45%; width: 45%&quot; /&gt;
 &lt;/p&gt;
-
 &lt;p style=&quot;text-align: center&quot;&gt;
-Fig. 1&lt;br&gt;
+Fig. 1&lt;br /&gt;
 &lt;span style=&quot;color: #000; font-size: 1rem;&quot;&gt;
 Left: DNN without Dropout, Right: DNN with some dropped neurons
 &lt;/span&gt;
@@ -34,9 +33,9 @@ Left: DNN without Dropout, Right: DNN with some dropped neurons
 
 &lt;h2 id=&quot;theano-implementation&quot;&gt;Theano Implementation:&lt;/h2&gt;
 
-&lt;p&gt;Let&amp;rsquo;s dive straight into the code for implementing a Dropout layer. If you don&amp;rsquo;t have prior knowledge of Theano and Numpy, then please go through these two awesome blogs by &lt;a href=&quot;https://twitter.com/dennybritz&quot;&gt;@dennybritz&lt;/a&gt; - &lt;a href=&quot;http://www.wildml.com/2015/09/implementing-a-neural-network-from-scratch/&quot;&gt;Implementing a Neural Network from Scratch&lt;/a&gt; and &lt;a href=&quot;http://www.wildml.com/2015/09/speeding-up-your-neural-network-with-theano-and-the-gpu/&quot;&gt;Speeding up your neural network with theano and gpu&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Let’s dive straight into the code for implementing a Dropout layer. If you don’t have prior knowledge of Theano and Numpy, then please go through these two awesome blogs by &lt;a href=&quot;https://twitter.com/dennybritz&quot;&gt;@dennybritz&lt;/a&gt; - &lt;a href=&quot;http://www.wildml.com/2015/09/implementing-a-neural-network-from-scratch/&quot;&gt;Implementing a Neural Network from Scratch&lt;/a&gt; and &lt;a href=&quot;http://www.wildml.com/2015/09/speeding-up-your-neural-network-with-theano-and-the-gpu/&quot;&gt;Speeding up your neural network with theano and gpu&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;As recommended, whenever we are dealing with Random numbers, it is advisable to set a random seed. &lt;/p&gt;
+&lt;p&gt;As recommended, whenever we are dealing with Random numbers, it is advisable to set a random seed.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -59,11 +58,11 @@ Left: DNN without Dropout, Right: DNN with some dropped neurons
 &lt;span class=&quot;n&quot;&gt;srng&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RandomStreams&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rng&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;randint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;999999&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Let&amp;rsquo;s enumerate through each line in the above code. Firstly, we import all the necessary modules(more about &lt;code&gt;RandomStreams&lt;/code&gt; in the next few lines) and initialize the random seed, so the random numbers generated are consistent in each different run. On the second line we create an object &lt;code&gt;rng&lt;/code&gt; of &lt;code&gt;numpy.random.RandomState&lt;/code&gt;, this exposes a number of methods for generating random numbers, drawn from a variety of probability distributions.&lt;/p&gt;
+&lt;p&gt;Let’s enumerate through each line in the above code. Firstly, we import all the necessary modules(more about &lt;code class=&quot;highlighter-rouge&quot;&gt;RandomStreams&lt;/code&gt; in the next few lines) and initialize the random seed, so the random numbers generated are consistent in each different run. On the second line we create an object &lt;code class=&quot;highlighter-rouge&quot;&gt;rng&lt;/code&gt; of &lt;code class=&quot;highlighter-rouge&quot;&gt;numpy.random.RandomState&lt;/code&gt;, this exposes a number of methods for generating random numbers, drawn from a variety of probability distributions.&lt;/p&gt;
 
-&lt;p&gt;Theano is designed in a functional manner, as a result of this generating random numbers in Theano Computation graphs is a bit tricky compared to Numpy. Using Random Variables with Theano is equivalent to imputing random variables in the Computation graph. Theano will allocate a numpy &lt;code&gt;RandomState&lt;/code&gt; object for each such variable, and draw from it as necessary. Theano calls this sort of sequence of random numbers a &lt;code&gt;Random Stream&lt;/code&gt;. The &lt;code&gt;MRG_RandomStreams&lt;/code&gt; we are using is another implementation of &lt;code&gt;RandomStreams&lt;/code&gt; in Theano, which works for GPUs as well.&lt;/p&gt;
+&lt;p&gt;Theano is designed in a functional manner, as a result of this generating random numbers in Theano Computation graphs is a bit tricky compared to Numpy. Using Random Variables with Theano is equivalent to imputing random variables in the Computation graph. Theano will allocate a numpy &lt;code class=&quot;highlighter-rouge&quot;&gt;RandomState&lt;/code&gt; object for each such variable, and draw from it as necessary. Theano calls this sort of sequence of random numbers a &lt;code class=&quot;highlighter-rouge&quot;&gt;Random Stream&lt;/code&gt;. The &lt;code class=&quot;highlighter-rouge&quot;&gt;MRG_RandomStreams&lt;/code&gt; we are using is another implementation of &lt;code class=&quot;highlighter-rouge&quot;&gt;RandomStreams&lt;/code&gt; in Theano, which works for GPUs as well.&lt;/p&gt;
 
-&lt;p&gt;So, finally we create a &lt;code&gt;srng&lt;/code&gt; object which will provide us with Random Streams in each run of our Optimization Function.&lt;/p&gt;
+&lt;p&gt;So, finally we create a &lt;code class=&quot;highlighter-rouge&quot;&gt;srng&lt;/code&gt; object which will provide us with Random Streams in each run of our Optimization Function.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -90,20 +89,24 @@ Left: DNN without Dropout, Right: DNN with some dropped neurons
                              &lt;span class=&quot;n&quot;&gt;theano&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;floatX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Here is our main Dropout function with three arguments: &lt;code&gt;srng&lt;/code&gt; - A RandomStream generator, &lt;code&gt;weight&lt;/code&gt; - Any theano tensor(Weights of a Neural Net), and &lt;code&gt;drop&lt;/code&gt; - a float value to denote the proportion of neurons to drop. So, naturally number of neurons to retain will be &lt;code&gt;1 - drop&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Here is our main Dropout function with three arguments: &lt;code class=&quot;highlighter-rouge&quot;&gt;srng&lt;/code&gt; - A RandomStream generator, &lt;code class=&quot;highlighter-rouge&quot;&gt;weight&lt;/code&gt; - Any theano tensor(Weights of a Neural Net), and &lt;code class=&quot;highlighter-rouge&quot;&gt;drop&lt;/code&gt; - a float value to denote the proportion of neurons to drop. So, naturally number of neurons to retain will be &lt;code class=&quot;highlighter-rouge&quot;&gt;1 - drop&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;On the second line in the function, we are generating a RandomStream from &lt;a href=&quot;https://en.wikipedia.org/wiki/Binomial_distribution&quot;&gt;Binomial Distribution&lt;/a&gt;, where &lt;code&gt;n&lt;/code&gt; denotes the number of trials, &lt;code&gt;p&lt;/code&gt; is the probability with which to retain the neurons and &lt;code&gt;size&lt;/code&gt; is the shape of the output. As the final step, all we need to do is to switch the value of some of the neurons to &lt;code&gt;0&lt;/code&gt;, which can be accomplished by simply multiplying &lt;code&gt;mask&lt;/code&gt; with the &lt;code&gt;weight&lt;/code&gt; tensor/matrix. &lt;code&gt;theano.tensor.cast&lt;/code&gt; is further type casting the resulting value to the value of &lt;code&gt;theano.config.floatX&lt;/code&gt;, which is either the default value of &lt;code&gt;floatX&lt;/code&gt;, which is &lt;code&gt;float32&lt;/code&gt; in theano or any other value that we might have mentioned in &lt;code&gt;.theanorc&lt;/code&gt; configuration file.&lt;/p&gt;
+&lt;p&gt;On the second line in the function, we are generating a RandomStream from &lt;a href=&quot;https://en.wikipedia.org/wiki/Binomial_distribution&quot;&gt;Binomial Distribution&lt;/a&gt;, where &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; denotes the number of trials, &lt;code class=&quot;highlighter-rouge&quot;&gt;p&lt;/code&gt; is the probability with which to retain the neurons and &lt;code class=&quot;highlighter-rouge&quot;&gt;size&lt;/code&gt; is the shape of the output. As the final step, all we need to do is to switch the value of some of the neurons to &lt;code class=&quot;highlighter-rouge&quot;&gt;0&lt;/code&gt;, which can be accomplished by simply multiplying &lt;code class=&quot;highlighter-rouge&quot;&gt;mask&lt;/code&gt; with the &lt;code class=&quot;highlighter-rouge&quot;&gt;weight&lt;/code&gt; tensor/matrix. &lt;code class=&quot;highlighter-rouge&quot;&gt;theano.tensor.cast&lt;/code&gt; is further type casting the resulting value to the value of &lt;code class=&quot;highlighter-rouge&quot;&gt;theano.config.floatX&lt;/code&gt;, which is either the default value of &lt;code class=&quot;highlighter-rouge&quot;&gt;floatX&lt;/code&gt;, which is &lt;code class=&quot;highlighter-rouge&quot;&gt;float32&lt;/code&gt; in theano or any other value that we might have mentioned in &lt;code class=&quot;highlighter-rouge&quot;&gt;.theanorc&lt;/code&gt; configuration file.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;dont_dropit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;weight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;drop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;drop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;theano&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tensor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cast&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;weight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;theano&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;floatX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;drop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;theano&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tensor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cast&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;weight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;theano&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;floatX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Now, one thing to keep in mind is - we only want to drop neurons during the training phase and not during the validation or test phase. Also, we need to somehow compensate for the fact that during the training time we deactivated some of the neurons. There are two ways to achieve this:&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;Scaling the Weights&lt;/strong&gt;(implemented at the test phase): Since, our resulting Neural Net is an averaged model, it makes sense to use the averaged value of the weights during the test phase, considering the fact that we are not deactivating any neurons here. The easiest way to do this is to scale the weights(which acts as averaging) by the factor of retained probability, in the training phase. This is exactly what we are doing in the above function.&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;Inverted Dropout&lt;/strong&gt;(implemented at the training phase): Now scaling the weights has its caveats, since we have to tweak the weights at the test time. On the other end &amp;lsquo;Inverted Dropout&amp;rsquo; performs the scaling at the training time. So, we don&amp;rsquo;t have to tweak the test code whenever we decide to change the order of Dropout layer. In this post, we&amp;rsquo;ll be using the first method(scaling), although I&amp;rsquo;d recommend you to play with Inverted Dropout as well. You can follow &lt;a href=&quot;https://github.com/cs231n/cs231n.github.io/blob/master/neural-networks-2.md#reg&quot;&gt;this&lt;/a&gt; up for the guidance.&lt;/p&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Scaling the Weights&lt;/strong&gt;(implemented at the test phase): Since, our resulting Neural Net is an averaged model, it makes sense to use the averaged value of the weights during the test phase, considering the fact that we are not deactivating any neurons here. The easiest way to do this is to scale the weights(which acts as averaging) by the factor of retained probability, in the training phase. This is exactly what we are doing in the above function.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Inverted Dropout&lt;/strong&gt;(implemented at the training phase): Now scaling the weights has its caveats, since we have to tweak the weights at the test time. On the other end ‘Inverted Dropout’ performs the scaling at the training time. So, we don’t have to tweak the test code whenever we decide to change the order of Dropout layer. In this post, we’ll be using the first method(scaling), although I’d recommend you to play with Inverted Dropout as well. You can follow &lt;a href=&quot;https://github.com/cs231n/cs231n.github.io/blob/master/neural-networks-2.md#reg&quot;&gt;this&lt;/a&gt; up for the guidance.&lt;/p&gt;
+  &lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
@@ -115,9 +118,9 @@ Left: DNN without Dropout, Right: DNN with some dropped neurons
     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Our final &lt;code&gt;dropout_layer&lt;/code&gt; function uses &lt;code&gt;theano.ifelse&lt;/code&gt; module to return the value of either &lt;code&gt;dropit&lt;/code&gt; or &lt;code&gt;dont_dropit&lt;/code&gt; function. This is conditioned on whether our &lt;code&gt;train&lt;/code&gt; flag is on or off. So, while the model is in training phase, we&amp;rsquo;ll use dropout for our model weights and in test phase, we would simply scale the weights to compensate for all the training steps, where we omitted some random neurons.&lt;/p&gt;
+&lt;p&gt;Our final &lt;code class=&quot;highlighter-rouge&quot;&gt;dropout_layer&lt;/code&gt; function uses &lt;code class=&quot;highlighter-rouge&quot;&gt;theano.ifelse&lt;/code&gt; module to return the value of either &lt;code class=&quot;highlighter-rouge&quot;&gt;dropit&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;dont_dropit&lt;/code&gt; function. This is conditioned on whether our &lt;code class=&quot;highlighter-rouge&quot;&gt;train&lt;/code&gt; flag is on or off. So, while the model is in training phase, we’ll use dropout for our model weights and in test phase, we would simply scale the weights to compensate for all the training steps, where we omitted some random neurons.&lt;/p&gt;
 
-&lt;p&gt;Finally, here&amp;rsquo;s how you can add a Dropout layer in your DNN. I am taking an example of RNN, similar to the one used in &lt;a href=&quot;http://www.wildml.com/2015/10/recurrent-neural-network-tutorial-part-4-implementing-a-grulstm-rnn-with-python-and-theano/&quot;&gt;this&lt;/a&gt; blog:&lt;/p&gt;
+&lt;p&gt;Finally, here’s how you can add a Dropout layer in your DNN. I am taking an example of RNN, similar to the one used in &lt;a href=&quot;http://www.wildml.com/2015/10/recurrent-neural-network-tutorial-part-4-implementing-a-grulstm-rnn-with-python-and-theano/&quot;&gt;this&lt;/a&gt; blog:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -170,18 +173,18 @@ Left: DNN without Dropout, Right: DNN with some dropped neurons
              &lt;span class=&quot;n&quot;&gt;outputs_info&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;dict&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;initial&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hidden_dim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))])&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Here, we have the &lt;code&gt;forward_prop&lt;/code&gt; function for RNN+GRU model. Starting from the first line, we are creating a theano tensor variable &lt;code&gt;x&lt;/code&gt;, for input(words) and another &lt;code&gt;drop_value&lt;/code&gt; variable of type &lt;code&gt;theano.tensor.scalar&lt;/code&gt;, which will take a float value to denote the proportion of neurons to be dropped.&lt;/p&gt;
+&lt;p&gt;Here, we have the &lt;code class=&quot;highlighter-rouge&quot;&gt;forward_prop&lt;/code&gt; function for RNN+GRU model. Starting from the first line, we are creating a theano tensor variable &lt;code class=&quot;highlighter-rouge&quot;&gt;x&lt;/code&gt;, for input(words) and another &lt;code class=&quot;highlighter-rouge&quot;&gt;drop_value&lt;/code&gt; variable of type &lt;code class=&quot;highlighter-rouge&quot;&gt;theano.tensor.scalar&lt;/code&gt;, which will take a float value to denote the proportion of neurons to be dropped.&lt;/p&gt;
 
-&lt;p&gt;Then we are creating an object &lt;code&gt;dropout&lt;/code&gt; of the &lt;code&gt;Dropout&lt;/code&gt; class, we implemented in previous sections. After this, we are initiating a &lt;code&gt;GRU&lt;/code&gt; object(I have kept this as a generic class, since you might have a different implementation). We also have one more variable, namely &lt;code&gt;params&lt;/code&gt; which is an &lt;code&gt;OrderedDict&lt;/code&gt; containing the model parameters. &lt;/p&gt;
+&lt;p&gt;Then we are creating an object &lt;code class=&quot;highlighter-rouge&quot;&gt;dropout&lt;/code&gt; of the &lt;code class=&quot;highlighter-rouge&quot;&gt;Dropout&lt;/code&gt; class, we implemented in previous sections. After this, we are initiating a &lt;code class=&quot;highlighter-rouge&quot;&gt;GRU&lt;/code&gt; object(I have kept this as a generic class, since you might have a different implementation). We also have one more variable, namely &lt;code class=&quot;highlighter-rouge&quot;&gt;params&lt;/code&gt; which is an &lt;code class=&quot;highlighter-rouge&quot;&gt;OrderedDict&lt;/code&gt; containing the model parameters.&lt;/p&gt;
 
-&lt;p&gt;Furthermore, &lt;code&gt;E&lt;/code&gt; is our Word Embedding Matrix, &lt;code&gt;U&lt;/code&gt; contains, input to hidden layer weights, &lt;code&gt;W&lt;/code&gt; is the hidden to hidden layer weights and &lt;code&gt;b&lt;/code&gt; is the bias. Then we have our workhorse - the &lt;code&gt;forward_prop&lt;/code&gt; function, which is called iteratively for each value in &lt;code&gt;x&lt;/code&gt; variable(here these values will be the indexes for sequential words in the text). Now, all we have to do is call the &lt;code&gt;dropout_layer&lt;/code&gt; function from &lt;code&gt;forward_prop&lt;/code&gt;, which will return &lt;code&gt;W&lt;/code&gt;, &lt;code&gt;U&lt;/code&gt;, with few dropped neurons.&lt;/p&gt;
+&lt;p&gt;Furthermore, &lt;code class=&quot;highlighter-rouge&quot;&gt;E&lt;/code&gt; is our Word Embedding Matrix, &lt;code class=&quot;highlighter-rouge&quot;&gt;U&lt;/code&gt; contains, input to hidden layer weights, &lt;code class=&quot;highlighter-rouge&quot;&gt;W&lt;/code&gt; is the hidden to hidden layer weights and &lt;code class=&quot;highlighter-rouge&quot;&gt;b&lt;/code&gt; is the bias. Then we have our workhorse - the &lt;code class=&quot;highlighter-rouge&quot;&gt;forward_prop&lt;/code&gt; function, which is called iteratively for each value in &lt;code class=&quot;highlighter-rouge&quot;&gt;x&lt;/code&gt; variable(here these values will be the indexes for sequential words in the text). Now, all we have to do is call the &lt;code class=&quot;highlighter-rouge&quot;&gt;dropout_layer&lt;/code&gt; function from &lt;code class=&quot;highlighter-rouge&quot;&gt;forward_prop&lt;/code&gt;, which will return &lt;code class=&quot;highlighter-rouge&quot;&gt;W&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;U&lt;/code&gt;, with few dropped neurons.&lt;/p&gt;
 
-&lt;p&gt;This is it in terms of implementing and using a dropout layer with Theano. Although, there are a few things mentioned in the next section, which you have to keep in mind when working with &lt;code&gt;RandomStreams&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;This is it in terms of implementing and using a dropout layer with Theano. Although, there are a few things mentioned in the next section, which you have to keep in mind when working with &lt;code class=&quot;highlighter-rouge&quot;&gt;RandomStreams&lt;/code&gt;.&lt;/p&gt;
 
 &lt;h2 id=&quot;few-things-to-take-care-of&quot;&gt;Few things to take care of:&lt;/h2&gt;
 
-&lt;p&gt;&lt;b&gt;Wherever we are going to use a &lt;code&gt;theano.function&lt;/code&gt; after this, we&amp;rsquo;ll have to explicitly pass it the &lt;code&gt;updates&lt;/code&gt;, we got from &lt;code&gt;theano.scan&lt;/code&gt; function in previous section. Reason?&lt;/b&gt;
-Whenever there is a call to theano&amp;rsquo;s &lt;code&gt;RandomStreams&lt;/code&gt;, it throws some updates, and all of the theano functions, following the above code, should be made aware of these updates. So let&amp;rsquo;s have a look at this code:&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Wherever we are going to use a &lt;code class=&quot;highlighter-rouge&quot;&gt;theano.function&lt;/code&gt; after this, we’ll have to explicitly pass it the &lt;code class=&quot;highlighter-rouge&quot;&gt;updates&lt;/code&gt;, we got from &lt;code class=&quot;highlighter-rouge&quot;&gt;theano.scan&lt;/code&gt; function in previous section. Reason?&lt;/b&gt;
+Whenever there is a call to theano’s &lt;code class=&quot;highlighter-rouge&quot;&gt;RandomStreams&lt;/code&gt;, it throws some updates, and all of the theano functions, following the above code, should be made aware of these updates. So let’s have a look at this code:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -211,43 +214,66 @@ Whenever there is a call to theano&amp;rsquo;s &lt;code&gt;RandomStreams&lt;/cod
 &lt;span class=&quot;n&quot;&gt;predict_class&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;theano&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prediction&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;updates&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;updates&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;theano&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;updates&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;updates&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
- 
 
-&lt;p&gt;As a standard procedure, we are using another model parameter &lt;code&gt;V&lt;/code&gt;(hidden to output) and taking a &lt;code&gt;softmax&lt;/code&gt; over this. If you have a look at &lt;code&gt;predict&lt;/code&gt;, &lt;code&gt;loss&lt;/code&gt; functions, then we had to explicitly, tell them about the &lt;code&gt;updates&lt;/code&gt; that &lt;code&gt;RandomStreams&lt;/code&gt; made during the execution of &lt;code&gt;dropout_layer&lt;/code&gt; function. Else, this will throw an error in Theano. &lt;/p&gt;
+&lt;p&gt;As a standard procedure, we are using another model parameter &lt;code class=&quot;highlighter-rouge&quot;&gt;V&lt;/code&gt;(hidden to output) and taking a &lt;code class=&quot;highlighter-rouge&quot;&gt;softmax&lt;/code&gt; over this. If you have a look at &lt;code class=&quot;highlighter-rouge&quot;&gt;predict&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;loss&lt;/code&gt; functions, then we had to explicitly, tell them about the &lt;code class=&quot;highlighter-rouge&quot;&gt;updates&lt;/code&gt; that &lt;code class=&quot;highlighter-rouge&quot;&gt;RandomStreams&lt;/code&gt; made during the execution of &lt;code class=&quot;highlighter-rouge&quot;&gt;dropout_layer&lt;/code&gt; function. Else, this will throw an error in Theano.&lt;/p&gt;
 
 &lt;p&gt;&lt;b&gt;What is the appropriate float value for dropout?&lt;/b&gt;
-To be on the safe side, a value of &lt;code&gt;0.5&lt;/code&gt;(as mentioned in the original &lt;a href=&quot;https://arxiv.org/pdf/1207.0580v1.pdf&quot;&gt;paper&lt;/a&gt;) is generally good enough. Although, you could always try to tweak it a bit and see what works best for your model.&lt;/p&gt;
+To be on the safe side, a value of &lt;code class=&quot;highlighter-rouge&quot;&gt;0.5&lt;/code&gt;(as mentioned in the original &lt;a href=&quot;https://arxiv.org/pdf/1207.0580v1.pdf&quot;&gt;paper&lt;/a&gt;) is generally good enough. Although, you could always try to tweak it a bit and see what works best for your model.&lt;/p&gt;
 
 &lt;h2 id=&quot;alternatives-to-dropout&quot;&gt;Alternatives to Dropout&lt;/h2&gt;
-
-&lt;p&gt;Lately, there has been a lot of research for better regularization methods in DNNs. One of the things that I really like about Dropout is that it&amp;rsquo;s conceptually very simple as well as an highly effective way to prevent overfitting. A few more methods, that are increasingly being used in DNNs now a days(I am omitting the standard L1/L2 regularization here):&lt;/p&gt;
+&lt;p&gt;Lately, there has been a lot of research for better regularization methods in DNNs. One of the things that I really like about Dropout is that it’s conceptually very simple as well as an highly effective way to prevent overfitting. A few more methods, that are increasingly being used in DNNs now a days(I am omitting the standard L1/L2 regularization here):&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;Max-Norm:&lt;/strong&gt; Max-Norm puts a specific upper bound on the magnitude of weight matrices and if the magnitude exceeds this threshold then the values of weight matrices are clipped down. This is particularly helpful for exploding gradient problem.&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;DropConnect:&lt;/strong&gt;
-When training with Dropout, a randomly selected subset of activations are set to zero within each layer. DropConnect instead sets a randomly selected subset of weights within the network to zero. Each unit thus receives input from a random subset of units in the previous layer. We derive a bound on the generalization performance of both Dropout and DropConnect. - Abstract from the original &lt;a href=&quot;https://cs.nyu.edu/%7Ewanli/dropc/dropc.pdf&quot;&gt;paper&lt;/a&gt;.&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;ZoneOut(specific to RNNs):&lt;/strong&gt; 
-In each training step, ZoneOut keeps the value of some of the hidden units unchanged. So, instead of throwing out the information, it enforces a random number of hidden units to propogate the same information in next time step. &lt;/p&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Max-Norm:&lt;/strong&gt; Max-Norm puts a specific upper bound on the magnitude of weight matrices and if the magnitude exceeds this threshold then the values of weight matrices are clipped down. This is particularly helpful for exploding gradient problem.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;DropConnect:&lt;/strong&gt;
+When training with Dropout, a randomly selected subset of activations are set to zero within each layer. DropConnect instead sets a randomly selected subset of weights within the network to zero. Each unit thus receives input from a random subset of units in the previous layer. We derive a bound on the generalization performance of both Dropout and DropConnect. - Abstract from the original &lt;a href=&quot;https://cs.nyu.edu/~wanli/dropc/dropc.pdf&quot;&gt;paper&lt;/a&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;ZoneOut(specific to RNNs):&lt;/strong&gt; 
+In each training step, ZoneOut keeps the value of some of the hidden units unchanged. So, instead of throwing out the information, it enforces a random number of hidden units to propogate the same information in next time step.&lt;/p&gt;
+  &lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;The reason I wanted to write about this, is because if you are working with a low level library like Theano, then sometimes using modules like &lt;code&gt;RandomStreams&lt;/code&gt; might get a bit tricky. Although, for prototyping and even for production purposes, you should also consider other high level libraries like &lt;a href=&quot;https://keras.io/&quot;&gt;Keras&lt;/a&gt; and &lt;a href=&quot;https://www.tensorflow.org/&quot;&gt;TensorFlow&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The reason I wanted to write about this, is because if you are working with a low level library like Theano, then sometimes using modules like &lt;code class=&quot;highlighter-rouge&quot;&gt;RandomStreams&lt;/code&gt; might get a bit tricky. Although, for prototyping and even for production purposes, you should also consider other high level libraries like &lt;a href=&quot;https://keras.io/&quot;&gt;Keras&lt;/a&gt; and &lt;a href=&quot;https://www.tensorflow.org/&quot;&gt;TensorFlow&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Feel free, to add any other regularization methods and feedbacks, in the comments section.&lt;/p&gt;
 
 &lt;p&gt;Suggested Readings:&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;http://www.wildml.com/2015/09/implementing-a-neural-network-from-scratch/&quot;&gt;Implementing a Neural Network From Scratch - Wildml&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://www.wildml.com/2015/09/recurrent-neural-networks-tutorial-part-1-introduction-to-rnns/&quot;&gt;Introduction to Recurrent Neural Networks - Wildml&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://arxiv.org/pdf/1207.0580v1.pdf&quot;&gt;Improving neural networks by preventing co-adaptation of feature detectors&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf&quot;&gt;Dropout: A Simple Way to Prevent Neural Networks from Overfitting&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://wiki.ubc.ca/Course:CPSC522/Regularization_for_Neural_Networks&quot;&gt;Regularization for Neural Networks&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://wikicoursenote.com/wiki/Dropout&quot;&gt;Dropout - WikiCourse&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://papers.nips.cc/paper/4124-practical-large-scale-optimization-for-max-norm-regularization.pdf&quot;&gt;Practical large scale optimization for Max Norm Regularization&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://cs.nyu.edu/%7Ewanli/dropc/dropc.pdf&quot;&gt;DropConnect Paper&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1606.01305&quot;&gt;ZoneOut Paper&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://github.com/cs231n/cs231n.github.io/blob/master/neural-networks-2.md#reg&quot;&gt;Regularization in Neural Networks&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.wildml.com/2015/09/implementing-a-neural-network-from-scratch/&quot;&gt;Implementing a Neural Network From Scratch - Wildml&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.wildml.com/2015/09/recurrent-neural-networks-tutorial-part-1-introduction-to-rnns/&quot;&gt;Introduction to Recurrent Neural Networks - Wildml&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/pdf/1207.0580v1.pdf&quot;&gt;Improving neural networks by preventing co-adaptation of feature detectors&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf&quot;&gt;Dropout: A Simple Way to Prevent Neural Networks from Overfitting&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://wiki.ubc.ca/Course:CPSC522/Regularization_for_Neural_Networks&quot;&gt;Regularization for Neural Networks&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://wikicoursenote.com/wiki/Dropout&quot;&gt;Dropout - WikiCourse&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://papers.nips.cc/paper/4124-practical-large-scale-optimization-for-max-norm-regularization.pdf&quot;&gt;Practical large scale optimization for Max Norm Regularization&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://cs.nyu.edu/~wanli/dropc/dropc.pdf&quot;&gt;DropConnect Paper&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1606.01305&quot;&gt;ZoneOut Paper&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/cs231n/cs231n.github.io/blob/master/neural-networks-2.md#reg&quot;&gt;Regularization in Neural Networks&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;!-- % if page.comments % --&gt;
+
+&lt;div id=&quot;disqus_thread&quot;&gt;&lt;/div&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'rishabhshukla';
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+&lt;/script&gt;
+
+&lt;noscript&gt;Please enable JavaScript to view the &lt;a href=&quot;https://disqus.com/?ref_noscript&quot; rel=&quot;nofollow&quot;&gt;comments powered by Disqus.&lt;/a&gt;&lt;/noscript&gt;
+
+&lt;!-- % endif % --&gt;
 </description>
         <pubDate>Wed, 12 Oct 2016 17:30:05 +0530</pubDate>
         <link>http://localhost:4000/ml/2016/10/12/dropout-with-theano/</link>
@@ -256,11 +282,11 @@ In each training step, ZoneOut keeps the value of some of the hidden units uncha
     
       <item>
         <title>Electricity Demand Analysis and Appliance Detection</title>
-        <description>&lt;p&gt;In this post, we are going to analyze electricity consumption data from a house. We have a  time-series dataset which contains the power(kWh), Cost of electricity and Voltage at a particular time stamp. We are further provided with the temperature records during the same day for each hour. You can download the compressed dataset from &lt;a href=&quot;https://github.com/rishy/electricity-demand-analysis/blob/master/data-science.gz&quot;&gt;here&lt;/a&gt;. I&amp;rsquo;d further recommend you to have a look at the corresponding &lt;a href=&quot;https://github.com/rishy/electricity-demand-analysis/blob/master/Electricity%20Demand.ipynb&quot;&gt;ipython notebook&lt;/a&gt;. &lt;/p&gt;
+        <description>&lt;p&gt;In this post, we are going to analyze electricity consumption data from a house. We have a  time-series dataset which contains the power(kWh), Cost of electricity and Voltage at a particular time stamp. We are further provided with the temperature records during the same day for each hour. You can download the compressed dataset from &lt;a href=&quot;https://github.com/rishy/electricity-demand-analysis/blob/master/data-science.gz&quot;&gt;here&lt;/a&gt;. I’d further recommend you to have a look at the corresponding &lt;a href=&quot;https://github.com/rishy/electricity-demand-analysis/blob/master/Electricity%20Demand.ipynb&quot;&gt;ipython notebook&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;First part is the Data Analysis Part where we will be doing the basic data cleaning and analysis regarding the power demand and cost incurred. The second part employs a KMeans clustering approach to identify which appliance might be the major cause for the power demand in a particular hour of the day.&lt;/p&gt;
 
-&lt;p&gt;So let&amp;rsquo;s start with basic imports and reading of data from the given dataset.&lt;/p&gt;
+&lt;p&gt;So let’s start with basic imports and reading of data from the given dataset.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -351,11 +377,13 @@ In each training step, ZoneOut keeps the value of some of the hidden units uncha
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;
+Let’s have a quick look at the weather dataset as well:&lt;/p&gt;
 
-&lt;p&gt;&lt;br&gt;
-Let&amp;rsquo;s have a quick look at the weather dataset as well:&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;weather_data
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;weather_data
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
 &lt;pre&gt;
 2015-05-12 00:00:00    75.4
 2015-05-12 01:00:00    73.2
@@ -369,11 +397,12 @@ dtype: float64
 
 &lt;h2 id=&quot;task-1-data-analysis&quot;&gt;TASK 1: Data Analysis&lt;/h2&gt;
 
-&lt;h3 id=&quot;data-cleaning-munging&quot;&gt;Data Cleaning/Munging:&lt;/h3&gt;
+&lt;h3 id=&quot;data-cleaningmunging&quot;&gt;Data Cleaning/Munging:&lt;/h3&gt;
+&lt;p&gt;After having a look at the &lt;b&gt;merged-sensor-files.csv&lt;/b&gt; I found out there are some inconsistent rows where header names are repeated and as a result ‘pandas’ is converting all these columns to ‘object’ type. This is quite a common problem, which arises while merging multiple csv files into a single file.&lt;/p&gt;
 
-&lt;p&gt;After having a look at the &lt;b&gt;merged-sensor-files.csv&lt;/b&gt; I found out there are some inconsistent rows where header names are repeated and as a result &amp;lsquo;pandas&amp;rsquo; is converting all these columns to &amp;#39;object&amp;rsquo; type. This is quite a common problem, which arises while merging multiple csv files into a single file. &lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;sensor_data.dtypes
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sensor_data.dtypes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 &lt;pre&gt;
 MTU        object
 Time       object
@@ -383,9 +412,9 @@ Voltage    object
 dtype: object
 &lt;/pre&gt;
 
-&lt;p&gt;Let&amp;rsquo;s find out and remove these inconsistent rows so that all the columns can be converted to appropriate data types. &lt;/p&gt;
+&lt;p&gt;Let’s find out and remove these inconsistent rows so that all the columns can be converted to appropriate data types.&lt;/p&gt;
 
-&lt;p&gt;The code below finds all the rows where &amp;ldquo;Power&amp;rdquo; column has a string value - &amp;ldquo;Power&amp;rdquo; and get the index of these rows. &lt;/p&gt;
+&lt;p&gt;The code below finds all the rows where “Power” column has a string value - “Power” and get the index of these rows.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -402,7 +431,7 @@ dtype: object
  .
  81617,
  85327]
-&lt;/pre&gt; 
+&lt;/pre&gt;
 
 &lt;p&gt;and now we can drop these rows from the dataframe&lt;/p&gt;
 
@@ -491,7 +520,7 @@ This is better now. We have got clearly defined datatypes of different columns n
 &lt;/pre&gt;
 
 &lt;p&gt;
-Since now we have both of our dataframes in place, it&amp;rsquo;d be a good point to have a look at sum of the basic statistics of both of these data frames.
+Since now we have both of our dataframes in place, it'd be a good point to have a look at sum of the basic statistics of both of these data frames.
 &lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;n&quot;&gt;sensor_data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
@@ -569,7 +598,7 @@ Since now we have both of our dataframes in place, it&amp;rsquo;d be a good poin
 &lt;/table&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;n&quot;&gt;temperature_data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
@@ -628,10 +657,10 @@ Since now we have both of our dataframes in place, it&amp;rsquo;d be a good poin
 &lt;/table&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;br&gt;
-As apparent from above statistics there is a good amount of variation in &lt;b&gt;Power&lt;/b&gt; and corresponding &lt;b&gt;Cost&lt;/b&gt; values in &lt;b&gt;sensor_data&lt;/b&gt; dataframe, where average power is &lt;b&gt;1.315980kW&lt;/b&gt; and minimum and maximum power used throughout the day is &lt;b&gt;0.11kW&lt;/b&gt; and &lt;b&gt;6.54kW&lt;/b&gt; respectively. Similarily there is an apparent variation in temperature in &lt;b&gt;temperature_data&lt;/b&gt; dataset, most probably it attributes to day and night time. &lt;br&gt;&lt;br&gt;
-To get a better understanding of these variations we&amp;rsquo;ll be plotting power and temperatures with the timestamps, so as to find out the peak times for both.&lt;br&gt;
-But before moving to visualizations we&amp;rsquo;ll have to create respective grouped datasets from &lt;b&gt;sensor_data&lt;/b&gt; and &lt;b&gt;temperature_data&lt;/b&gt;, grouping by the &amp;ldquo;Hour&amp;rdquo; column. This way we can work on hourly basis.&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;
+As apparent from above statistics there is a good amount of variation in &lt;b&gt;Power&lt;/b&gt; and corresponding &lt;b&gt;Cost&lt;/b&gt; values in &lt;b&gt;sensor_data&lt;/b&gt; dataframe, where average power is &lt;b&gt;1.315980kW&lt;/b&gt; and minimum and maximum power used throughout the day is &lt;b&gt;0.11kW&lt;/b&gt; and &lt;b&gt;6.54kW&lt;/b&gt; respectively. Similarily there is an apparent variation in temperature in &lt;b&gt;temperature_data&lt;/b&gt; dataset, most probably it attributes to day and night time. &lt;br /&gt;&lt;br /&gt;
+To get a better understanding of these variations we’ll be plotting power and temperatures with the timestamps, so as to find out the peak times for both.&lt;br /&gt;
+But before moving to visualizations we’ll have to create respective grouped datasets from &lt;b&gt;sensor_data&lt;/b&gt; and &lt;b&gt;temperature_data&lt;/b&gt;, grouping by the “Hour” column. This way we can work on hourly basis.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -769,10 +798,10 @@ But before moving to visualizations we&amp;rsquo;ll have to create respective gr
 &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ylabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Count'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fontsize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;&lt;img src=&quot;../../../../../images/power-histogram.png&quot; alt=&quot;power-histogram&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../../../../images/power-histogram.png&quot; alt=&quot;power-histogram&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Looks like most of the time this house is consuming a limited amount of power. Although there is also a good amount of distribution in the range of &lt;b&gt;3.5kW - 5kW&lt;/b&gt;, indicating a higher demand.&lt;br/&gt;
-Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
+&lt;p&gt;Looks like most of the time this house is consuming a limited amount of power. Although there is also a good amount of distribution in the range of &lt;b&gt;3.5kW - 5kW&lt;/b&gt;, indicating a higher demand.&lt;br /&gt;
+Let’s now plot the Power Distribution with the day hours.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -789,29 +818,29 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;show&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;&lt;img src=&quot;../../../../../images/power-time-distribution.png&quot; alt=&quot;power-time-distribution&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../../../../images/power-time-distribution.png&quot; alt=&quot;power-time-distribution&quot; /&gt;&lt;/p&gt;
 
 &lt;h4 id=&quot;some-of-the-inferences-we-can-get-from-this-bar-chart-are&quot;&gt;Some of the inferences we can get from this bar chart are:&lt;/h4&gt;
 
 &lt;ul&gt;
-&lt;li&gt;Highest Demand is noticed during the evening hours. This is quite expected since most of the equipments would be in &amp;#39;on&amp;rsquo; state during this time like AC(during summers), room heaters(during winters), TV, Oven, Washing Machine, Lights, etc.&lt;/li&gt;
-&lt;li&gt;Night hours(0000 - 0500) and office hours(0900 - 1600) have very low demand, since most of the appliances will be in &amp;#39;off&amp;rsquo; state during this period.&lt;/li&gt;
-&lt;li&gt;There is a slight increase in Power during morning hours from 0600 - 0900, which should account for the power used by the appliances during morning activities, lights, geysers, etc.&lt;/li&gt;
+  &lt;li&gt;Highest Demand is noticed during the evening hours. This is quite expected since most of the equipments would be in ‘on’ state during this time like AC(during summers), room heaters(during winters), TV, Oven, Washing Machine, Lights, etc.&lt;/li&gt;
+  &lt;li&gt;Night hours(0000 - 0500) and office hours(0900 - 1600) have very low demand, since most of the appliances will be in ‘off’ state during this period.&lt;/li&gt;
+  &lt;li&gt;There is a slight increase in Power during morning hours from 0600 - 0900, which should account for the power used by the appliances during morning activities, lights, geysers, etc.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h4 id=&quot;steady-states&quot;&gt;Steady States:&lt;/h4&gt;
 
 &lt;ul&gt;
-&lt;li&gt;In the time period &lt;b&gt;0000 - 0500&lt;/b&gt;, demand is noticeably less and ranges between &lt;b&gt;0.17kW - 0.18kW&lt;/b&gt;&lt;/li&gt;
-&lt;li&gt;Another steady period is from &lt;b&gt;1000 - 1500&lt;/b&gt;, demand is pretty much steady between &lt;b&gt;0.373kW - 0.376kW&lt;/b&gt;&lt;/li&gt;
-&lt;li&gt;Steady state with highest demand is from &lt;b&gt;1600 - 1900&lt;/b&gt; having a range between &lt;b&gt;4.36kW - 4.25kW&lt;/b&gt;&lt;/li&gt;
+  &lt;li&gt;In the time period &lt;b&gt;0000 - 0500&lt;/b&gt;, demand is noticeably less and ranges between &lt;b&gt;0.17kW - 0.18kW&lt;/b&gt;&lt;/li&gt;
+  &lt;li&gt;Another steady period is from &lt;b&gt;1000 - 1500&lt;/b&gt;, demand is pretty much steady between &lt;b&gt;0.373kW - 0.376kW&lt;/b&gt;&lt;/li&gt;
+  &lt;li&gt;Steady state with highest demand is from &lt;b&gt;1600 - 1900&lt;/b&gt; having a range between &lt;b&gt;4.36kW - 4.25kW&lt;/b&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;Some sudden changes in Demand during 0700 and 1800 can be attributed because of random events or the usage of certain appliances and may be counted as noise in the dataset. &lt;/p&gt;
+&lt;p&gt;Some sudden changes in Demand during 0700 and 1800 can be attributed because of random events or the usage of certain appliances and may be counted as noise in the dataset.&lt;/p&gt;
 
 &lt;p&gt;Similarily there is a slight oscillation in demand during 0900 which suddenly falls down from 0.38kW to 0.16kW and rises up again to about 0.37kW. Similar change in demand is seen at 2100.&lt;/p&gt;
 
-&lt;p&gt;Let&amp;rsquo;s further plot temperature with the Power to see if there is any correlation among these.&lt;/p&gt;
+&lt;p&gt;Let’s further plot temperature with the Power to see if there is any correlation among these.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -828,13 +857,13 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;show&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;&lt;img src=&quot;../../../../../images/power-temp-distribution.png&quot; alt=&quot;power-temp-distribution&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../../../../images/power-temp-distribution.png&quot; alt=&quot;power-temp-distribution&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;There seems to be a direct correlation between temperature and the demand of power. This makes sense, since with our current dataset which is from May, this shows that cooling appliances like AC, refrigerator, etc. are consuming a lot of power during the peak hours(evening).&lt;/p&gt;
 
 &lt;h2 id=&quot;task-2-machine-learning&quot;&gt;Task 2: Machine Learning&lt;/h2&gt;
 
-&lt;p&gt;We&amp;rsquo;ll start with merging the &lt;b&gt;grouped_sensor_data&lt;/b&gt; and &lt;b&gt;grouped_temperature_data&lt;/b&gt; so that we can work on the complete dataset from a single dataframe.&lt;/p&gt;
+&lt;p&gt;We’ll start with merging the &lt;b&gt;grouped_sensor_data&lt;/b&gt; and &lt;b&gt;grouped_temperature_data&lt;/b&gt; so that we can work on the complete dataset from a single dataframe.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -843,40 +872,35 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 &lt;span class=&quot;n&quot;&gt;merged_data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;grouped_sensor_data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;merge&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;grouped_temperature_data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;In previous visualization we saw that when temperature is low generally there is less demand of power. But that mainly relates to the cooling appliances in the home. We&amp;rsquo;ll consider the following appliances:&lt;/p&gt;
+&lt;p&gt;In previous visualization we saw that when temperature is low generally there is less demand of power. But that mainly relates to the cooling appliances in the home. We’ll consider the following appliances:&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;Cooling Systems&lt;/li&gt;
-&lt;li&gt;TV&lt;/li&gt;
-&lt;li&gt;Geyser&lt;/li&gt;
-&lt;li&gt;Lights&lt;/li&gt;
-&lt;li&gt;Oven&lt;/li&gt;
-&lt;li&gt;Home Security Systems&lt;/li&gt;
+  &lt;li&gt;Cooling Systems&lt;/li&gt;
+  &lt;li&gt;TV&lt;/li&gt;
+  &lt;li&gt;Geyser&lt;/li&gt;
+  &lt;li&gt;Lights&lt;/li&gt;
+  &lt;li&gt;Oven&lt;/li&gt;
+  &lt;li&gt;Home Security Systems&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;and would try to identify there presence or on/off state using the merged dataset.&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;and would try to identify there presence or on/off state using the merged dataset.&lt;br /&gt;&lt;/p&gt;
 
 &lt;h4 id=&quot;ac-refrigerator-and-other-coooling-systems&quot;&gt;AC, Refrigerator and Other Coooling Systems:&lt;/h4&gt;
-
-&lt;p&gt;As apparent from &amp;ldquo;Power Distribution with Temperature&amp;rdquo; figure, there is a sudden increase in power demand with the rise in temperature. This clearly indicates the &lt;b&gt;ON&lt;/b&gt; state of one or more cooling systems in the home. Since these appliances takes a considerable amount of power, this sudden upsurge in the power is quite justified. Clearly &lt;b&gt;Power&lt;/b&gt; and &lt;b&gt;Temperature&lt;/b&gt; are the two features that indicates the &amp;#39;ON&amp;rsquo; state of these appliances. Although &amp;#39;Cost&amp;rsquo; feature is also correlated with &amp;#39;Power&amp;rsquo; we&amp;rsquo;d leave it out, since it is more of a causation of Power demand, then a completely independent feature.&lt;/p&gt;
+&lt;p&gt;As apparent from “Power Distribution with Temperature” figure, there is a sudden increase in power demand with the rise in temperature. This clearly indicates the &lt;b&gt;ON&lt;/b&gt; state of one or more cooling systems in the home. Since these appliances takes a considerable amount of power, this sudden upsurge in the power is quite justified. Clearly &lt;b&gt;Power&lt;/b&gt; and &lt;b&gt;Temperature&lt;/b&gt; are the two features that indicates the ‘ON’ state of these appliances. Although ‘Cost’ feature is also correlated with ‘Power’ we’d leave it out, since it is more of a causation of Power demand, then a completely independent feature.&lt;/p&gt;
 
 &lt;h4 id=&quot;tv&quot;&gt;TV:&lt;/h4&gt;
-
-&lt;p&gt;During the evening hours(1600 - 2300), an &amp;#39;ON&amp;rsquo; television set is probably another factor for increased power demand. It is quite apparent from the &lt;b&gt;Power&lt;/b&gt; feature.&lt;/p&gt;
+&lt;p&gt;During the evening hours(1600 - 2300), an ‘ON’ television set is probably another factor for increased power demand. It is quite apparent from the &lt;b&gt;Power&lt;/b&gt; feature.&lt;/p&gt;
 
 &lt;h4 id=&quot;geyser-oven&quot;&gt;Geyser, Oven:&lt;/h4&gt;
-
 &lt;p&gt;Slight increase in power demand during morning hours can be related to the presence of these appliances and is justified again by the &lt;b&gt;Power&lt;/b&gt; feature.&lt;/p&gt;
 
 &lt;h4 id=&quot;lights&quot;&gt;Lights:&lt;/h4&gt;
-
-&lt;p&gt;It&amp;rsquo;s quite obvious there is a small contribution(considering house owner was smart and installed LED bulbs ;) ) of lights in the house in the &amp;#39;Power&amp;rsquo; demand. And of course it only makes sense to switch &amp;#39;ON&amp;rsquo; the lights during &lt;em&gt;darker times&lt;/em&gt; :D of the day, &lt;b&gt;Hour&lt;/b&gt; and Low &lt;b&gt;Power&lt;/b&gt; are the indicators of lights.&lt;/p&gt;
+&lt;p&gt;It’s quite obvious there is a small contribution(considering house owner was smart and installed LED bulbs ;) ) of lights in the house in the ‘Power’ demand. And of course it only makes sense to switch ‘ON’ the lights during &lt;em&gt;darker times&lt;/em&gt; :D of the day, &lt;b&gt;Hour&lt;/b&gt; and Low &lt;b&gt;Power&lt;/b&gt; are the indicators of lights.&lt;/p&gt;
 
 &lt;h4 id=&quot;home-security-systems&quot;&gt;Home Security Systems:&lt;/h4&gt;
+&lt;p&gt;During the office hours there’s a very little increase in the Power demand, this can be attributed to home security systems or other automated devices.&lt;br /&gt;&lt;/p&gt;
 
-&lt;p&gt;During the office hours there&amp;rsquo;s a very little increase in the Power demand, this can be attributed to home security systems or other automated devices.&lt;br&gt;&lt;/p&gt;
-
-&lt;p&gt;Now, we&amp;rsquo;ll be using simple &lt;b&gt;K-Means clustering&lt;/b&gt; using &lt;b&gt;scikit-learn&lt;/b&gt;. We are going to consider &lt;b&gt;Hour, Power and Temperature&lt;/b&gt; feature from the original dataset. For that first of all we&amp;rsquo;ll have to merge the sensor_data dataframe with grouped_temperature_data dataframe.&lt;/p&gt;
+&lt;p&gt;Now, we’ll be using simple &lt;b&gt;K-Means clustering&lt;/b&gt; using &lt;b&gt;scikit-learn&lt;/b&gt;. We are going to consider &lt;b&gt;Hour, Power and Temperature&lt;/b&gt; feature from the original dataset. For that first of all we’ll have to merge the sensor_data dataframe with grouped_temperature_data dataframe.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -978,13 +1002,13 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 &lt;p&gt;This looks like a pretty reasonable clustering. We can further assign the labels to these clusters, as an appliance detection model. As apparent from the predicted result, We can set the labels for clusters as:&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;&lt;b&gt;0&lt;/b&gt; - Cooling Systems&lt;/li&gt;
-&lt;li&gt;&lt;b&gt;1&lt;/b&gt; - Oven, Geyser&lt;/li&gt;
-&lt;li&gt;&lt;b&gt;2&lt;/b&gt; - Night Lights&lt;/li&gt;
-&lt;li&gt;&lt;b&gt;3&lt;/b&gt; - Home Security Systems&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;0&lt;/b&gt; - Cooling Systems&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;1&lt;/b&gt; - Oven, Geyser&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;2&lt;/b&gt; - Night Lights&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;3&lt;/b&gt; - Home Security Systems&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;We&amp;rsquo;ll create a data frame with these labels and merge it with predicted results.&lt;/p&gt;
+&lt;p&gt;We’ll create a data frame with these labels and merge it with predicted results.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -1009,7 +1033,7 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
 &lt;div&gt;
 &lt;table&gt;
@@ -1064,31 +1088,30 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 &lt;/table&gt;
 &lt;/div&gt;
 
-&lt;p&gt;I think this makes sense. As apparent from &lt;em&gt;result&lt;/em&gt; dataframe, in hours like 8, 9, 10 there is a high possibility that a Oven or Geyser is being used. On the other hand during office hours(1000 - 1600), most probably Home Security Appliances are taking the power.&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;I think this makes sense. As apparent from &lt;em&gt;result&lt;/em&gt; dataframe, in hours like 8, 9, 10 there is a high possibility that a Oven or Geyser is being used. On the other hand during office hours(1000 - 1600), most probably Home Security Appliances are taking the power.&lt;br /&gt;&lt;/p&gt;
 
-&lt;p&gt;Starting from the very beginning, i.e. the Data Analysis process, I think with more data we could group it according to the days(for a week&amp;rsquo;s or month&amp;rsquo;s data), or by months(for a year&amp;rsquo;s data). That could&amp;rsquo;ve significantly changed the predicted Power values, since the average values over these larger intervals would be smoother.&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Starting from the very beginning, i.e. the Data Analysis process, I think with more data we could group it according to the days(for a week’s or month’s data), or by months(for a year’s data). That could’ve significantly changed the predicted Power values, since the average values over these larger intervals would be smoother.&lt;br /&gt;&lt;/p&gt;
 
-&lt;p&gt;We&amp;rsquo;d also have to take care of the seasons and temperature, since different appliances would be taking power in different seasons, so clustering would turn into a bit complicated task compared to what we did with data of just one day.&lt;/p&gt;
+&lt;p&gt;We’d also have to take care of the seasons and temperature, since different appliances would be taking power in different seasons, so clustering would turn into a bit complicated task compared to what we did with data of just one day.&lt;/p&gt;
 
-&lt;p&gt;The most important data that could help in a more accurate analysis would be the power consumption amount of all the appliances in the house. That way it&amp;rsquo;d be much easier to understand what appliance is taking more power in a certain period of time. &lt;/p&gt;
+&lt;p&gt;The most important data that could help in a more accurate analysis would be the power consumption amount of all the appliances in the house. That way it’d be much easier to understand what appliance is taking more power in a certain period of time.&lt;/p&gt;
 
-&lt;p&gt;Furthermore, this would also help during the classification task, since we would already know that certain appliances requires much power, hence we could more accurately classify a sample.&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Furthermore, this would also help during the classification task, since we would already know that certain appliances requires much power, hence we could more accurately classify a sample.&lt;br /&gt;&lt;/p&gt;
 
-&lt;p&gt;One limitation is the number of features we have in this dataset, to learn new features a simple neural net could also be employed to get some hidden patterns here. &lt;/p&gt;
+&lt;p&gt;One limitation is the number of features we have in this dataset, to learn new features a simple neural net could also be employed to get some hidden patterns here.&lt;/p&gt;
 
-&lt;p&gt;You can further look at the Github repo with the above code at: &lt;a href=&quot;https://github.com/rishy/electricity-demand-analysis&quot;&gt;rishy/electricity-demand-analysis&lt;/a&gt;. Your feedbacks and comments are always welcomed. &lt;/p&gt;
+&lt;p&gt;You can further look at the Github repo with the above code at: &lt;a href=&quot;https://github.com/rishy/electricity-demand-analysis&quot;&gt;rishy/electricity-demand-analysis&lt;/a&gt;. Your feedbacks and comments are always welcomed.&lt;/p&gt;
 
 &lt;p&gt;Related Papers:&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;http://www.sciencedirect.com/science/article/pii/S037877881200151X&quot;&gt;http://www.sciencedirect.com/science/article/pii/S037877881200151X&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://cs.gmu.edu/%7Ejessica/publications/astronomy11.pdf&quot;&gt;http://cs.gmu.edu/~jessica/publications/astronomy11.pdf&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.sciencedirect.com/science/article/pii/S037877881200151X&quot;&gt;http://www.sciencedirect.com/science/article/pii/S037877881200151X&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://cs.gmu.edu/~jessica/publications/astronomy11.pdf&quot;&gt;http://cs.gmu.edu/~jessica/publications/astronomy11.pdf&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;!-- % if page.comments % --&gt;
 
 &lt;div id=&quot;disqus_thread&quot;&gt;&lt;/div&gt;
-
 &lt;script type=&quot;text/javascript&quot;&gt;
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = 'rishabhshukla';
@@ -1112,13 +1135,13 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
     
       <item>
         <title>Phishing Websites Detection</title>
-        <description>&lt;p&gt;Detection of phishing websites is a really important safety measure for most of the online platforms. So, as to save a platform with malicious requests from such websites, it is important to have a robust phishing detection system in place. &lt;/p&gt;
+        <description>&lt;p&gt;Detection of phishing websites is a really important safety measure for most of the online platforms. So, as to save a platform with malicious requests from such websites, it is important to have a robust phishing detection system in place.&lt;/p&gt;
 
 &lt;p&gt;Thanks to people like, Rami M. Mohammad, Fadi Thabtah, and Lee McCluskey who have worked intensively in this area. In this post, we are going to use &lt;a href=&quot;http://archive.ics.uci.edu/ml/datasets/Phishing+Websites&quot;&gt;Phishing Websites Data&lt;/a&gt; from UCI Machine Learning Datasets. This dataset was donated by &lt;i&gt;Rami Mustafa A Mohammad&lt;/i&gt; for further analysis. Rami M. Mohammad, Fadi Thabtah, and Lee McCluskey have even used neural nets and various other models to create a really robust phishing detection system. I really encourage you to have a look at the original papers &lt;a href=&quot;http://eprints.hud.ac.uk/17994/3/RamiIntelligent_Rule_based_Phishing_Websites_Classification_IET_Journal.pdf&quot;&gt;here&lt;/a&gt; and &lt;a href=&quot;http://eprints.hud.ac.uk/18246/3/Predicting_Phishing_Websites_using_Neural_Network_trained_with_Back-Propagation.pdf&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;For this very basic analysis, we are going to use multiple models, and see which one fits the best with our &lt;a href=&quot;https://github.com/rishy/phishing-websites/blob/master/Datasets/phising.csv&quot;&gt;dataset&lt;/a&gt;. And finally, the most important part - a breakdown of most important features to detect a phishing website using a &lt;code&gt;randomForest&lt;/code&gt; Fit.&lt;/p&gt;
+&lt;p&gt;For this very basic analysis, we are going to use multiple models, and see which one fits the best with our &lt;a href=&quot;https://github.com/rishy/phishing-websites/blob/master/Datasets/phising.csv&quot;&gt;dataset&lt;/a&gt;. And finally, the most important part - a breakdown of most important features to detect a phishing website using a &lt;code class=&quot;highlighter-rouge&quot;&gt;randomForest&lt;/code&gt; Fit.&lt;/p&gt;
 
-&lt;p&gt;We&amp;rsquo;ll start with loading the &lt;a href=&quot;https://github.com/rishy/phishing-websites/blob/master/Datasets/phising.csv&quot;&gt;csv&lt;/a&gt; file, in our R Script and setting the new column names.&lt;/p&gt;
+&lt;p&gt;We’ll start with loading the &lt;a href=&quot;https://github.com/rishy/phishing-websites/blob/master/Datasets/phising.csv&quot;&gt;csv&lt;/a&gt; file, in our R Script and setting the new column names.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -1149,12 +1172,12 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 
 &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# Read the data from csv file
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;read.csv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'Datasets/phising.csv'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;header&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;F&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;colClasses&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;factor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+				&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;colClasses&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;factor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 
 &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# Names list for the features
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;names&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;has_ip&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;long_url&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;short_service&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;has_at&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-           &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;double_slash_redirect&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pref_suf&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;has_sub_domain&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-           &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;ssl_state&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;long_domain&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;favicon&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;port&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+		   &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;double_slash_redirect&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pref_suf&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;has_sub_domain&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+		   &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;ssl_state&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;long_domain&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;favicon&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;port&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;https_token&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;req_url&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;url_of_anchor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;tag_links&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;SFH&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;submit_to_email&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;abnormal_url&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;redirect&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;mouseover&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;right_click&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;popup&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;iframe&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
@@ -1167,15 +1190,15 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 
 &lt;p&gt;Here we are importing &lt;a href=&quot;caret.r-forge.r-project.org&quot;&gt;caret&lt;/a&gt; and &lt;a href=&quot;http://cran.r-project.org/web/packages/doMC/index.html&quot;&gt;doMC&lt;/a&gt; libraries and then registering &lt;b&gt;4 cores&lt;/b&gt; for parallel processing. You can set the number of cores according to your machine.&lt;/p&gt;
 
-&lt;p&gt;All of the features in this dataset are factors, that&amp;rsquo;s the reason I have used &lt;code&gt;colClasses = &amp;quot;factor&amp;quot;&lt;/code&gt; in &lt;code&gt;read.csv&lt;/code&gt; method. You can have a look at the &lt;code&gt;README.md&lt;/code&gt; file in &lt;a href=&quot;https://github.com/rishy/phishing-websites&quot;&gt;this&lt;/a&gt; Github Repo, to get an overview of the possible values of each feature.&lt;/p&gt;
+&lt;p&gt;All of the features in this dataset are factors, that’s the reason I have used &lt;code class=&quot;highlighter-rouge&quot;&gt;colClasses = &quot;factor&quot;&lt;/code&gt; in &lt;code class=&quot;highlighter-rouge&quot;&gt;read.csv&lt;/code&gt; method. You can have a look at the &lt;code class=&quot;highlighter-rouge&quot;&gt;README.md&lt;/code&gt; file in &lt;a href=&quot;https://github.com/rishy/phishing-websites&quot;&gt;this&lt;/a&gt; Github Repo, to get an overview of the possible values of each feature.&lt;/p&gt;
 
-&lt;p&gt;Now, first thing first, let&amp;rsquo;s have a look at the &lt;code&gt;data&lt;/code&gt;,&lt;/p&gt;
+&lt;p&gt;Now, first thing first, let’s have a look at the &lt;code class=&quot;highlighter-rouge&quot;&gt;data&lt;/code&gt;,&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;n&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;pre&gt;
-'data.frame':   2456 obs. of  31 variables:
+'data.frame':	2456 obs. of  31 variables:
  $ has_ip               : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 1 1 ...
  $ long_url             : Factor w/ 3 levels &quot;0&quot;,&quot;1&quot;,&quot;-1&quot;: 2 2 1 ...
  $ short_service        : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 ...
@@ -1209,9 +1232,9 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
  $ target               : Factor w/ 2 levels &quot;1&quot;,&quot;-1&quot;: 1 1 1 ...
 &lt;/pre&gt;
 
-&lt;p&gt;So, we have some &lt;b&gt;30&lt;/b&gt; features and a &lt;code&gt;target&lt;/code&gt; variable with two levels(1, -1), i.e. whether a website is a phishing website or not.&lt;/p&gt;
+&lt;p&gt;So, we have some &lt;b&gt;30&lt;/b&gt; features and a &lt;code class=&quot;highlighter-rouge&quot;&gt;target&lt;/code&gt; variable with two levels(1, -1), i.e. whether a website is a phishing website or not.&lt;/p&gt;
 
-&lt;p&gt;We&amp;rsquo;ll now create a training and test set using caret&amp;rsquo;s &lt;code&gt;createDataPartition&lt;/code&gt; method. We&amp;rsquo;ll use test set to validate the accuracy of our detection system.&lt;/p&gt;
+&lt;p&gt;We’ll now create a training and test set using caret’s &lt;code class=&quot;highlighter-rouge&quot;&gt;createDataPartition&lt;/code&gt; method. We’ll use test set to validate the accuracy of our detection system.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -1226,13 +1249,13 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 
 &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# Create training and testing partitions
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train_in&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;createDataPartition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0.75&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;FALSE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+						&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0.75&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;FALSE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;training&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Now, we are ready to try a few models on the dataset. Starting with a &lt;code&gt;Boosted logistic Regression&lt;/code&gt; model. Let&amp;rsquo;s see how that perform on our quest for the nearly perfect phishing detection system ;).&lt;/p&gt;
+&lt;p&gt;Now, we are ready to try a few models on the dataset. Starting with a &lt;code class=&quot;highlighter-rouge&quot;&gt;Boosted logistic Regression&lt;/code&gt; model. Let’s see how that perform on our quest for the nearly perfect phishing detection system ;).&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -1256,8 +1279,8 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 
 &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# Run a Boosted logisitic regression over the training set
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log.fit&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;~&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;training&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; 
-                &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;LogitBoost&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;trControl&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fitControl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuneLength&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+				&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;LogitBoost&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;trControl&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fitControl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+				&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuneLength&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 
 &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# Predict the testing target
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log.predict&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;predict&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log.fit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;-31&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
@@ -1265,9 +1288,9 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;confusionMatrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log.predict&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;We are using caret&amp;rsquo;s &lt;code&gt;trainControl&lt;/code&gt; method to find out the best performing parameters using repeated cross-validation. After creating a confusion Matrix of the predicted values and the real target values, I could get a prediction accuracy of &lt;b&gt;0.9357&lt;/b&gt;, which is actually pretty good for a Boosted Logistic Regression model.&lt;/p&gt;
+&lt;p&gt;We are using caret’s &lt;code class=&quot;highlighter-rouge&quot;&gt;trainControl&lt;/code&gt; method to find out the best performing parameters using repeated cross-validation. After creating a confusion Matrix of the predicted values and the real target values, I could get a prediction accuracy of &lt;b&gt;0.9357&lt;/b&gt;, which is actually pretty good for a Boosted Logistic Regression model.&lt;/p&gt;
 
-&lt;p&gt;But of course we have better choices for models, right? And there is no reason, for not using our one of the most favourite &lt;code&gt;SVM with an RBF Kernel&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;But of course we have better choices for models, right? And there is no reason, for not using our one of the most favourite &lt;code class=&quot;highlighter-rouge&quot;&gt;SVM with an RBF Kernel&lt;/code&gt;.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -1287,12 +1310,12 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# trainControl for Radial SVM
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fitControl&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;trainControl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;repeatedcv&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;repeats&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                         &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;number&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;verboseIter&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+						 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;number&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;verboseIter&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 
 &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# Run a RBF - SVM over the training set
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rbfsvm.fit&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;~&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;training&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                    &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;svmRadial&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;trControl&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fitControl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                    &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuneLength&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+					&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;svmRadial&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;trControl&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fitControl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+					&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuneLength&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 
 &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# Predict the testing target
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rbfsvm.predict&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;predict&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rbfsvm.fit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;-31&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
@@ -1302,9 +1325,9 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 
 &lt;p&gt;Woah! I am getting a &lt;b&gt;0.9706&lt;/b&gt; accuracy with a SVM and RBF Kernel. Looks like there is almost no escape for phishing websites now :D.&lt;/p&gt;
 
-&lt;p&gt;But, since one of the most important reason I picked up this analysis was to find out the most important predictors, that can identify a phishing website, we&amp;rsquo;ll have to move to Tree-based models to get the variable importance.&lt;/p&gt;
+&lt;p&gt;But, since one of the most important reason I picked up this analysis was to find out the most important predictors, that can identify a phishing website, we’ll have to move to Tree-based models to get the variable importance.&lt;/p&gt;
 
-&lt;p&gt;So, let&amp;rsquo;s fit a Tree bagging model on our dataset.&lt;/p&gt;
+&lt;p&gt;So, let’s fit a Tree bagging model on our dataset.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -1323,11 +1346,11 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# trainControl for Treebag
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fitControl&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;trainControl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;repeatedcv&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;repeats&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                         &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;number&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;verboseIter&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+						 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;number&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;verboseIter&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 
 &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# Run a Treebag classification over the training set
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;treebag.fit&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;~&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;training&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                     &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;treebag&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;importance&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+					 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;treebag&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;importance&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 
 &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# Predict the testing target
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;treebag.predict&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;predict&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;treebag.fit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;-31&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
@@ -1336,7 +1359,7 @@ Let&amp;rsquo;s now plot the Power Distribution with the day hours.&lt;/p&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Now, this is something, an accuracy of &lt;b&gt;0.9739&lt;/b&gt; and we also get our variable importances :).
-But I am not going to show that, without fitting another tree model, the almighty(throw-anything-at-me) &lt;code&gt;Random Forests&lt;/code&gt;.&lt;/p&gt;
+But I am not going to show that, without fitting another tree model, the almighty(throw-anything-at-me) &lt;code class=&quot;highlighter-rouge&quot;&gt;Random Forests&lt;/code&gt;.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -1356,7 +1379,7 @@ But I am not going to show that, without fitting another tree model, the almight
 &lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# trainControl for Random Forest
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fitControl&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;trainControl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;repeatedcv&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;repeats&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-                         &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;number&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;verboseIter&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+						 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;number&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;verboseIter&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 
 &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# Run a Random Forest classification over the training set
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rf.fit&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;~&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;training&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;rf&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
@@ -1369,44 +1392,43 @@ But I am not going to show that, without fitting another tree model, the almight
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;confusionMatrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rf.predict&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;That&amp;rsquo;s some coincidence(or-not), with mtry = 21, we are still getting an accuracy of &lt;b&gt;)0.9739&lt;/b&gt; with our &lt;code&gt;Random Forest&lt;/code&gt; model, which is actually pretty good, even for practical purposes. so, finally let&amp;rsquo;s have a look at the variable importances of different features,&lt;/p&gt;
+&lt;p&gt;That’s some coincidence(or-not), with mtry = 21, we are still getting an accuracy of &lt;b&gt;)0.9739&lt;/b&gt; with our &lt;code class=&quot;highlighter-rouge&quot;&gt;Random Forest&lt;/code&gt; model, which is actually pretty good, even for practical purposes. so, finally let’s have a look at the variable importances of different features,&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;n&quot;&gt;plot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;varImp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rf.fit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/rishy/phishing-websites/master/varImp1.png&quot; alt=&quot;varImp&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/rishy/phishing-websites/master/varImp1.png&quot; alt=&quot;varImp&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;According to our Random Forest model, 10 of the most imporant features are:&lt;/p&gt;
 
 &lt;blockquote&gt;
-    &lt;pre&gt;
-        * pref_suf-1           100.00
-        * url_of_anchor-1       85.89
-        * ssl_state1            84.59
-        * has_sub_domain-1      69.18
-        * traffic1              64.39
-        * req_url-1             43.23
-        * url_of_anchor1        37.58
-        * long_domain-1         36.00
-        * domain_Age-1          34.68
-        * domain_Age1           29.54
-    &lt;/pre&gt;
+	&lt;pre&gt;
+		* pref_suf-1           100.00
+		* url_of_anchor-1       85.89
+		* ssl_state1            84.59
+		* has_sub_domain-1      69.18
+		* traffic1              64.39
+		* req_url-1             43.23
+		* url_of_anchor1        37.58
+		* long_domain-1         36.00
+		* domain_Age-1          34.68
+		* domain_Age1           29.54
+	&lt;/pre&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;Numerical values suffixing the features name are just the level of the factor of that particular feature. As apparent from this variable importance plot and from our own intuition, features listed here are indeed some of the most important attributes to find out whether a given sample is a phishing website or not.&lt;/p&gt;
 
-&lt;p&gt;Like, if there is prefixes or suffixes being used in the url then there are very high chances that it&amp;rsquo;s a phishing website. Or a suspicious SSL state, having a sub domain in url, having a long domain url, etc. are actually really important features that can clearly identify a phishing website.&lt;/p&gt;
+&lt;p&gt;Like, if there is prefixes or suffixes being used in the url then there are very high chances that it’s a phishing website. Or a suspicious SSL state, having a sub domain in url, having a long domain url, etc. are actually really important features that can clearly identify a phishing website.&lt;/p&gt;
 
-&lt;p&gt;One can create a phishing detection system pretty easily if he/she can get the information about these predictors. Rami M. Mohammad, Fadi Thabtah, and Lee McCluskey have also mentioned in their original paper, how they did it. &lt;/p&gt;
+&lt;p&gt;One can create a phishing detection system pretty easily if he/she can get the information about these predictors. Rami M. Mohammad, Fadi Thabtah, and Lee McCluskey have also mentioned in their original paper, how they did it.&lt;/p&gt;
 
 &lt;p&gt;I am sure that neural nets can further increase the accuracy of phishing detection system, but I tried to do a very basic analysis and it worked out pretty good. But of course getting and filtering out the data, creating factors out of different attributes is probably the most challanging task in phishing website detection.&lt;/p&gt;
 
-&lt;p&gt;You can further look at the Github repo with the above code at: &lt;a href=&quot;https://github.com/rishy/phishing-websites&quot;&gt;rishy/phishing-websites&lt;/a&gt;. Your feedbacks and comments are always welcomed. &lt;/p&gt;
+&lt;p&gt;You can further look at the Github repo with the above code at: &lt;a href=&quot;https://github.com/rishy/phishing-websites&quot;&gt;rishy/phishing-websites&lt;/a&gt;. Your feedbacks and comments are always welcomed.&lt;/p&gt;
 
 &lt;!-- % if page.comments % --&gt;
 
 &lt;div id=&quot;disqus_thread&quot;&gt;&lt;/div&gt;
-
 &lt;script type=&quot;text/javascript&quot;&gt;
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = 'rishabhshukla';
@@ -1430,14 +1452,14 @@ But I am not going to show that, without fitting another tree model, the almight
     
       <item>
         <title>L1 vs. L2 Loss function</title>
-        <description>&lt;p&gt;Least absolute deviations(L1) and Least square errors(L2) are the two standard loss functions, that decides what function should be minimized while learning from a dataset. &lt;/p&gt;
+        <description>&lt;p&gt;Least absolute deviations(L1) and Least square errors(L2) are the two standard loss functions, that decides what function should be minimized while learning from a dataset.&lt;/p&gt;
 
-&lt;p&gt;L1 Loss function minimizes the &lt;b&gt;absolute differences&lt;/b&gt; between the estimated values and the existing target values. So, summing up each target &lt;/span&gt; value &lt;span&gt;\( y_i \)&lt;/span&gt; and corresponding estimated value &lt;span&gt;\( h(x_i) \)&lt;/span&gt;, where &lt;span&gt;\( x_i \)&lt;/span&gt; denotes the feature set of a single sample, Sum of absolute differences for &amp;lsquo;n&amp;rsquo; samples can be calculated as,&lt;/p&gt;
+&lt;p&gt;L1 Loss function minimizes the &lt;b&gt;absolute differences&lt;/b&gt; between the estimated values and the existing target values. So, summing up each target &amp;lt;/span&amp;gt; value &lt;span&gt;\( y_i \)&lt;/span&gt; and corresponding estimated value &lt;span&gt;\( h(x_i) \)&lt;/span&gt;, where &lt;span&gt;\( x_i \)&lt;/span&gt; denotes the feature set of a single sample, Sum of absolute differences for ‘n’ samples can be calculated as,&lt;/p&gt;
 
 &lt;div&gt;
 $$
 \begin{align*}
-  &amp; S = \sum_{i=0}^n|y_i - h(x_i)|
+  &amp;amp; S = \sum_{i=0}^n|y_i - h(x_i)|
 \end{align*}
 $$
 &lt;/div&gt;
@@ -1447,18 +1469,18 @@ $$
 &lt;div&gt;
 $$
 \begin{align*}
-  &amp; S = \sum_{i=0}^n(y_i - h(x_i))^2
+  &amp;amp; S = \sum_{i=0}^n(y_i - h(x_i))^2
 \end{align*}
 $$
 &lt;/div&gt;
 
-&lt;p&gt;As apparent from above formulae that L2 error will be much larger in the case of outliers compared to L1. Since, the difference between an incorrectly predicted target value and original target value will be quite large and squaring it will make it even larger. &lt;/p&gt;
+&lt;p&gt;As apparent from above formulae that L2 error will be much larger in the case of outliers compared to L1. Since, the difference between an incorrectly predicted target value and original target value will be quite large and squaring it will make it even larger.&lt;/p&gt;
 
-&lt;p&gt;As a result, L1 loss function is more robust and is generally not affected by outliers. On the contrary L2 loss function will try to adjust the model according to these outlier values, even on the expense of other samples. Hence, L2 loss function is highly sensitive to outliers in the dataset. &lt;/p&gt;
+&lt;p&gt;As a result, L1 loss function is more robust and is generally not affected by outliers. On the contrary L2 loss function will try to adjust the model according to these outlier values, even on the expense of other samples. Hence, L2 loss function is highly sensitive to outliers in the dataset.&lt;/p&gt;
 
-&lt;p&gt;We&amp;rsquo;ll see how outliers can affect the performance of a regression model. We are going to use pandas, scikit-learn and numpy to work through this. I&amp;rsquo;d highly recommend to have a look at the &lt;a href=&quot;http://nbviewer.ipython.org/github/rishy/rishy.github.io/blob/master/ipy_notebooks/L1%20vs.%20L2%20Loss.ipynb&quot;&gt;ipython notebook&lt;/a&gt; containing the code on this post. &lt;/p&gt;
+&lt;p&gt;We’ll see how outliers can affect the performance of a regression model. We are going to use pandas, scikit-learn and numpy to work through this. I’d highly recommend to have a look at the &lt;a href=&quot;http://nbviewer.ipython.org/github/rishy/rishy.github.io/blob/master/ipy_notebooks/L1%20vs.%20L2%20Loss.ipynb&quot;&gt;ipython notebook&lt;/a&gt; containing the code on this post.&lt;/p&gt;
 
-&lt;p&gt;We&amp;rsquo;ll be using Boston Housing Prices dataset and will to try to predict the prices using Gradient Boosting Regressor from scikit-learn. You can downloaded the dataset directly from &lt;a href=&quot;https://archive.ics.uci.edu/ml/datasets/Housing&quot;&gt;UCI Datasets&lt;/a&gt; or from this &lt;a href=&quot;../../../../../ipy_notebooks/Datasets/Housing.csv&quot;&gt;csv&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;We’ll be using Boston Housing Prices dataset and will to try to predict the prices using Gradient Boosting Regressor from scikit-learn. You can downloaded the dataset directly from &lt;a href=&quot;https://archive.ics.uci.edu/ml/datasets/Housing&quot;&gt;UCI Datasets&lt;/a&gt; or from this &lt;a href=&quot;../../../../../ipy_notebooks/Datasets/Housing.csv&quot;&gt;csv&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;We are goint to start with reading the data from the csv file.&lt;/p&gt;
 
@@ -1515,8 +1537,8 @@ $$
 
 &lt;h4 id=&quot;regression-without-any-outliers&quot;&gt;Regression without any Outliers:&lt;/h4&gt;
 
-&lt;p&gt;At this moment, our housing dataset is pretty much clean and doesn&amp;rsquo;t contain any outliers as such.
-So let&amp;rsquo;s fit a GB regressor with L1 and L2 loss functions.&lt;/p&gt;
+&lt;p&gt;At this moment, our housing dataset is pretty much clean and doesn’t contain any outliers as such.
+So let’s fit a GB regressor with L1 and L2 loss functions.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -1542,7 +1564,7 @@ So let&amp;rsquo;s fit a GB regressor with L1 and L2 loss functions.&lt;/p&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;With a L1 loss function and no outlier we get a value of RMSE: 3.440147.
-Let&amp;rsquo;s see what results we get with L2 loss function.&lt;/p&gt;
+Let’s see what results we get with L2 loss function.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -1568,9 +1590,9 @@ outperform L1, when there are no outliers in the data.&lt;/p&gt;
 
 &lt;h4 id=&quot;regression-with-outliers&quot;&gt;Regression with Outliers:&lt;/h4&gt;
 
-&lt;p&gt;After looking at the minimum and maximum values of &amp;#39;medv&amp;rsquo; column, we can see
-that the range of values in &amp;#39;medv&amp;rsquo; is [5, 50].&lt;br/&gt;
-Let&amp;rsquo;s add a few Outliers in this Dataset, so that we can see some significant
+&lt;p&gt;After looking at the minimum and maximum values of ‘medv’ column, we can see
+that the range of values in ‘medv’ is [5, 50].&lt;br /&gt;
+Let’s add a few Outliers in this Dataset, so that we can see some significant
 differences with &lt;b&gt;L1&lt;/b&gt; and &lt;b&gt;L2&lt;/b&gt; loss functions.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
@@ -1623,7 +1645,7 @@ the [min, max] range of respective features.&lt;/p&gt;
 &lt;p&gt;array([[  17.04578252,   19.15194504,    5.68465061,    0.19151945,
            0.47807845,    4.56054001,   21.49653863,    3.23572024,
            5.40494736,  287.356192  ,   14.40028283,   76.27278363,
-           8.67066488],&amp;hellip;,
+           8.67066488],…,
        [  69.40067405,   77.99758081,   21.73774005,    0.77997581,
            0.76406824,    7.63169374,   78.63565097,    9.70691596,
           18.93944359,  595.70732345,   19.9317726 ,  309.64280598,
@@ -1665,10 +1687,10 @@ the [min, max] range of respective features.&lt;/p&gt;
 &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ylabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'count'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fontsize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;&lt;img src=&quot;../../../../../images/l1-l2-loss.png&quot; alt=&quot;png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../../../../images/l1-l2-loss.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;You can see there are some clear outliers at 600, 700 and even one or two &amp;#39;medv&amp;rsquo;
-values are 0.&lt;br/&gt;
+&lt;p&gt;You can see there are some clear outliers at 600, 700 and even one or two ‘medv’
+values are 0.&lt;br /&gt;
 Since, our outliers are in place now, we will once again fit the
 GradientBoostingRegressor with L1 and L2 Loss functions to see the contrast in
 their performances with outliers.&lt;/p&gt;
@@ -1719,18 +1741,17 @@ their performances with outliers.&lt;/p&gt;
 model according to these outliers on the expense of other
 good-samples, since the squared-error is going to be huge for these outliers(for
 error &amp;gt; 1). On the other hand L1(Least absolute deviation) is quite resistant to
-outliers.&lt;br/&gt;
+outliers.&lt;br /&gt;
 As a result, L2 loss function may result in huge deviations in some of the
 samples which results in reduced accuracy.&lt;/p&gt;
 
-&lt;p&gt;So, if you can ignore the ouliers in your dataset or you need them to be there, then you should be using a L1 loss function, on the other hand if you don&amp;rsquo;t want undesired outliers in the dataset and would like to use a stable solution then first of all you should try to remove the outliers and then use a L2 loss function. Or performance of a model with a L2 loss function may deteriorate badly due to the presence of outliers in the dataset. &lt;/p&gt;
+&lt;p&gt;So, if you can ignore the ouliers in your dataset or you need them to be there, then you should be using a L1 loss function, on the other hand if you don’t want undesired outliers in the dataset and would like to use a stable solution then first of all you should try to remove the outliers and then use a L2 loss function. Or performance of a model with a L2 loss function may deteriorate badly due to the presence of outliers in the dataset.&lt;/p&gt;
 
-&lt;p&gt;Whenever in doubt, prefer L2 loss function, it works pretty well in most of the situations. &lt;/p&gt;
+&lt;p&gt;Whenever in doubt, prefer L2 loss function, it works pretty well in most of the situations.&lt;/p&gt;
 
 &lt;!-- % if page.comments % --&gt;
 
 &lt;div id=&quot;disqus_thread&quot;&gt;&lt;/div&gt;
-
 &lt;script type=&quot;text/javascript&quot;&gt;
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = 'rishabhshukla';
@@ -1754,49 +1775,47 @@ samples which results in reduced accuracy.&lt;/p&gt;
     
       <item>
         <title>Normal/Gaussian Distributions</title>
-        <description>&lt;p&gt;Normal Distributions are the most common distributions in statistics primarily because they describe a lot of natural phenomena. Normal distributions are also known as &amp;lsquo;Gaussian distributions&amp;rsquo; or &amp;#39;bell curve&amp;rsquo;, because of the bell shaped curve.&lt;/p&gt;
+        <description>&lt;p&gt;Normal Distributions are the most common distributions in statistics primarily because they describe a lot of natural phenomena. Normal distributions are also known as ‘Gaussian distributions’ or ‘bell curve’, because of the bell shaped curve.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../../../../../images/normal_distributions.png&quot; alt=&quot;bell&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../../../../images/normal_distributions.png&quot; alt=&quot;bell&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Samples of heights of people, size of things produced by machines, errors in measurements, blood pressure, marks in an examination, wages payed to employees by a company, life span of a species, all of these follows a normal or nearly normal distribution.&lt;/p&gt;
 
-&lt;p&gt;I don&amp;rsquo;t intend to cover a lot of mathematical background regarding normal distributions, still it won&amp;rsquo;t hurt to know just a few simple mathematical properties of normal distributions:&lt;/p&gt;
+&lt;p&gt;I don’t intend to cover a lot of mathematical background regarding normal distributions, still it won’t hurt to know just a few simple mathematical properties of normal distributions:&lt;/p&gt;
 
 &lt;blockquote&gt;
-    &lt;ul&gt;
-        &lt;li&gt;Bell curve is symmetrical about mean(which lies at the center)
-        &lt;li&gt;mean = median = mode
-        &lt;li&gt;Only determining factors of normal distributions are its mean and standard deviation
-    &lt;/ul&gt;
-&lt;/blockquote&gt;
+	&lt;ul&gt;
+		&lt;li&gt;Bell curve is symmetrical about mean(which lies at the center)
+		&lt;li&gt;mean = median = mode
+		&lt;li&gt;Only determining factors of normal distributions are its mean and standard deviation
+	&amp;lt;/ul&amp;gt;
+&amp;lt;/blockquote&amp;gt;
 
-&lt;p&gt;We can also get a normal distribution from a lot of datasets using &lt;a href=&quot;http://en.wikipedia.org/wiki/Central_limit_theorem&quot;&gt;Central Limit Theorem&lt;/a&gt;(CLT). In layman&amp;rsquo;s language CLT states that if we take a large number of samples from a population, multiple times and go on plotting these then it will result in a normal distribution(which can be used by a lot of statistical and machine learning models).&lt;/p&gt;
+We can also get a normal distribution from a lot of datasets using [Central Limit Theorem](http://en.wikipedia.org/wiki/Central_limit_theorem)(CLT). In layman's language CLT states that if we take a large number of samples from a population, multiple times and go on plotting these then it will result in a normal distribution(which can be used by a lot of statistical and machine learning models).
 
-&lt;p&gt;A lot of machine learning models assumes that data fed to these models follows a normal distribution. So, after you have got your data cleaned, you should definitely check what distribution it follows. Some of the machine learning and Statistical models which assumes a normally distributed input data are:&lt;/p&gt;
+A lot of machine learning models assumes that data fed to these models follows a normal distribution. So, after you have got your data cleaned, you should definitely check what distribution it follows. Some of the machine learning and Statistical models which assumes a normally distributed input data are:
 
 &lt;blockquote&gt;
-    &lt;ul&gt;
-        &lt;li&gt;Gaussian naive Bayes
-        &lt;li&gt;Least Squares based (regression)models
-        &lt;li&gt;LDA
-        &lt;li&gt;QDA
-    &lt;/ul&gt;
-&lt;/blockquote&gt;
+	&lt;ul&gt;
+		&lt;li&gt;Gaussian naive Bayes
+		&lt;li&gt;Least Squares based (regression)models
+		&lt;li&gt;LDA
+		&lt;li&gt;QDA
+	&amp;lt;/ul&amp;gt;
+&amp;lt;/blockquote&amp;gt;
+It is also quite common to transform non-normal data to normal form by applying log, square root or similar transormations. 
 
-&lt;p&gt;It is also quite common to transform non-normal data to normal form by applying log, square root or similar transormations. &lt;/p&gt;
+If plotting the data results in a skewed plot, then it is probably a log-normal distribution(as shown in figure below), which you can transform into normal form, simply by applying a log function on all data points.
 
-&lt;p&gt;If plotting the data results in a skewed plot, then it is probably a log-normal distribution(as shown in figure below), which you can transform into normal form, simply by applying a log function on all data points.&lt;/p&gt;
+![log-normal](../../../../../images/log-normal.png)
 
-&lt;p&gt;&lt;img src=&quot;../../../../../images/log-normal.png&quot; alt=&quot;log-normal&quot;&gt;&lt;/p&gt;
+Once it is transformed into normal distributions, you are free to use this dataset with models assuming a normal input data(as listed in above section). 
 
-&lt;p&gt;Once it is transformed into normal distributions, you are free to use this dataset with models assuming a normal input data(as listed in above section). &lt;/p&gt;
-
-&lt;p&gt;As a general approach, &lt;b&gt;Always look at the statistical/probability distributions&lt;/b&gt; as your first step in data analysis.&lt;/p&gt;
+As a general approach, &lt;b&gt;Always look at the statistical/probability distributions&lt;/b&gt; as your first step in data analysis.
 
 &lt;!-- % if page.comments % --&gt;
 
 &lt;div id=&quot;disqus_thread&quot;&gt;&lt;/div&gt;
-
 &lt;script type=&quot;text/javascript&quot;&gt;
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = 'rishabhshukla';
@@ -1808,10 +1827,10 @@ samples which results in reduced accuracy.&lt;/p&gt;
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
 &lt;/script&gt;
-
 &lt;noscript&gt;Please enable JavaScript to view the &lt;a href=&quot;https://disqus.com/?ref_noscript&quot; rel=&quot;nofollow&quot;&gt;comments powered by Disqus.&lt;/a&gt;&lt;/noscript&gt;
 
 &lt;!-- % endif % --&gt;
+&lt;/li&gt;&lt;/li&gt;&lt;/li&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/blockquote&gt;&lt;/li&gt;&lt;/li&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/blockquote&gt;
 </description>
         <pubDate>Tue, 21 Apr 2015 09:30:01 +0530</pubDate>
         <link>http://localhost:4000/stats/2015/04/21/normal-distributions/</link>
@@ -1822,18 +1841,17 @@ samples which results in reduced accuracy.&lt;/p&gt;
         <title>Google Summer of Code 2014</title>
         <description>&lt;p&gt;I have got selected for Google Summer of Code 2014 and from today onwards the Coding period for GSOC starts.&lt;/p&gt;
 
-&lt;p&gt;For next 3 months I&amp;rsquo;ll be working on developing a Batch API for an awesome community - &lt;a href=&quot;http://mifos.org/&quot;&gt;mifos&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;For next 3 months I’ll be working on developing a Batch API for an awesome community - &lt;a href=&quot;http://mifos.org/&quot;&gt;mifos&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Mifos is an organization that leverages the power of Open Source to fuel the functioning of micro-finance institutions and helps in fighting poverty, worldwide.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://mifosforge.jira.com/wiki/display/projects/GSOC+2014+-+Batch+API&quot;&gt;Batch API&lt;/a&gt; project is focused towards creating an API akin to &lt;a href=&quot;https://developers.facebook.com/docs/graph-api/making-multiple-requests/&quot;&gt;facebook-multiple-requests&lt;/a&gt; so that multiple HTTP requests can be handled by mifos platform. This provides an efficient way for clients based on mifos platform to send multiple HTTP requests as JSON string and get back a Batch HTTP response in JSON.&lt;/p&gt;
 
-&lt;p&gt;For this project I&amp;rsquo;ll be working with Java(Spring/Jersey/JPA) for developing the backend API and AngularJS and Bootstrap 3 for making all the UI changes. Development work regarding the Batch API can be followed at: &lt;a href=&quot;https://github.com/rishy/mifosx/tree/Batch-API&quot;&gt;Github - mifos X Batch API&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;For this project I’ll be working with Java(Spring/Jersey/JPA) for developing the backend API and AngularJS and Bootstrap 3 for making all the UI changes. Development work regarding the Batch API can be followed at: &lt;a href=&quot;https://github.com/rishy/mifosx/tree/Batch-API&quot;&gt;Github - mifos X Batch API&lt;/a&gt;.&lt;/p&gt;
 
 &lt;!-- % if page.comments % --&gt;
 
 &lt;div id=&quot;disqus_thread&quot;&gt;&lt;/div&gt;
-
 &lt;script type=&quot;text/javascript&quot;&gt;
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = 'rishabhshukla';

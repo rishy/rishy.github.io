@@ -192,3 +192,5 @@ Suggested Readings:
 8. [DropConnect Paper](https://cs.nyu.edu/~wanli/dropc/dropc.pdf)
 9. [ZoneOut Paper](https://arxiv.org/abs/1606.01305)
 10. [Regularization in Neural Networks](https://github.com/cs231n/cs231n.github.io/blob/master/neural-networks-2.md#reg)
+
+{% include disqus.html %}

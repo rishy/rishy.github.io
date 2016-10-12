@@ -26,7 +26,7 @@
     <meta property="og:locale" content="en_US">
     <meta property="og:type" content="article">
     <meta property="og:title" content="Phishing Websites Detection">
-    <meta property="og:description" content="I pour out some of my random thoughts regarding Data Science and Machine Learning here">
+    <meta property="og:description" content="A few reads about Machine Learning and Natural Language Processing">
     <meta property="og:url" content="http://localhost:4000/projects/2015/05/08/phishing-websites-detection/">
     <meta property="og:site_name" content="Rishabh Shukla">
 
@@ -104,13 +104,13 @@
 </div>
 
 <article class="post-content">
-  <p>Detection of phishing websites is a really important safety measure for most of the online platforms. So, as to save a platform with malicious requests from such websites, it is important to have a robust phishing detection system in place. </p>
+  <p>Detection of phishing websites is a really important safety measure for most of the online platforms. So, as to save a platform with malicious requests from such websites, it is important to have a robust phishing detection system in place.</p>
 
 <p>Thanks to people like, Rami M. Mohammad, Fadi Thabtah, and Lee McCluskey who have worked intensively in this area. In this post, we are going to use <a href="http://archive.ics.uci.edu/ml/datasets/Phishing+Websites">Phishing Websites Data</a> from UCI Machine Learning Datasets. This dataset was donated by <i>Rami Mustafa A Mohammad</i> for further analysis. Rami M. Mohammad, Fadi Thabtah, and Lee McCluskey have even used neural nets and various other models to create a really robust phishing detection system. I really encourage you to have a look at the original papers <a href="http://eprints.hud.ac.uk/17994/3/RamiIntelligent_Rule_based_Phishing_Websites_Classification_IET_Journal.pdf">here</a> and <a href="http://eprints.hud.ac.uk/18246/3/Predicting_Phishing_Websites_using_Neural_Network_trained_with_Back-Propagation.pdf">here</a>.</p>
 
-<p>For this very basic analysis, we are going to use multiple models, and see which one fits the best with our <a href="https://github.com/rishy/phishing-websites/blob/master/Datasets/phising.csv">dataset</a>. And finally, the most important part - a breakdown of most important features to detect a phishing website using a <code>randomForest</code> Fit.</p>
+<p>For this very basic analysis, we are going to use multiple models, and see which one fits the best with our <a href="https://github.com/rishy/phishing-websites/blob/master/Datasets/phising.csv">dataset</a>. And finally, the most important part - a breakdown of most important features to detect a phishing website using a <code class="highlighter-rouge">randomForest</code> Fit.</p>
 
-<p>We&rsquo;ll start with loading the <a href="https://github.com/rishy/phishing-websites/blob/master/Datasets/phising.csv">csv</a> file, in our R Script and setting the new column names.</p>
+<p>We’ll start with loading the <a href="https://github.com/rishy/phishing-websites/blob/master/Datasets/phising.csv">csv</a> file, in our R Script and setting the new column names.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -141,12 +141,12 @@
 
 </span><span class="c1"># Read the data from csv file
 </span><span class="n">data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s1">'Datasets/phising.csv'</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w">
-                </span><span class="n">colClasses</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"factor"</span><span class="p">)</span><span class="w">
+				</span><span class="n">colClasses</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"factor"</span><span class="p">)</span><span class="w">
 
 </span><span class="c1"># Names list for the features
 </span><span class="n">names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"has_ip"</span><span class="p">,</span><span class="w"> </span><span class="s2">"long_url"</span><span class="p">,</span><span class="w"> </span><span class="s2">"short_service"</span><span class="p">,</span><span class="w"> </span><span class="s2">"has_at"</span><span class="p">,</span><span class="w">
-           </span><span class="s2">"double_slash_redirect"</span><span class="p">,</span><span class="w"> </span><span class="s2">"pref_suf"</span><span class="p">,</span><span class="w"> </span><span class="s2">"has_sub_domain"</span><span class="p">,</span><span class="w">
-           </span><span class="s2">"ssl_state"</span><span class="p">,</span><span class="w"> </span><span class="s2">"long_domain"</span><span class="p">,</span><span class="w"> </span><span class="s2">"favicon"</span><span class="p">,</span><span class="w"> </span><span class="s2">"port"</span><span class="p">,</span><span class="w">
+		   </span><span class="s2">"double_slash_redirect"</span><span class="p">,</span><span class="w"> </span><span class="s2">"pref_suf"</span><span class="p">,</span><span class="w"> </span><span class="s2">"has_sub_domain"</span><span class="p">,</span><span class="w">
+		   </span><span class="s2">"ssl_state"</span><span class="p">,</span><span class="w"> </span><span class="s2">"long_domain"</span><span class="p">,</span><span class="w"> </span><span class="s2">"favicon"</span><span class="p">,</span><span class="w"> </span><span class="s2">"port"</span><span class="p">,</span><span class="w">
            </span><span class="s2">"https_token"</span><span class="p">,</span><span class="w"> </span><span class="s2">"req_url"</span><span class="p">,</span><span class="w"> </span><span class="s2">"url_of_anchor"</span><span class="p">,</span><span class="w"> </span><span class="s2">"tag_links"</span><span class="p">,</span><span class="w">
            </span><span class="s2">"SFH"</span><span class="p">,</span><span class="w"> </span><span class="s2">"submit_to_email"</span><span class="p">,</span><span class="w"> </span><span class="s2">"abnormal_url"</span><span class="p">,</span><span class="w"> </span><span class="s2">"redirect"</span><span class="p">,</span><span class="w">
            </span><span class="s2">"mouseover"</span><span class="p">,</span><span class="w"> </span><span class="s2">"right_click"</span><span class="p">,</span><span class="w"> </span><span class="s2">"popup"</span><span class="p">,</span><span class="w"> </span><span class="s2">"iframe"</span><span class="p">,</span><span class="w">
@@ -159,15 +159,15 @@
 
 <p>Here we are importing <a href="caret.r-forge.r-project.org">caret</a> and <a href="http://cran.r-project.org/web/packages/doMC/index.html">doMC</a> libraries and then registering <b>4 cores</b> for parallel processing. You can set the number of cores according to your machine.</p>
 
-<p>All of the features in this dataset are factors, that&rsquo;s the reason I have used <code>colClasses = &quot;factor&quot;</code> in <code>read.csv</code> method. You can have a look at the <code>README.md</code> file in <a href="https://github.com/rishy/phishing-websites">this</a> Github Repo, to get an overview of the possible values of each feature.</p>
+<p>All of the features in this dataset are factors, that’s the reason I have used <code class="highlighter-rouge">colClasses = "factor"</code> in <code class="highlighter-rouge">read.csv</code> method. You can have a look at the <code class="highlighter-rouge">README.md</code> file in <a href="https://github.com/rishy/phishing-websites">this</a> Github Repo, to get an overview of the possible values of each feature.</p>
 
-<p>Now, first thing first, let&rsquo;s have a look at the <code>data</code>,</p>
+<p>Now, first thing first, let’s have a look at the <code class="highlighter-rouge">data</code>,</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1</pre></td><td class="code"><pre><span class="n">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
 <pre>
-'data.frame':   2456 obs. of  31 variables:
+'data.frame':	2456 obs. of  31 variables:
  $ has_ip               : Factor w/ 2 levels "0","1": 2 1 1 ...
  $ long_url             : Factor w/ 3 levels "0","1","-1": 2 2 1 ...
  $ short_service        : Factor w/ 2 levels "0","1": 1 1 1 ...
@@ -201,9 +201,9 @@
  $ target               : Factor w/ 2 levels "1","-1": 1 1 1 ...
 </pre>
 
-<p>So, we have some <b>30</b> features and a <code>target</code> variable with two levels(1, -1), i.e. whether a website is a phishing website or not.</p>
+<p>So, we have some <b>30</b> features and a <code class="highlighter-rouge">target</code> variable with two levels(1, -1), i.e. whether a website is a phishing website or not.</p>
 
-<p>We&rsquo;ll now create a training and test set using caret&rsquo;s <code>createDataPartition</code> method. We&rsquo;ll use test set to validate the accuracy of our detection system.</p>
+<p>We’ll now create a training and test set using caret’s <code class="highlighter-rouge">createDataPartition</code> method. We’ll use test set to validate the accuracy of our detection system.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -218,13 +218,13 @@
 
 </span><span class="c1"># Create training and testing partitions
 </span><span class="n">train_in</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">createDataPartition</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data</span><span class="o">$</span><span class="n">target</span><span class="p">,</span><span class="w">
-                        </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.75</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+						</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.75</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
 
 </span><span class="n">training</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="n">train_in</span><span class="p">,]</span><span class="w">
 </span><span class="n">testing</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="n">train_in</span><span class="p">,]</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
-<p>Now, we are ready to try a few models on the dataset. Starting with a <code>Boosted logistic Regression</code> model. Let&rsquo;s see how that perform on our quest for the nearly perfect phishing detection system ;).</p>
+<p>Now, we are ready to try a few models on the dataset. Starting with a <code class="highlighter-rouge">Boosted logistic Regression</code> model. Let’s see how that perform on our quest for the nearly perfect phishing detection system ;).</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -248,8 +248,8 @@
 
 </span><span class="c1"># Run a Boosted logisitic regression over the training set
 </span><span class="n">log.fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">training</span><span class="p">,</span><span class="w"> 
-                </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"LogitBoost"</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fitControl</span><span class="p">,</span><span class="w">
-                </span><span class="n">tuneLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w">
+				</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"LogitBoost"</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fitControl</span><span class="p">,</span><span class="w">
+				</span><span class="n">tuneLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w">
 
 </span><span class="c1"># Predict the testing target
 </span><span class="n">log.predict</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">log.fit</span><span class="p">,</span><span class="w"> </span><span class="n">testing</span><span class="p">[,</span><span class="m">-31</span><span class="p">])</span><span class="w">
@@ -257,9 +257,9 @@
 </span><span class="n">confusionMatrix</span><span class="p">(</span><span class="n">log.predict</span><span class="p">,</span><span class="w"> </span><span class="n">testing</span><span class="o">$</span><span class="n">target</span><span class="p">)</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
-<p>We are using caret&rsquo;s <code>trainControl</code> method to find out the best performing parameters using repeated cross-validation. After creating a confusion Matrix of the predicted values and the real target values, I could get a prediction accuracy of <b>0.9357</b>, which is actually pretty good for a Boosted Logistic Regression model.</p>
+<p>We are using caret’s <code class="highlighter-rouge">trainControl</code> method to find out the best performing parameters using repeated cross-validation. After creating a confusion Matrix of the predicted values and the real target values, I could get a prediction accuracy of <b>0.9357</b>, which is actually pretty good for a Boosted Logistic Regression model.</p>
 
-<p>But of course we have better choices for models, right? And there is no reason, for not using our one of the most favourite <code>SVM with an RBF Kernel</code>.</p>
+<p>But of course we have better choices for models, right? And there is no reason, for not using our one of the most favourite <code class="highlighter-rouge">SVM with an RBF Kernel</code>.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -279,12 +279,12 @@
 </span><span class="w">
 </span><span class="c1"># trainControl for Radial SVM
 </span><span class="n">fitControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"repeatedcv"</span><span class="p">,</span><span class="w"> </span><span class="n">repeats</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w">
-                         </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">verboseIter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+						 </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">verboseIter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
 
 </span><span class="c1"># Run a RBF - SVM over the training set
 </span><span class="n">rbfsvm.fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">training</span><span class="p">,</span><span class="w">
-                    </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"svmRadial"</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fitControl</span><span class="p">,</span><span class="w">
-                    </span><span class="n">tuneLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w">
+					</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"svmRadial"</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fitControl</span><span class="p">,</span><span class="w">
+					</span><span class="n">tuneLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w">
 
 </span><span class="c1"># Predict the testing target
 </span><span class="n">rbfsvm.predict</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">rbfsvm.fit</span><span class="p">,</span><span class="w"> </span><span class="n">testing</span><span class="p">[,</span><span class="m">-31</span><span class="p">])</span><span class="w">
@@ -294,9 +294,9 @@
 
 <p>Woah! I am getting a <b>0.9706</b> accuracy with a SVM and RBF Kernel. Looks like there is almost no escape for phishing websites now :D.</p>
 
-<p>But, since one of the most important reason I picked up this analysis was to find out the most important predictors, that can identify a phishing website, we&rsquo;ll have to move to Tree-based models to get the variable importance.</p>
+<p>But, since one of the most important reason I picked up this analysis was to find out the most important predictors, that can identify a phishing website, we’ll have to move to Tree-based models to get the variable importance.</p>
 
-<p>So, let&rsquo;s fit a Tree bagging model on our dataset.</p>
+<p>So, let’s fit a Tree bagging model on our dataset.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -315,11 +315,11 @@
 </span><span class="w">
 </span><span class="c1"># trainControl for Treebag
 </span><span class="n">fitControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"repeatedcv"</span><span class="p">,</span><span class="w"> </span><span class="n">repeats</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w">
-                         </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">verboseIter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+						 </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">verboseIter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
 
 </span><span class="c1"># Run a Treebag classification over the training set
 </span><span class="n">treebag.fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">training</span><span class="p">,</span><span class="w">
-                     </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"treebag"</span><span class="p">,</span><span class="w"> </span><span class="n">importance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+					 </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"treebag"</span><span class="p">,</span><span class="w"> </span><span class="n">importance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
 
 </span><span class="c1"># Predict the testing target
 </span><span class="n">treebag.predict</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">treebag.fit</span><span class="p">,</span><span class="w"> </span><span class="n">testing</span><span class="p">[,</span><span class="m">-31</span><span class="p">])</span><span class="w">
@@ -328,7 +328,7 @@
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>Now, this is something, an accuracy of <b>0.9739</b> and we also get our variable importances :).
-But I am not going to show that, without fitting another tree model, the almighty(throw-anything-at-me) <code>Random Forests</code>.</p>
+But I am not going to show that, without fitting another tree model, the almighty(throw-anything-at-me) <code class="highlighter-rouge">Random Forests</code>.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -348,7 +348,7 @@ But I am not going to show that, without fitting another tree model, the almight
 </span><span class="w">
 </span><span class="c1"># trainControl for Random Forest
 </span><span class="n">fitControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"repeatedcv"</span><span class="p">,</span><span class="w"> </span><span class="n">repeats</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w">
-                         </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">verboseIter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+						 </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">verboseIter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
 
 </span><span class="c1"># Run a Random Forest classification over the training set
 </span><span class="n">rf.fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">training</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rf"</span><span class="p">,</span><span class="w">
@@ -361,44 +361,43 @@ But I am not going to show that, without fitting another tree model, the almight
 </span><span class="n">confusionMatrix</span><span class="p">(</span><span class="n">rf.predict</span><span class="p">,</span><span class="w"> </span><span class="n">testing</span><span class="o">$</span><span class="n">target</span><span class="p">)</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
-<p>That&rsquo;s some coincidence(or-not), with mtry = 21, we are still getting an accuracy of <b>)0.9739</b> with our <code>Random Forest</code> model, which is actually pretty good, even for practical purposes. so, finally let&rsquo;s have a look at the variable importances of different features,</p>
+<p>That’s some coincidence(or-not), with mtry = 21, we are still getting an accuracy of <b>)0.9739</b> with our <code class="highlighter-rouge">Random Forest</code> model, which is actually pretty good, even for practical purposes. so, finally let’s have a look at the variable importances of different features,</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1</pre></td><td class="code"><pre><span class="n">plot</span><span class="p">(</span><span class="n">varImp</span><span class="p">(</span><span class="n">rf.fit</span><span class="p">))</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
-<p><img src="https://raw.githubusercontent.com/rishy/phishing-websites/master/varImp1.png" alt="varImp"></p>
+<p><img src="https://raw.githubusercontent.com/rishy/phishing-websites/master/varImp1.png" alt="varImp" /></p>
 
 <p>According to our Random Forest model, 10 of the most imporant features are:</p>
 
 <blockquote>
-    <pre>
-        * pref_suf-1           100.00
-        * url_of_anchor-1       85.89
-        * ssl_state1            84.59
-        * has_sub_domain-1      69.18
-        * traffic1              64.39
-        * req_url-1             43.23
-        * url_of_anchor1        37.58
-        * long_domain-1         36.00
-        * domain_Age-1          34.68
-        * domain_Age1           29.54
-    </pre>
+	<pre>
+		* pref_suf-1           100.00
+		* url_of_anchor-1       85.89
+		* ssl_state1            84.59
+		* has_sub_domain-1      69.18
+		* traffic1              64.39
+		* req_url-1             43.23
+		* url_of_anchor1        37.58
+		* long_domain-1         36.00
+		* domain_Age-1          34.68
+		* domain_Age1           29.54
+	</pre>
 </blockquote>
 
 <p>Numerical values suffixing the features name are just the level of the factor of that particular feature. As apparent from this variable importance plot and from our own intuition, features listed here are indeed some of the most important attributes to find out whether a given sample is a phishing website or not.</p>
 
-<p>Like, if there is prefixes or suffixes being used in the url then there are very high chances that it&rsquo;s a phishing website. Or a suspicious SSL state, having a sub domain in url, having a long domain url, etc. are actually really important features that can clearly identify a phishing website.</p>
+<p>Like, if there is prefixes or suffixes being used in the url then there are very high chances that it’s a phishing website. Or a suspicious SSL state, having a sub domain in url, having a long domain url, etc. are actually really important features that can clearly identify a phishing website.</p>
 
-<p>One can create a phishing detection system pretty easily if he/she can get the information about these predictors. Rami M. Mohammad, Fadi Thabtah, and Lee McCluskey have also mentioned in their original paper, how they did it. </p>
+<p>One can create a phishing detection system pretty easily if he/she can get the information about these predictors. Rami M. Mohammad, Fadi Thabtah, and Lee McCluskey have also mentioned in their original paper, how they did it.</p>
 
 <p>I am sure that neural nets can further increase the accuracy of phishing detection system, but I tried to do a very basic analysis and it worked out pretty good. But of course getting and filtering out the data, creating factors out of different attributes is probably the most challanging task in phishing website detection.</p>
 
-<p>You can further look at the Github repo with the above code at: <a href="https://github.com/rishy/phishing-websites">rishy/phishing-websites</a>. Your feedbacks and comments are always welcomed. </p>
+<p>You can further look at the Github repo with the above code at: <a href="https://github.com/rishy/phishing-websites">rishy/phishing-websites</a>. Your feedbacks and comments are always welcomed.</p>
 
 <!-- % if page.comments % -->
 
 <div id="disqus_thread"></div>
-
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = 'rishabhshukla';

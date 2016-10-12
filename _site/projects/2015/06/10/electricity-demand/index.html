@@ -26,7 +26,7 @@
     <meta property="og:locale" content="en_US">
     <meta property="og:type" content="article">
     <meta property="og:title" content="Electricity Demand Analysis and Appliance Detection">
-    <meta property="og:description" content="I pour out some of my random thoughts regarding Data Science and Machine Learning here">
+    <meta property="og:description" content="A few reads about Machine Learning and Natural Language Processing">
     <meta property="og:url" content="http://localhost:4000/projects/2015/06/10/electricity-demand/">
     <meta property="og:site_name" content="Rishabh Shukla">
 
@@ -104,11 +104,11 @@
 </div>
 
 <article class="post-content">
-  <p>In this post, we are going to analyze electricity consumption data from a house. We have a  time-series dataset which contains the power(kWh), Cost of electricity and Voltage at a particular time stamp. We are further provided with the temperature records during the same day for each hour. You can download the compressed dataset from <a href="https://github.com/rishy/electricity-demand-analysis/blob/master/data-science.gz">here</a>. I&rsquo;d further recommend you to have a look at the corresponding <a href="https://github.com/rishy/electricity-demand-analysis/blob/master/Electricity%20Demand.ipynb">ipython notebook</a>. </p>
+  <p>In this post, we are going to analyze electricity consumption data from a house. We have a  time-series dataset which contains the power(kWh), Cost of electricity and Voltage at a particular time stamp. We are further provided with the temperature records during the same day for each hour. You can download the compressed dataset from <a href="https://github.com/rishy/electricity-demand-analysis/blob/master/data-science.gz">here</a>. I’d further recommend you to have a look at the corresponding <a href="https://github.com/rishy/electricity-demand-analysis/blob/master/Electricity%20Demand.ipynb">ipython notebook</a>.</p>
 
 <p>First part is the Data Analysis Part where we will be doing the basic data cleaning and analysis regarding the power demand and cost incurred. The second part employs a KMeans clustering approach to identify which appliance might be the major cause for the power demand in a particular hour of the day.</p>
 
-<p>So let&rsquo;s start with basic imports and reading of data from the given dataset.</p>
+<p>So let’s start with basic imports and reading of data from the given dataset.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -199,11 +199,13 @@
   </tbody>
 </table>
 </div>
+<p><br />
+Let’s have a quick look at the weather dataset as well:</p>
 
-<p><br>
-Let&rsquo;s have a quick look at the weather dataset as well:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">weather_data
-</code></pre></div>
+<div class="highlighter-rouge"><pre class="highlight"><code>weather_data
+</code></pre>
+</div>
+
 <pre>
 2015-05-12 00:00:00    75.4
 2015-05-12 01:00:00    73.2
@@ -217,11 +219,12 @@ dtype: float64
 
 <h2 id="task-1-data-analysis">TASK 1: Data Analysis</h2>
 
-<h3 id="data-cleaning-munging">Data Cleaning/Munging:</h3>
+<h3 id="data-cleaningmunging">Data Cleaning/Munging:</h3>
+<p>After having a look at the <b>merged-sensor-files.csv</b> I found out there are some inconsistent rows where header names are repeated and as a result ‘pandas’ is converting all these columns to ‘object’ type. This is quite a common problem, which arises while merging multiple csv files into a single file.</p>
 
-<p>After having a look at the <b>merged-sensor-files.csv</b> I found out there are some inconsistent rows where header names are repeated and as a result &lsquo;pandas&rsquo; is converting all these columns to &#39;object&rsquo; type. This is quite a common problem, which arises while merging multiple csv files into a single file. </p>
-<div class="highlight"><pre><code class="language-" data-lang="">sensor_data.dtypes
-</code></pre></div>
+<div class="highlighter-rouge"><pre class="highlight"><code>sensor_data.dtypes
+</code></pre>
+</div>
 <pre>
 MTU        object
 Time       object
@@ -231,9 +234,9 @@ Voltage    object
 dtype: object
 </pre>
 
-<p>Let&rsquo;s find out and remove these inconsistent rows so that all the columns can be converted to appropriate data types. </p>
+<p>Let’s find out and remove these inconsistent rows so that all the columns can be converted to appropriate data types.</p>
 
-<p>The code below finds all the rows where &ldquo;Power&rdquo; column has a string value - &ldquo;Power&rdquo; and get the index of these rows. </p>
+<p>The code below finds all the rows where “Power” column has a string value - “Power” and get the index of these rows.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -250,7 +253,7 @@ dtype: object
  .
  81617,
  85327]
-</pre> 
+</pre>
 
 <p>and now we can drop these rows from the dataframe</p>
 
@@ -339,7 +342,7 @@ This is better now. We have got clearly defined datatypes of different columns n
 </pre>
 
 <p>
-Since now we have both of our dataframes in place, it&rsquo;d be a good point to have a look at sum of the basic statistics of both of these data frames.
+Since now we have both of our dataframes in place, it'd be a good point to have a look at sum of the basic statistics of both of these data frames.
 </p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1</pre></td><td class="code"><pre><span class="n">sensor_data</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="w">
@@ -417,7 +420,7 @@ Since now we have both of our dataframes in place, it&rsquo;d be a good point to
 </table>
 </div>
 
-<p><br></p>
+<p><br /></p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1</pre></td><td class="code"><pre><span class="n">temperature_data</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
@@ -476,10 +479,10 @@ Since now we have both of our dataframes in place, it&rsquo;d be a good point to
 </table>
 </div>
 
-<p><br>
-As apparent from above statistics there is a good amount of variation in <b>Power</b> and corresponding <b>Cost</b> values in <b>sensor_data</b> dataframe, where average power is <b>1.315980kW</b> and minimum and maximum power used throughout the day is <b>0.11kW</b> and <b>6.54kW</b> respectively. Similarily there is an apparent variation in temperature in <b>temperature_data</b> dataset, most probably it attributes to day and night time. <br><br>
-To get a better understanding of these variations we&rsquo;ll be plotting power and temperatures with the timestamps, so as to find out the peak times for both.<br>
-But before moving to visualizations we&rsquo;ll have to create respective grouped datasets from <b>sensor_data</b> and <b>temperature_data</b>, grouping by the &ldquo;Hour&rdquo; column. This way we can work on hourly basis.</p>
+<p><br />
+As apparent from above statistics there is a good amount of variation in <b>Power</b> and corresponding <b>Cost</b> values in <b>sensor_data</b> dataframe, where average power is <b>1.315980kW</b> and minimum and maximum power used throughout the day is <b>0.11kW</b> and <b>6.54kW</b> respectively. Similarily there is an apparent variation in temperature in <b>temperature_data</b> dataset, most probably it attributes to day and night time. <br /><br />
+To get a better understanding of these variations we’ll be plotting power and temperatures with the timestamps, so as to find out the peak times for both.<br />
+But before moving to visualizations we’ll have to create respective grouped datasets from <b>sensor_data</b> and <b>temperature_data</b>, grouping by the “Hour” column. This way we can work on hourly basis.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -617,10 +620,10 @@ But before moving to visualizations we&rsquo;ll have to create respective groupe
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'Count'</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
-<p><img src="../../../../../images/power-histogram.png" alt="power-histogram"></p>
+<p><img src="../../../../../images/power-histogram.png" alt="power-histogram" /></p>
 
-<p>Looks like most of the time this house is consuming a limited amount of power. Although there is also a good amount of distribution in the range of <b>3.5kW - 5kW</b>, indicating a higher demand.<br/>
-Let&rsquo;s now plot the Power Distribution with the day hours.</p>
+<p>Looks like most of the time this house is consuming a limited amount of power. Although there is also a good amount of distribution in the range of <b>3.5kW - 5kW</b>, indicating a higher demand.<br />
+Let’s now plot the Power Distribution with the day hours.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -637,29 +640,29 @@ Let&rsquo;s now plot the Power Distribution with the day hours.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
-<p><img src="../../../../../images/power-time-distribution.png" alt="power-time-distribution"></p>
+<p><img src="../../../../../images/power-time-distribution.png" alt="power-time-distribution" /></p>
 
 <h4 id="some-of-the-inferences-we-can-get-from-this-bar-chart-are">Some of the inferences we can get from this bar chart are:</h4>
 
 <ul>
-<li>Highest Demand is noticed during the evening hours. This is quite expected since most of the equipments would be in &#39;on&rsquo; state during this time like AC(during summers), room heaters(during winters), TV, Oven, Washing Machine, Lights, etc.</li>
-<li>Night hours(0000 - 0500) and office hours(0900 - 1600) have very low demand, since most of the appliances will be in &#39;off&rsquo; state during this period.</li>
-<li>There is a slight increase in Power during morning hours from 0600 - 0900, which should account for the power used by the appliances during morning activities, lights, geysers, etc.</li>
+  <li>Highest Demand is noticed during the evening hours. This is quite expected since most of the equipments would be in ‘on’ state during this time like AC(during summers), room heaters(during winters), TV, Oven, Washing Machine, Lights, etc.</li>
+  <li>Night hours(0000 - 0500) and office hours(0900 - 1600) have very low demand, since most of the appliances will be in ‘off’ state during this period.</li>
+  <li>There is a slight increase in Power during morning hours from 0600 - 0900, which should account for the power used by the appliances during morning activities, lights, geysers, etc.</li>
 </ul>
 
 <h4 id="steady-states">Steady States:</h4>
 
 <ul>
-<li>In the time period <b>0000 - 0500</b>, demand is noticeably less and ranges between <b>0.17kW - 0.18kW</b></li>
-<li>Another steady period is from <b>1000 - 1500</b>, demand is pretty much steady between <b>0.373kW - 0.376kW</b></li>
-<li>Steady state with highest demand is from <b>1600 - 1900</b> having a range between <b>4.36kW - 4.25kW</b></li>
+  <li>In the time period <b>0000 - 0500</b>, demand is noticeably less and ranges between <b>0.17kW - 0.18kW</b></li>
+  <li>Another steady period is from <b>1000 - 1500</b>, demand is pretty much steady between <b>0.373kW - 0.376kW</b></li>
+  <li>Steady state with highest demand is from <b>1600 - 1900</b> having a range between <b>4.36kW - 4.25kW</b></li>
 </ul>
 
-<p>Some sudden changes in Demand during 0700 and 1800 can be attributed because of random events or the usage of certain appliances and may be counted as noise in the dataset. </p>
+<p>Some sudden changes in Demand during 0700 and 1800 can be attributed because of random events or the usage of certain appliances and may be counted as noise in the dataset.</p>
 
 <p>Similarily there is a slight oscillation in demand during 0900 which suddenly falls down from 0.38kW to 0.16kW and rises up again to about 0.37kW. Similar change in demand is seen at 2100.</p>
 
-<p>Let&rsquo;s further plot temperature with the Power to see if there is any correlation among these.</p>
+<p>Let’s further plot temperature with the Power to see if there is any correlation among these.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -676,13 +679,13 @@ Let&rsquo;s now plot the Power Distribution with the day hours.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
-<p><img src="../../../../../images/power-temp-distribution.png" alt="power-temp-distribution"></p>
+<p><img src="../../../../../images/power-temp-distribution.png" alt="power-temp-distribution" /></p>
 
 <p>There seems to be a direct correlation between temperature and the demand of power. This makes sense, since with our current dataset which is from May, this shows that cooling appliances like AC, refrigerator, etc. are consuming a lot of power during the peak hours(evening).</p>
 
 <h2 id="task-2-machine-learning">Task 2: Machine Learning</h2>
 
-<p>We&rsquo;ll start with merging the <b>grouped_sensor_data</b> and <b>grouped_temperature_data</b> so that we can work on the complete dataset from a single dataframe.</p>
+<p>We’ll start with merging the <b>grouped_sensor_data</b> and <b>grouped_temperature_data</b> so that we can work on the complete dataset from a single dataframe.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -691,40 +694,35 @@ Let&rsquo;s now plot the Power Distribution with the day hours.</p>
 <span class="n">merged_data</span> <span class="o">=</span> <span class="n">grouped_sensor_data</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">grouped_temperature_data</span><span class="p">)</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
-<p>In previous visualization we saw that when temperature is low generally there is less demand of power. But that mainly relates to the cooling appliances in the home. We&rsquo;ll consider the following appliances:</p>
+<p>In previous visualization we saw that when temperature is low generally there is less demand of power. But that mainly relates to the cooling appliances in the home. We’ll consider the following appliances:</p>
 
 <ul>
-<li>Cooling Systems</li>
-<li>TV</li>
-<li>Geyser</li>
-<li>Lights</li>
-<li>Oven</li>
-<li>Home Security Systems</li>
+  <li>Cooling Systems</li>
+  <li>TV</li>
+  <li>Geyser</li>
+  <li>Lights</li>
+  <li>Oven</li>
+  <li>Home Security Systems</li>
 </ul>
 
-<p>and would try to identify there presence or on/off state using the merged dataset.<br></p>
+<p>and would try to identify there presence or on/off state using the merged dataset.<br /></p>
 
 <h4 id="ac-refrigerator-and-other-coooling-systems">AC, Refrigerator and Other Coooling Systems:</h4>
-
-<p>As apparent from &ldquo;Power Distribution with Temperature&rdquo; figure, there is a sudden increase in power demand with the rise in temperature. This clearly indicates the <b>ON</b> state of one or more cooling systems in the home. Since these appliances takes a considerable amount of power, this sudden upsurge in the power is quite justified. Clearly <b>Power</b> and <b>Temperature</b> are the two features that indicates the &#39;ON&rsquo; state of these appliances. Although &#39;Cost&rsquo; feature is also correlated with &#39;Power&rsquo; we&rsquo;d leave it out, since it is more of a causation of Power demand, then a completely independent feature.</p>
+<p>As apparent from “Power Distribution with Temperature” figure, there is a sudden increase in power demand with the rise in temperature. This clearly indicates the <b>ON</b> state of one or more cooling systems in the home. Since these appliances takes a considerable amount of power, this sudden upsurge in the power is quite justified. Clearly <b>Power</b> and <b>Temperature</b> are the two features that indicates the ‘ON’ state of these appliances. Although ‘Cost’ feature is also correlated with ‘Power’ we’d leave it out, since it is more of a causation of Power demand, then a completely independent feature.</p>
 
 <h4 id="tv">TV:</h4>
-
-<p>During the evening hours(1600 - 2300), an &#39;ON&rsquo; television set is probably another factor for increased power demand. It is quite apparent from the <b>Power</b> feature.</p>
+<p>During the evening hours(1600 - 2300), an ‘ON’ television set is probably another factor for increased power demand. It is quite apparent from the <b>Power</b> feature.</p>
 
 <h4 id="geyser-oven">Geyser, Oven:</h4>
-
 <p>Slight increase in power demand during morning hours can be related to the presence of these appliances and is justified again by the <b>Power</b> feature.</p>
 
 <h4 id="lights">Lights:</h4>
-
-<p>It&rsquo;s quite obvious there is a small contribution(considering house owner was smart and installed LED bulbs ;) ) of lights in the house in the &#39;Power&rsquo; demand. And of course it only makes sense to switch &#39;ON&rsquo; the lights during <em>darker times</em> :D of the day, <b>Hour</b> and Low <b>Power</b> are the indicators of lights.</p>
+<p>It’s quite obvious there is a small contribution(considering house owner was smart and installed LED bulbs ;) ) of lights in the house in the ‘Power’ demand. And of course it only makes sense to switch ‘ON’ the lights during <em>darker times</em> :D of the day, <b>Hour</b> and Low <b>Power</b> are the indicators of lights.</p>
 
 <h4 id="home-security-systems">Home Security Systems:</h4>
+<p>During the office hours there’s a very little increase in the Power demand, this can be attributed to home security systems or other automated devices.<br /></p>
 
-<p>During the office hours there&rsquo;s a very little increase in the Power demand, this can be attributed to home security systems or other automated devices.<br></p>
-
-<p>Now, we&rsquo;ll be using simple <b>K-Means clustering</b> using <b>scikit-learn</b>. We are going to consider <b>Hour, Power and Temperature</b> feature from the original dataset. For that first of all we&rsquo;ll have to merge the sensor_data dataframe with grouped_temperature_data dataframe.</p>
+<p>Now, we’ll be using simple <b>K-Means clustering</b> using <b>scikit-learn</b>. We are going to consider <b>Hour, Power and Temperature</b> feature from the original dataset. For that first of all we’ll have to merge the sensor_data dataframe with grouped_temperature_data dataframe.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -826,13 +824,13 @@ Let&rsquo;s now plot the Power Distribution with the day hours.</p>
 <p>This looks like a pretty reasonable clustering. We can further assign the labels to these clusters, as an appliance detection model. As apparent from the predicted result, We can set the labels for clusters as:</p>
 
 <ul>
-<li><b>0</b> - Cooling Systems</li>
-<li><b>1</b> - Oven, Geyser</li>
-<li><b>2</b> - Night Lights</li>
-<li><b>3</b> - Home Security Systems</li>
+  <li><b>0</b> - Cooling Systems</li>
+  <li><b>1</b> - Oven, Geyser</li>
+  <li><b>2</b> - Night Lights</li>
+  <li><b>3</b> - Home Security Systems</li>
 </ul>
 
-<p>We&rsquo;ll create a data frame with these labels and merge it with predicted results.</p>
+<p>We’ll create a data frame with these labels and merge it with predicted results.</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
 2
@@ -857,7 +855,7 @@ Let&rsquo;s now plot the Power Distribution with the day hours.</p>
 <span class="n">result</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
-<p><br></p>
+<p><br /></p>
 
 <div>
 <table>
@@ -912,31 +910,30 @@ Let&rsquo;s now plot the Power Distribution with the day hours.</p>
 </table>
 </div>
 
-<p>I think this makes sense. As apparent from <em>result</em> dataframe, in hours like 8, 9, 10 there is a high possibility that a Oven or Geyser is being used. On the other hand during office hours(1000 - 1600), most probably Home Security Appliances are taking the power.<br></p>
+<p>I think this makes sense. As apparent from <em>result</em> dataframe, in hours like 8, 9, 10 there is a high possibility that a Oven or Geyser is being used. On the other hand during office hours(1000 - 1600), most probably Home Security Appliances are taking the power.<br /></p>
 
-<p>Starting from the very beginning, i.e. the Data Analysis process, I think with more data we could group it according to the days(for a week&rsquo;s or month&rsquo;s data), or by months(for a year&rsquo;s data). That could&rsquo;ve significantly changed the predicted Power values, since the average values over these larger intervals would be smoother.<br></p>
+<p>Starting from the very beginning, i.e. the Data Analysis process, I think with more data we could group it according to the days(for a week’s or month’s data), or by months(for a year’s data). That could’ve significantly changed the predicted Power values, since the average values over these larger intervals would be smoother.<br /></p>
 
-<p>We&rsquo;d also have to take care of the seasons and temperature, since different appliances would be taking power in different seasons, so clustering would turn into a bit complicated task compared to what we did with data of just one day.</p>
+<p>We’d also have to take care of the seasons and temperature, since different appliances would be taking power in different seasons, so clustering would turn into a bit complicated task compared to what we did with data of just one day.</p>
 
-<p>The most important data that could help in a more accurate analysis would be the power consumption amount of all the appliances in the house. That way it&rsquo;d be much easier to understand what appliance is taking more power in a certain period of time. </p>
+<p>The most important data that could help in a more accurate analysis would be the power consumption amount of all the appliances in the house. That way it’d be much easier to understand what appliance is taking more power in a certain period of time.</p>
 
-<p>Furthermore, this would also help during the classification task, since we would already know that certain appliances requires much power, hence we could more accurately classify a sample.<br></p>
+<p>Furthermore, this would also help during the classification task, since we would already know that certain appliances requires much power, hence we could more accurately classify a sample.<br /></p>
 
-<p>One limitation is the number of features we have in this dataset, to learn new features a simple neural net could also be employed to get some hidden patterns here. </p>
+<p>One limitation is the number of features we have in this dataset, to learn new features a simple neural net could also be employed to get some hidden patterns here.</p>
 
-<p>You can further look at the Github repo with the above code at: <a href="https://github.com/rishy/electricity-demand-analysis">rishy/electricity-demand-analysis</a>. Your feedbacks and comments are always welcomed. </p>
+<p>You can further look at the Github repo with the above code at: <a href="https://github.com/rishy/electricity-demand-analysis">rishy/electricity-demand-analysis</a>. Your feedbacks and comments are always welcomed.</p>
 
 <p>Related Papers:</p>
 
 <ul>
-<li><a href="http://www.sciencedirect.com/science/article/pii/S037877881200151X">http://www.sciencedirect.com/science/article/pii/S037877881200151X</a></li>
-<li><a href="http://cs.gmu.edu/%7Ejessica/publications/astronomy11.pdf">http://cs.gmu.edu/~jessica/publications/astronomy11.pdf</a></li>
+  <li><a href="http://www.sciencedirect.com/science/article/pii/S037877881200151X">http://www.sciencedirect.com/science/article/pii/S037877881200151X</a></li>
+  <li><a href="http://cs.gmu.edu/~jessica/publications/astronomy11.pdf">http://cs.gmu.edu/~jessica/publications/astronomy11.pdf</a></li>
 </ul>
 
 <!-- % if page.comments % -->
 
 <div id="disqus_thread"></div>
-
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = 'rishabhshukla';
