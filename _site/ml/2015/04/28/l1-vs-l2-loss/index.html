@@ -8,7 +8,7 @@
     <meta name="description" content="Comparison of performances of L1 and L2 loss functions with and without outliers in a dataset.">
     <meta name="author" content="Rishabh Shukla">
     <meta name="keywords" content="ml">
-    <link rel="canonical" href="http://rishy.github.io//ml/2015/04/28/l1-vs-l2-loss/">
+    <link rel="canonical" href="http://localhost:4000/ml/2015/04/28/l1-vs-l2-loss/">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/pixyll.css" type="text/css">
@@ -27,7 +27,7 @@
     <meta property="og:type" content="article">
     <meta property="og:title" content="L1 vs. L2 Loss function">
     <meta property="og:description" content="I pour out some of my random thoughts regarding Data Science and Machine Learning here">
-    <meta property="og:url" content="http://rishy.github.io//ml/2015/04/28/l1-vs-l2-loss/">
+    <meta property="og:url" content="http://localhost:4000/ml/2015/04/28/l1-vs-l2-loss/">
     <meta property="og:site_name" content="Rishabh Shukla">
 
     <!-- Icons -->
@@ -52,7 +52,7 @@
     <header class="site-header px2 px-responsive">
   <div class="mt2 wrap">
     <div class="measure">
-      <a href="http://rishy.github.io/" class="site-title">Rishabh Shukla</a>
+      <a href="http://localhost:4000" class="site-title">Rishabh Shukla</a>
       <nav class="site-nav right">
         <a href="/about/">About</a>
 <a href="/contact/">Contact</a>
@@ -100,7 +100,7 @@
   <h1>L1 vs. L2 Loss function</h1>
   <span class="post-meta">Apr 28, 2015</span><br>
   
-  <span class="post-meta small">9 minute read</span>
+  <span class="post-meta small">10 minute read</span>
 </div>
 
 <article class="post-content">
@@ -136,98 +136,163 @@ $$
 
 <p>We are goint to start with reading the data from the csv file.</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25</pre></td><td class="code"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">GradientBoostingRegressor</span>
 <span class="kn">from</span> <span class="nn">statsmodels.tools.eval_measures</span> <span class="kn">import</span> <span class="n">rmse</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="kn">as</span> <span class="nn">plt</span>
 
-<span class="c"># Make pylab inline and set the theme to &#39;ggplot&#39;</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s">&#39;ggplot&#39;</span><span class="p">)</span>
+<span class="c"># Make pylab inline and set the theme to 'ggplot'</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s">'ggplot'</span><span class="p">)</span>
 <span class="o">%</span><span class="n">pylab</span> <span class="n">inline</span>
 
 <span class="c"># Read Boston Housing Data</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;Datasets/Housing.csv&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">'Datasets/Housing.csv'</span><span class="p">)</span>
 
 <span class="c"># Create a data frame with all the independent features</span>
-<span class="n">data_indep</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s">&#39;medv&#39;</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">data_indep</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s">'medv'</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
 
-<span class="c"># Create a target vector(vector of dependent variable, i.e. &#39;medv&#39;)</span>
-<span class="n">data_dep</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;medv&#39;</span><span class="p">]</span>
+<span class="c"># Create a target vector(vector of dependent variable, i.e. 'medv')</span>
+<span class="n">data_dep</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">'medv'</span><span class="p">]</span>
 
 <span class="c"># Split data into training and test sets</span>
 <span class="n">train_X</span><span class="p">,</span> <span class="n">test_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">,</span> <span class="n">test_y</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
                                     <span class="n">data_indep</span><span class="p">,</span> <span class="n">data_dep</span><span class="p">,</span>
                                     <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.20</span><span class="p">,</span>
-                                    <span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span><span class="p">)</span></code></pre></div>
+                                    <span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
-<h4 id="regression-without-any-outliers:">Regression without any Outliers:</h4>
+<h4 id="regression-without-any-outliers">Regression without any Outliers:</h4>
 
 <p>At this moment, our housing dataset is pretty much clean and doesn&rsquo;t contain any outliers as such.
 So let&rsquo;s fit a GB regressor with L1 and L2 loss functions.</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># GradientBoostingRegressor with a L1(Least Absolute Deviations) loss function</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre></td><td class="code"><pre><span class="c"># GradientBoostingRegressor with a L1(Least Absolute Deviations) loss function</span>
 <span class="c"># Set a random seed so that we can reproduce the results</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">32767</span><span class="p">)</span>
 
-<span class="n">mod</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;lad&#39;</span><span class="p">)</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">'lad'</span><span class="p">)</span>
 
 <span class="n">fit</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
 <span class="n">predict</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_X</span><span class="p">)</span>
 
 <span class="c"># Root Mean Squared Error</span>
-<span class="k">print</span> <span class="s">&quot;RMSE -&gt; </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span></code></pre></div>
+<span class="k">print</span> <span class="s">"RMSE -&gt; </span><span class="si">%</span><span class="s">f"</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>With a L1 loss function and no outlier we get a value of RMSE: 3.440147.
 Let&rsquo;s see what results we get with L2 loss function.</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># GradientBoostingRegressor with L2(Least Square errors) loss function</span>
-<span class="n">mod</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;ls&#39;</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8</pre></td><td class="code"><pre><span class="c"># GradientBoostingRegressor with L2(Least Square errors) loss function</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">'ls'</span><span class="p">)</span>
 
 <span class="n">fit</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
 <span class="n">predict</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_X</span><span class="p">)</span>
 
 <span class="c"># Root Mean Squared Error</span>
-<span class="k">print</span> <span class="s">&quot;RMSE -&gt; </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span></code></pre></div>
+<span class="k">print</span> <span class="s">"RMSE -&gt; </span><span class="si">%</span><span class="s">f"</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>This prints out a mean squared value of RMSE -&gt; 2.542019.</p>
 
 <p>As apparent from RMSE errors of L1 and L2 loss functions, Least Squares(L2)
 outperform L1, when there are no outliers in the data.</p>
 
-<h4 id="regression-with-outliers:">Regression with Outliers:</h4>
+<h4 id="regression-with-outliers">Regression with Outliers:</h4>
 
-<p>After looking at the minimum and maximum values of &lsquo;medv&rsquo; column, we can see
-that the range of values in &lsquo;medv&rsquo; is [5, 50].<br/>
+<p>After looking at the minimum and maximum values of &#39;medv&rsquo; column, we can see
+that the range of values in &#39;medv&rsquo; is [5, 50].<br/>
 Let&rsquo;s add a few Outliers in this Dataset, so that we can see some significant
 differences with <b>L1</b> and <b>L2</b> loss functions.</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Get upper and lower bounds[min, max] of all the features</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4</pre></td><td class="code"><pre><span class="c"># Get upper and lower bounds[min, max] of all the features</span>
 <span class="n">stats</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
-<span class="n">extremes</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s">&#39;min&#39;</span><span class="p">,</span> <span class="s">&#39;max&#39;</span><span class="p">],:]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s">&#39;medv&#39;</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">extremes</span></code></pre></div>
+<span class="n">extremes</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s">'min'</span><span class="p">,</span> <span class="s">'max'</span><span class="p">],:]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s">'medv'</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">extremes</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>Now, we are going to generate 5 random samples, such that their values lies in
 the [min, max] range of respective features.</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Set a random seed</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17</pre></td><td class="code"><pre><span class="c"># Set a random seed</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
 
 <span class="c"># Create 5 random values </span>
 <span class="n">rands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">rands</span>
 
-<span class="c"># Get the &#39;min&#39; and &#39;max&#39; rows as numpy array</span>
-<span class="n">min_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">extremes</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s">&#39;min&#39;</span><span class="p">],</span> <span class="p">:])</span>
-<span class="n">max_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">extremes</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s">&#39;max&#39;</span><span class="p">],</span> <span class="p">:])</span>
+<span class="c"># Get the 'min' and 'max' rows as numpy array</span>
+<span class="n">min_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">extremes</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s">'min'</span><span class="p">],</span> <span class="p">:])</span>
+<span class="n">max_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">extremes</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="s">'max'</span><span class="p">],</span> <span class="p">:])</span>
 
-<span class="c"># Find the difference(range) of &#39;max&#39; and &#39;min&#39;</span>
+<span class="c"># Find the difference(range) of 'max' and 'min'</span>
 <span class="nb">range</span> <span class="o">=</span> <span class="n">max_array</span> <span class="o">-</span> <span class="n">min_array</span>
 
-<span class="c"># Generate 5 samples with &#39;rands&#39; value</span>
+<span class="c"># Generate 5 samples with 'rands' value</span>
 <span class="n">outliers_X</span> <span class="o">=</span> <span class="p">(</span><span class="n">rands</span> <span class="o">*</span> <span class="nb">range</span><span class="p">)</span> <span class="o">+</span> <span class="n">min_array</span>
-<span class="n">outliers_X</span></code></pre></div>
+<span class="n">outliers_X</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>array([[  17.04578252,   19.15194504,    5.68465061,    0.19151945,
            0.47807845,    4.56054001,   21.49653863,    3.23572024,
@@ -238,54 +303,89 @@ the [min, max] range of respective features.</p>
           18.93944359,  595.70732345,   19.9317726 ,  309.64280598,
           29.99632329]])</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># We will also create some hard coded outliers</span>
-<span class="c"># for &#39;medv&#39;, i.e. our target</span>
-<span class="n">medv_outliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span> <span class="mi">600</span><span class="p">])</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3</pre></td><td class="code"><pre><span class="c"># We will also create some hard coded outliers</span>
+<span class="c"># for 'medv', i.e. our target</span>
+<span class="n">medv_outliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span> <span class="mi">600</span><span class="p">])</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># Change the type of &#39;chas&#39;, &#39;rad&#39; and &#39;tax&#39; to rounded of Integers</span>
-<span class="n">outliers_X</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">outliers_X</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]]))</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14</pre></td><td class="code"><pre><span class="c"># Change the type of 'chas', 'rad' and 'tax' to rounded of Integers</span>
+<span class="n">outliers_X</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="nb">round</span><span class="p">(</span><span class="n">outliers_X</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]]))</span>
 
-<span class="c"># Finally concatenate our existing &#39;train_X&#39; and</span>
-<span class="c"># &#39;train_y&#39; with these outliers</span>
+<span class="c"># Finally concatenate our existing 'train_X' and</span>
+<span class="c"># 'train_y' with these outliers</span>
 <span class="n">train_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_X</span><span class="p">,</span> <span class="n">outliers_X</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">train_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_y</span><span class="p">,</span> <span class="n">medv_outliers</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
 
-<span class="c"># Plot a histogram of &#39;medv&#39; in train_y</span>
+<span class="c"># Plot a histogram of 'medv' in train_y</span>
 <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">train_y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="nb">range</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s">&#39;medv Count&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;medv&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;count&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span></code></pre></div>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s">'medv Count'</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'medv'</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'count'</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p><img src="../../../../../images/l1-l2-loss.png" alt="png"></p>
 
-<p>You can see there are some clear outliers at 600, 700 and even one or two &lsquo;medv&rsquo;
+<p>You can see there are some clear outliers at 600, 700 and even one or two &#39;medv&rsquo;
 values are 0.<br/>
 Since, our outliers are in place now, we will once again fit the
 GradientBoostingRegressor with L1 and L2 Loss functions to see the contrast in
 their performances with outliers.</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># GradientBoostingRegressor with L1 loss function</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre></td><td class="code"><pre><span class="c"># GradientBoostingRegressor with L1 loss function</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">9876</span><span class="p">)</span>
 
-<span class="n">mod</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;lad&#39;</span><span class="p">)</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">'lad'</span><span class="p">)</span>
 
 <span class="n">fit</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
 <span class="n">predict</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_X</span><span class="p">)</span>
 
 <span class="c"># Root Mean Squared Error</span>
-<span class="k">print</span> <span class="s">&quot;RMSE -&gt; </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span></code></pre></div>
+<span class="k">print</span> <span class="s">"RMSE -&gt; </span><span class="si">%</span><span class="s">f"</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>We get a RMSE value of 7.055568, with L1 loss function and existing outliers.</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># GradientBoostingRegressor with L2 loss function</span>
-<span class="n">mod</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;ls&#39;</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8</pre></td><td class="code"><pre><span class="c"># GradientBoostingRegressor with L2 loss function</span>
+<span class="n">mod</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">'ls'</span><span class="p">)</span>
 
 <span class="n">fit</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_X</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
 <span class="n">predict</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_X</span><span class="p">)</span>
 
 <span class="c"># Root Mean Squared Error</span>
-<span class="k">print</span> <span class="s">&quot;RMSE -&gt; </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span></code></pre></div>
+<span class="k">print</span> <span class="s">"RMSE -&gt; </span><span class="si">%</span><span class="s">f"</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">test_y</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>On the other hand, we get a RMSE value of 9.806251, with L2 loss function and existing outliers.</p>
 
@@ -329,23 +429,19 @@ samples which results in reduced accuracy.</p>
 
   <div class="share-links">
     
-      <a class = "fa fa-facebook" href="https://facebook.com/sharer.php?u=http://rishy.github.io//ml/2015/04/28/l1-vs-l2-loss/" rel="nofollow" target="_blank" title="Share on Facebook"></a>
+      <a class = "fa fa-facebook" href="https://facebook.com/sharer.php?u=http://localhost:4000/ml/2015/04/28/l1-vs-l2-loss/" rel="nofollow" target="_blank" title="Share on Facebook"></a>
     
 
     
-      <a class="fa fa-twitter" href="https://twitter.com/intent/tweet?text=L1 vs. L2 Loss function&url=http://rishy.github.io//ml/2015/04/28/l1-vs-l2-loss/" rel="nofollow" target="_blank" title="Share on Twitter"></a>
+      <a class="fa fa-twitter" href="https://twitter.com/intent/tweet?text=L1 vs. L2 Loss function&url=http://localhost:4000/ml/2015/04/28/l1-vs-l2-loss/" rel="nofollow" target="_blank" title="Share on Twitter"></a>
     
 
     
-      <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://rishy.github.io//ml/2015/04/28/l1-vs-l2-loss/" rel="nofollow" target="_blank" title="Share on Google+"></a>
+      <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://localhost:4000/ml/2015/04/28/l1-vs-l2-loss/" rel="nofollow" target="_blank" title="Share on Google+"></a>
     
 
     
-      <a class="fa fa-linkedin" href="http://www.linkedin.com/shareArticle?url=http://rishy.github.io//ml/2015/04/28/l1-vs-l2-loss/&title=L1 vs. L2 Loss function" rel="nofollow" target="_blank" title="Share on LinkedIn"></a>
-    
-
-    
-
+      <a class="fa fa-linkedin" href="http://www.linkedin.com/shareArticle?url=http://localhost:4000/ml/2015/04/28/l1-vs-l2-loss/&title=L1 vs. L2 Loss function" rel="nofollow" target="_blank" title="Share on LinkedIn"></a>
     
 
     
@@ -353,7 +449,11 @@ samples which results in reduced accuracy.</p>
     
 
     
-      <a class = "fa fa-hacker-news" onclick="parent.postMessage('submit','*')" href="https://news.ycombinator.com/submitlink?u=http://rishy.github.io//ml/2015/04/28/l1-vs-l2-loss/&t=L1 vs. L2 Loss function" rel="nofollow" target="_blank" title="Share on Hacker News"></a>
+
+    
+
+    
+      <a class = "fa fa-hacker-news" onclick="parent.postMessage('submit','*')" href="https://news.ycombinator.com/submitlink?u=http://localhost:4000/ml/2015/04/28/l1-vs-l2-loss/&t=L1 vs. L2 Loss function" rel="nofollow" target="_blank" title="Share on Hacker News"></a>
     
 
 
@@ -364,14 +464,14 @@ samples which results in reduced accuracy.</p>
 
 
   <div class="py2 post-footer">
-  <img src="/images/me.jpg" alt="Rishabh" class="avatar" />
+  <!-- <img src="/images/me.jpg" alt="Rishabh" class="avatar" />
   <p>
     This is a web-log by Rishabh. He Loves Data. When he is not coding, he loves to
     listen to music, read books, trek and travel.
   </p>
   <p>
     Follow him on <a href="https://twitter.com/0_rishabh">Twitter</a>.
-  </p>
+  </p> -->
 </div>
 
 
@@ -380,6 +480,13 @@ samples which results in reduced accuracy.</p>
 
 
   <h3 class="related-post-title">Related Posts</h3>
+  
+    <div class="post ml2">
+      <a href="/ml/2016/10/12/dropout-with-theano/" class="post-link">
+        <h4 class="post-title">Dropout with Theano</h4>
+        <p class="post-summary">Implementing a Dropout Layer with Numpy and Theano along with all the caveats and tweaks.</p>
+      </a>
+    </div>
   
     <div class="post ml2">
       <a href="/projects/2015/06/10/electricity-demand/" class="post-link">
@@ -428,6 +535,16 @@ samples which results in reduced accuracy.</p>
 
 
 
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-50921176-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
 </body>
 <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 </html>

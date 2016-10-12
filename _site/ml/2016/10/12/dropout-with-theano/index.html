@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Dropout with Theano &#8211; Rishabh Shukla</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Implementing a Dropout Layer with Numpy and Theano along with all the caveats and tweaks.">
+    <meta name="author" content="Rishabh Shukla">
+    <meta name="keywords" content="ml">
+    <link rel="canonical" href="http://localhost:4000/ml/2016/10/12/dropout-with-theano/">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css" type="text/css">
+
+    <!-- Fonts -->
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    
+
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Dropout with Theano">
+    <meta property="og:description" content="I pour out some of my random thoughts regarding Data Science and Machine Learning here">
+    <meta property="og:url" content="http://localhost:4000/ml/2016/10/12/dropout-with-theano/">
+    <meta property="og:site_name" content="Rishabh Shukla">
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="favicon-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+</head>
+
+<body class="animated fade-in-down">
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="http://localhost:4000" class="site-title">Rishabh Shukla</a>
+      <nav class="site-nav right">
+        <a href="/about/">About</a>
+<a href="/contact/">Contact</a>
+
+      </nav>
+      <div class="clearfix"></div>
+      
+        <div class="social-icons">
+  <div class="left">
+    
+      <a class="fa fa-github" href="https://github.com/rishy"></a>
+    
+    
+    
+      <a class="fa fa-twitter" href="https://twitter.com/0_rishabh"></a>
+    
+    
+    
+      <a class="fa fa-envelope" href="mailto:rishy@gmail.com"></a>
+    
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/rishabhshukla1"></a>
+    
+  </div>
+  <div class="right">
+    
+    
+    
+  </div>
+</div>
+<div class="clearfix"></div>
+
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        
+
+
+<div class="post-header mb2">
+  <h1>Dropout with Theano</h1>
+  <span class="post-meta">Oct 12, 2016</span><br>
+  
+  <span class="post-meta small">15 minute read</span>
+</div>
+
+<article class="post-content">
+  <p>Almost everyone working with Deep Learning would have heard a smattering about <strong>Dropout</strong>. Albiet a simple concept(<a href="https://arxiv.org/pdf/1207.0580v1.pdf">introduced</a> a couple of years ago), which sounds like a pretty obvious way for model averaging, further resulting into a more generalized and regularized Neural Net; still when you actually get into the nitty-gritty details of implementing it in your favourite library(theano being mine), you might find some roadblocks there. Why? Because it&rsquo;s not exactly straight-forward to randomly deactivate some neurons in a DNN.</p>
+
+<p>In this post, we&rsquo;ll just recapitulate what has already been explained in detail about Dropout in lot of papers and online resources(some of these are provided at the end of the post). Our main focus will be on implementing a Dropout layer in <a href="https://docs.scipy.org/doc/numpy-dev/user/quickstart.html">Numpy</a> and <a href="http://deeplearning.net/software/theano/introduction.html">Theano</a>, while taking care of all the related caveats. You can find the Jupyter Notebook with the Dropout Class <a href="http://nbviewer.ipython.org/github/rishy/rishy.github.io/blob/master/ipy_notebooks/Dropout-Theano.ipynb">here</a>.</p>
+
+<p>Regularization is a technique to prevent <a href="https://en.wikipedia.org/wiki/Overfitting">Overfitting</a> in a machine learning model. Considering the fact that a DNN has a highly complex function to fit, it can easily overfit with a small/intermediate size of dataset.</p>
+
+<p>In very simple terms - <em>Dropout is a highly efficient regularization technique, wherein, for each iteration we randomly remove some of the neurons in a DNN</em>(along with their connections; have a look at Fig. 1). So how does this help in regularizing a DNN? Well, by randomly removing some of the cells in the computational graph(Neural Net), we are preventing some of the neurons(which are basically hidden features in a Neural Net) from overfitting on all of the training samples. So, this is more like just considering only a handful of features(neurons) for each training sample and producing the output based on these features only. This results into a completely different neural net(hopefully ;)) for each training sample, and eventually our output is the average of these different nets(any <code>Random Forests</code>-phile here? :D).</p>
+
+<h2 id="graphical-overview">Graphical Overview:</h2>
+
+<p>In Fig. 1, we have a fully connected deep neural net on the left side, where each neuron is connected to neurons in its upper and lower layers. On the right side, we have randomly omitted some neurons along with their connections. For every learning step, Neural net in Fig. 2 will have a different representation. Consequently, only the connected neurons and their weights will be learned in a particular learning step. </p>
+
+<p style="display: flex;">
+<img src="../../../../../images/nn.png" style="height: 45%; width: 45%">
+<img src="../../../../../images/dropout-nn.png" style="height: 45%; width: 45%">
+</p>
+
+<p style="text-align: center">
+Fig. 1<br>
+<span style="color: #000; font-size: 1rem;">
+Left: DNN without Dropout, Right: DNN with some dropped neurons
+</span>
+</p>
+
+<h2 id="theano-implementation">Theano Implementation:</h2>
+
+<p>Let&rsquo;s dive straight into the code for implementing a Dropout layer. If you don&rsquo;t have prior knowledge of Theano and Numpy, then please go through these two awesome blogs by <a href="https://twitter.com/dennybritz">@dennybritz</a> - <a href="http://www.wildml.com/2015/09/implementing-a-neural-network-from-scratch/">Implementing a Neural Network from Scratch</a> and <a href="http://www.wildml.com/2015/09/speeding-up-your-neural-network-with-theano-and-the-gpu/">Speeding up your neural network with theano and gpu</a>.</p>
+
+<p>As recommended, whenever we are dealing with Random numbers, it is advisable to set a random seed. </p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre></td><td class="code"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">theano.sandbox.rng_mrg</span> <span class="kn">import</span> <span class="n">MRG_RandomStreams</span> <span class="k">as</span> <span class="n">RandomStreams</span>
+<span class="kn">import</span> <span class="nn">theano</span>
+
+<span class="c"># Set seed for the random numbers</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="c"># Generate a theano RandomStreams</span>
+<span class="n">srng</span> <span class="o">=</span> <span class="n">RandomStreams</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">999999</span><span class="p">))</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Let&rsquo;s enumerate through each line in the above code. Firstly, we import all the necessary modules(more about <code>RandomStreams</code> in the next few lines) and initialize the random seed, so the random numbers generated are consistent in each different run. On the second line we create an object <code>rng</code> of <code>numpy.random.RandomState</code>, this exposes a number of methods for generating random numbers, drawn from a variety of probability distributions.</p>
+
+<p>Theano is designed in a functional manner, as a result of this generating random numbers in Theano Computation graphs is a bit tricky compared to Numpy. Using Random Variables with Theano is equivalent to imputing random variables in the Computation graph. Theano will allocate a numpy <code>RandomState</code> object for each such variable, and draw from it as necessary. Theano calls this sort of sequence of random numbers a <code>Random Stream</code>. The <code>MRG_RandomStreams</code> we are using is another implementation of <code>RandomStreams</code> in Theano, which works for GPUs as well.</p>
+
+<p>So, finally we create a <code>srng</code> object which will provide us with Random Streams in each run of our Optimization Function.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre></td><td class="code"><pre><span class="k">def</span> <span class="nf">dropit</span><span class="p">(</span><span class="n">srng</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">drop</span><span class="p">):</span>
+
+    <span class="c"># proportion of probability to retain</span>
+    <span class="n">retain_prob</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">drop</span>
+
+    <span class="c"># a masking variable</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">srng</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">retain_prob</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                         <span class="n">dtype</span><span class="o">=</span><span class="s">'floatX'</span><span class="p">)</span>
+
+    <span class="c"># final weight with dropped neurons</span>
+    <span class="k">return</span> <span class="n">theano</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">weight</span> <span class="o">*</span> <span class="n">mask</span><span class="p">,</span>
+                             <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">floatX</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Here is our main Dropout function with three arguments: <code>srng</code> - A RandomStream generator, <code>weight</code> - Any theano tensor(Weights of a Neural Net), and <code>drop</code> - a float value to denote the proportion of neurons to drop. So, naturally number of neurons to retain will be <code>1 - drop</code>.</p>
+
+<p>On the second line in the function, we are generating a RandomStream from <a href="https://en.wikipedia.org/wiki/Binomial_distribution">Binomial Distribution</a>, where <code>n</code> denotes the number of trials, <code>p</code> is the probability with which to retain the neurons and <code>size</code> is the shape of the output. As the final step, all we need to do is to switch the value of some of the neurons to <code>0</code>, which can be accomplished by simply multiplying <code>mask</code> with the <code>weight</code> tensor/matrix. <code>theano.tensor.cast</code> is further type casting the resulting value to the value of <code>theano.config.floatX</code>, which is either the default value of <code>floatX</code>, which is <code>float32</code> in theano or any other value that we might have mentioned in <code>.theanorc</code> configuration file.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2</pre></td><td class="code"><pre><span class="k">def</span> <span class="nf">dont_dropit</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="n">drop</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">drop</span><span class="p">)</span><span class="o">*</span><span class="n">theano</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">floatX</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Now, one thing to keep in mind is - we only want to drop neurons during the training phase and not during the validation or test phase. Also, we need to somehow compensate for the fact that during the training time we deactivated some of the neurons. There are two ways to achieve this:</p>
+
+<ol>
+<li><p><strong>Scaling the Weights</strong>(implemented at the test phase): Since, our resulting Neural Net is an averaged model, it makes sense to use the averaged value of the weights during the test phase, considering the fact that we are not deactivating any neurons here. The easiest way to do this is to scale the weights(which acts as averaging) by the factor of retained probability, in the training phase. This is exactly what we are doing in the above function.</p></li>
+<li><p><strong>Inverted Dropout</strong>(implemented at the training phase): Now scaling the weights has its caveats, since we have to tweak the weights at the test time. On the other end &lsquo;Inverted Dropout&rsquo; performs the scaling at the training time. So, we don&rsquo;t have to tweak the test code whenever we decide to change the order of Dropout layer. In this post, we&rsquo;ll be using the first method(scaling), although I&rsquo;d recommend you to play with Inverted Dropout as well. You can follow <a href="https://github.com/cs231n/cs231n.github.io/blob/master/neural-networks-2.md#reg">this</a> up for the guidance.</p></li>
+</ol>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4</pre></td><td class="code"><pre><span class="k">def</span> <span class="nf">dropout_layer</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="n">drop</span><span class="p">,</span> <span class="n">train</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">ifelse</span><span class="o">.</span><span class="n">ifelse</span><span class="p">(</span><span class="n">theano</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="n">dropit</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="n">drop</span><span class="p">),</span> <span class="n">dont_dropit</span><span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="n">drop</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Our final <code>dropout_layer</code> function uses <code>theano.ifelse</code> module to return the value of either <code>dropit</code> or <code>dont_dropit</code> function. This is conditioned on whether our <code>train</code> flag is on or off. So, while the model is in training phase, we&rsquo;ll use dropout for our model weights and in test phase, we would simply scale the weights to compensate for all the training steps, where we omitted some random neurons.</p>
+
+<p>Finally, here&rsquo;s how you can add a Dropout layer in your DNN. I am taking an example of RNN, similar to the one used in <a href="http://www.wildml.com/2015/10/recurrent-neural-network-tutorial-part-4-implementing-a-grulstm-rnn-with-python-and-theano/">this</a> blog:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25</pre></td><td class="code"><pre><span class="n">x</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ivector</span><span class="p">(</span><span class="s">'x'</span><span class="p">)</span>
+<span class="n">drop_value</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s">'drop_value'</span><span class="p">)</span>
+
+<span class="n">dropout</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">()</span>
+<span class="n">gru</span> <span class="o">=</span> <span class="n">GRU</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="c">#An object of GRU class with required arguments</span>
+<span class="n">params</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="c">#A dictionary of model parameters</span>
+    
+<span class="k">def</span> <span class="nf">forward_prop</span><span class="p">(</span><span class="n">x_t</span><span class="p">,</span> <span class="n">s_t_prev</span><span class="p">,</span> <span class="n">drop_value</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    
+    <span class="c"># Word vector embeddings</span>
+    <span class="n">x_e</span> <span class="o">=</span> <span class="n">E</span><span class="p">[:,</span> <span class="n">x_t</span><span class="p">]</span> 
+    
+    <span class="c"># GRU Layer</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">dropout</span><span class="o">.</span><span class="n">dropout_layer</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">drop_value</span><span class="p">,</span> <span class="n">train</span><span class="p">)</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="n">dropout</span><span class="o">.</span><span class="n">dropout_layer</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">drop_value</span><span class="p">,</span> <span class="n">train</span><span class="p">)</span>
+    
+    <span class="n">s</span> <span class="o">=</span> <span class="n">gru</span><span class="o">.</span><span class="n">GRU_layer</span><span class="p">(</span><span class="n">x_e</span><span class="p">,</span> <span class="n">s_t_prev</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">s_t</span>
+
+<span class="n">s</span><span class="p">,</span> <span class="n">updates</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span><span class="n">forward_prop</span><span class="p">,</span>
+             <span class="n">sequences</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">],</span>
+             <span class="n">non_sequences</span> <span class="o">=</span> <span class="p">[</span><span class="n">drop_value</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="s">'E'</span><span class="p">],</span>
+                             <span class="n">params</span><span class="p">[</span><span class="s">'U'</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="s">'W'</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="s">'b'</span><span class="p">]],</span>
+             <span class="n">outputs_info</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_dim</span><span class="p">))])</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Here, we have the <code>forward_prop</code> function for RNN+GRU model. Starting from the first line, we are creating a theano tensor variable <code>x</code>, for input(words) and another <code>drop_value</code> variable of type <code>theano.tensor.scalar</code>, which will take a float value to denote the proportion of neurons to be dropped.</p>
+
+<p>Then we are creating an object <code>dropout</code> of the <code>Dropout</code> class, we implemented in previous sections. After this, we are initiating a <code>GRU</code> object(I have kept this as a generic class, since you might have a different implementation). We also have one more variable, namely <code>params</code> which is an <code>OrderedDict</code> containing the model parameters. </p>
+
+<p>Furthermore, <code>E</code> is our Word Embedding Matrix, <code>U</code> contains, input to hidden layer weights, <code>W</code> is the hidden to hidden layer weights and <code>b</code> is the bias. Then we have our workhorse - the <code>forward_prop</code> function, which is called iteratively for each value in <code>x</code> variable(here these values will be the indexes for sequential words in the text). Now, all we have to do is call the <code>dropout_layer</code> function from <code>forward_prop</code>, which will return <code>W</code>, <code>U</code>, with few dropped neurons.</p>
+
+<p>This is it in terms of implementing and using a dropout layer with Theano. Although, there are a few things mentioned in the next section, which you have to keep in mind when working with <code>RandomStreams</code>.</p>
+
+<h2 id="few-things-to-take-care-of">Few things to take care of:</h2>
+
+<p><b>Wherever we are going to use a <code>theano.function</code> after this, we&rsquo;ll have to explicitly pass it the <code>updates</code>, we got from <code>theano.scan</code> function in previous section. Reason?</b>
+Whenever there is a call to theano&rsquo;s <code>RandomStreams</code>, it throws some updates, and all of the theano functions, following the above code, should be made aware of these updates. So let&rsquo;s have a look at this code:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14</pre></td><td class="code"><pre><span class="n">o</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">nnet</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s">'V'</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])))</span>
+
+<span class="n">prediction</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c"># cost/loss function</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">nnet</span><span class="o">.</span><span class="n">categorical_crossentropy</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+<span class="c"># cast values in 'updates' variable to a list</span>
+<span class="n">updates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">updates</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+<span class="c"># couple of commonly used theano functions with 'updates    '</span>
+<span class="n">predict</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">([</span><span class="n">x</span><span class="p">],</span> <span class="n">o</span><span class="p">,</span> <span class="n">updates</span> <span class="o">=</span> <span class="n">updates</span><span class="p">)</span>
+<span class="n">predict_class</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">([</span><span class="n">x</span><span class="p">],</span> <span class="n">prediction</span><span class="p">,</span> <span class="n">updates</span> <span class="o">=</span> <span class="n">updates</span><span class="p">)</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="n">loss</span><span class="p">,</span> <span class="n">updates</span> <span class="o">=</span> <span class="n">updates</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+ 
+
+<p>As a standard procedure, we are using another model parameter <code>V</code>(hidden to output) and taking a <code>softmax</code> over this. If you have a look at <code>predict</code>, <code>loss</code> functions, then we had to explicitly, tell them about the <code>updates</code> that <code>RandomStreams</code> made during the execution of <code>dropout_layer</code> function. Else, this will throw an error in Theano. </p>
+
+<p><b>What is the appropriate float value for dropout?</b>
+To be on the safe side, a value of <code>0.5</code>(as mentioned in the original <a href="https://arxiv.org/pdf/1207.0580v1.pdf">paper</a>) is generally good enough. Although, you could always try to tweak it a bit and see what works best for your model.</p>
+
+<h2 id="alternatives-to-dropout">Alternatives to Dropout</h2>
+
+<p>Lately, there has been a lot of research for better regularization methods in DNNs. One of the things that I really like about Dropout is that it&rsquo;s conceptually very simple as well as an highly effective way to prevent overfitting. A few more methods, that are increasingly being used in DNNs now a days(I am omitting the standard L1/L2 regularization here):</p>
+
+<ol>
+<li><p><strong>Max-Norm:</strong> Max-Norm puts a specific upper bound on the magnitude of weight matrices and if the magnitude exceeds this threshold then the values of weight matrices are clipped down. This is particularly helpful for exploding gradient problem.</p></li>
+<li><p><strong>DropConnect:</strong>
+When training with Dropout, a randomly selected subset of activations are set to zero within each layer. DropConnect instead sets a randomly selected subset of weights within the network to zero. Each unit thus receives input from a random subset of units in the previous layer. We derive a bound on the generalization performance of both Dropout and DropConnect. - Abstract from the original <a href="https://cs.nyu.edu/%7Ewanli/dropc/dropc.pdf">paper</a>.</p></li>
+<li><p><strong>ZoneOut(specific to RNNs):</strong> 
+In each training step, ZoneOut keeps the value of some of the hidden units unchanged. So, instead of throwing out the information, it enforces a random number of hidden units to propogate the same information in next time step. </p></li>
+</ol>
+
+<p>The reason I wanted to write about this, is because if you are working with a low level library like Theano, then sometimes using modules like <code>RandomStreams</code> might get a bit tricky. Although, for prototyping and even for production purposes, you should also consider other high level libraries like <a href="https://keras.io/">Keras</a> and <a href="https://www.tensorflow.org/">TensorFlow</a>.</p>
+
+<p>Feel free, to add any other regularization methods and feedbacks, in the comments section.</p>
+
+<p>Suggested Readings:</p>
+
+<ol>
+<li><a href="http://www.wildml.com/2015/09/implementing-a-neural-network-from-scratch/">Implementing a Neural Network From Scratch - Wildml</a></li>
+<li><a href="http://www.wildml.com/2015/09/recurrent-neural-networks-tutorial-part-1-introduction-to-rnns/">Introduction to Recurrent Neural Networks - Wildml</a></li>
+<li><a href="https://arxiv.org/pdf/1207.0580v1.pdf">Improving neural networks by preventing co-adaptation of feature detectors</a></li>
+<li><a href="http://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf">Dropout: A Simple Way to Prevent Neural Networks from Overfitting</a></li>
+<li><a href="http://wiki.ubc.ca/Course:CPSC522/Regularization_for_Neural_Networks">Regularization for Neural Networks</a></li>
+<li><a href="http://wikicoursenote.com/wiki/Dropout">Dropout - WikiCourse</a></li>
+<li><a href="https://papers.nips.cc/paper/4124-practical-large-scale-optimization-for-max-norm-regularization.pdf">Practical large scale optimization for Max Norm Regularization</a></li>
+<li><a href="https://cs.nyu.edu/%7Ewanli/dropc/dropc.pdf">DropConnect Paper</a></li>
+<li><a href="https://arxiv.org/abs/1606.01305">ZoneOut Paper</a></li>
+<li><a href="https://github.com/cs231n/cs231n.github.io/blob/master/neural-networks-2.md#reg">Regularization in Neural Networks</a></li>
+</ol>
+
+</article>
+
+
+  <div class="share-page">
+  Share this post!
+
+  <div class="share-links">
+    
+      <a class = "fa fa-facebook" href="https://facebook.com/sharer.php?u=http://localhost:4000/ml/2016/10/12/dropout-with-theano/" rel="nofollow" target="_blank" title="Share on Facebook"></a>
+    
+
+    
+      <a class="fa fa-twitter" href="https://twitter.com/intent/tweet?text=Dropout with Theano&url=http://localhost:4000/ml/2016/10/12/dropout-with-theano/" rel="nofollow" target="_blank" title="Share on Twitter"></a>
+    
+
+    
+      <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://localhost:4000/ml/2016/10/12/dropout-with-theano/" rel="nofollow" target="_blank" title="Share on Google+"></a>
+    
+
+    
+      <a class="fa fa-linkedin" href="http://www.linkedin.com/shareArticle?url=http://localhost:4000/ml/2016/10/12/dropout-with-theano/&title=Dropout with Theano" rel="nofollow" target="_blank" title="Share on LinkedIn"></a>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+      <a class = "fa fa-hacker-news" onclick="parent.postMessage('submit','*')" href="https://news.ycombinator.com/submitlink?u=http://localhost:4000/ml/2016/10/12/dropout-with-theano/&t=Dropout with Theano" rel="nofollow" target="_blank" title="Share on Hacker News"></a>
+    
+
+
+  </div>
+</div>
+
+
+
+
+  <div class="py2 post-footer">
+  <!-- <img src="/images/me.jpg" alt="Rishabh" class="avatar" />
+  <p>
+    This is a web-log by Rishabh. He Loves Data. When he is not coding, he loves to
+    listen to music, read books, trek and travel.
+  </p>
+  <p>
+    Follow him on <a href="https://twitter.com/0_rishabh">Twitter</a>.
+  </p> -->
+</div>
+
+
+
+
+
+
+  <h3 class="related-post-title">Related Posts</h3>
+  
+    <div class="post ml2">
+      <a href="/projects/2015/06/10/electricity-demand/" class="post-link">
+        <h4 class="post-title">Electricity Demand Analysis and Appliance Detection</h4>
+        <p class="post-summary">Analysis of Electricity demand from a house on a time-series dataset. An appliance detection systems is also created using K-Means Clustering based on the electricity demand.</p>
+      </a>
+    </div>
+  
+    <div class="post ml2">
+      <a href="/projects/2015/05/08/phishing-websites-detection/" class="post-link">
+        <h4 class="post-title">Phishing Websites Detection</h4>
+        <p class="post-summary">Phishing Websites detection with Random Forest, along with the breakdown of most important features, while detecting a phishing website.</p>
+      </a>
+    </div>
+  
+    <div class="post ml2">
+      <a href="/ml/2015/04/28/l1-vs-l2-loss/" class="post-link">
+        <h4 class="post-title">L1 vs. L2 Loss function</h4>
+        <p class="post-summary">Comparison of performances of L1 and L2 loss functions with and without outliers in a dataset.</p>
+      </a>
+    </div>
+  
+    <div class="post ml2">
+      <a href="/stats/2015/04/21/normal-distributions/" class="post-link">
+        <h4 class="post-title">Normal/Gaussian Distributions</h4>
+        <p class="post-summary">This is first blog post of the series "Statistical Distributions". We are starting with the most commonly used Normal Distributions.</p>
+      </a>
+    </div>
+  
+    <div class="post ml2">
+      <a href="/projects/2014/05/19/gsoc-selection/" class="post-link">
+        <h4 class="post-title">Google Summer of Code 2014</h4>
+        <p class="post-summary">Got Selected for Google Summer of Code 2014, with Mifos as my mentoring organization.</p>
+      </a>
+    </div>
+  
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+  <div class="p2 wrap">
+    <div class="measure mt1 center">
+      <small>
+      	You are free to use the Source Code available at <a href="https://github.com/rishy/rishy.github.io">Github</a>.<br/>
+        Theme by <a href="http://johnotander.com">John Otander</a> (<a href="https://twitter.com/4lpine">@4lpine</a>).
+      </small>
+    </div>
+  </div>
+</footer>
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-50921176-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+</html>

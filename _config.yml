@@ -44,10 +44,14 @@ share_stumbleupon: false
 share_hackernews: true
 
 # Build settings
-markdown:     redcarpet
-redcarpet:
-  extensions: ['smart', 'tables', 'with_toc_data']
+markdown:     kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  extensions: ['smart', 'tables', 'with_toc_data', "highlight"]
 permalink:    pretty
-paginate:     3
+paginate:     5
 sass:
   compressed: true
+
+gems: [jekyll-paginate]

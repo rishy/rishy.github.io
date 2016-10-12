@@ -22,8 +22,11 @@ html, body {
 }
 
 img {
-  width: auto;
-  max-width: 100%;
+    margin: 0 auto;
+}
+
+p:has(parent) {
+  display: flex; 
 }
 
 .site-wrap {
@@ -109,7 +112,6 @@ table {
         padding: 12px;
         line-height: 1.2;
         vertical-align: top;
-        border-top: 1px solid #333;
       }
     }
   }
@@ -265,14 +267,21 @@ pre, code {
 }
 
 code {
-  color: #7a7a7a;
+    color: #3a3a3a;
+    padding: 0.05em 0.2em;
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0.04);
+    border-radius: 3px;
 }
 
 pre {
-  padding: 1.125em;
+  overflow-y: hidden;
+  background: #f9f9f9;
+  border-radius: 4px;
+  padding: 0.5em;
   font-size: 1.125rem;
   line-height: 1.11;
-  overflow-x: scroll;
+  overflow-x: auto;
   margin-bottom: 0.88em;
 }
 
@@ -283,8 +292,8 @@ pre {
 
 blockquote {
   padding: 1.33em;
-  font-style: italic;
   border-left: 5px solid #7a7a7a;
+  font-size: 1.15rem;
 }
 
 blockquote footer {
@@ -574,4 +583,14 @@ Copyright (c) 2014 Daniel Eden
 .fade-in-down {
   -webkit-animation-name: fadeInDown;
           animation-name: fadeInDown;
+}
+
+figure{
+  margin: 0;
+}
+
+pre.lineno {
+    border-right: 1px solid #bfbfbf;
+    color: #808080;
+    border-radius: 0;
 }

@@ -15,7 +15,7 @@ For this very basic analysis, we are going to use multiple models, and see which
 
 We'll start with loading the [csv](https://github.com/rishy/phishing-websites/blob/master/Datasets/phising.csv) file, in our R Script and setting the new column names.
 
-{% highlight R %}
+{% highlight R linenos%}
 library(caret)
 library(doMC)
 
@@ -46,7 +46,7 @@ All of the features in this dataset are factors, that's the reason I have used `
 
 Now, first thing first, let's have a look at the `data`,
 
-{% highlight R %}
+{% highlight R linenos%}
 str(data)
 {% endhighlight %}
 
@@ -89,7 +89,7 @@ So, we have some <b>30</b> features and a `target` variable with two levels(1, -
 
 We'll now create a training and test set using caret's `createDataPartition` method. We'll use test set to validate the accuracy of our detection system.
 
-{% highlight R %}
+{% highlight R linenos%}
 # Set a random seed so we can reproduce the results
 set.seed(1234)
 
@@ -103,7 +103,7 @@ testing <- data[-train_in,]
 
 Now, we are ready to try a few models on the dataset. Starting with a `Boosted logistic Regression` model. Let's see how that perform on our quest for the nearly perfect phishing detection system ;).
 
-{% highlight R %}
+{% highlight R linenos%}
 ################ Boosted Logistic Regression ################
 
 # trainControl for Boosted Logisitic Regression
@@ -125,7 +125,7 @@ We are using caret's `trainControl` method to find out the best performing param
 
 But of course we have better choices for models, right? And there is no reason, for not using our one of the most favourite `SVM with an RBF Kernel`.
 
-{% highlight R %}
+{% highlight R linenos%}
 ################## SVM - RBF Kernel ####################
 
 # trainControl for Radial SVM
@@ -149,7 +149,7 @@ But, since one of the most important reason I picked up this analysis was to fin
 
 So, let's fit a Tree bagging model on our dataset.
 
-{% highlight R %}
+{% highlight R linenos%}
 ################## TreeBag ###################
 
 # trainControl for Treebag
@@ -169,7 +169,7 @@ confusionMatrix(treebag.predict, testing$target)
 Now, this is something, an accuracy of <b>0.9739</b> and we also get our variable importances :).
 But I am not going to show that, without fitting another tree model, the almighty(throw-anything-at-me) `Random Forests`.
 
-{% highlight R %}
+{% highlight R linenos%}
 ####################### Random Forest ########################
 
 # trainControl for Random Forest
@@ -189,7 +189,7 @@ confusionMatrix(rf.predict, testing$target)
 
 That's some coincidence(or-not), with mtry = 21, we are still getting an accuracy of <b>)0.9739</b> with our `Random Forest` model, which is actually pretty good, even for practical purposes. so, finally let's have a look at the variable importances of different features,
 
-{% highlight R %}
+{% highlight R linenos%}
 plot(varImp(rf.fit))
 {% endhighlight %}
 

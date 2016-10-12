@@ -8,7 +8,7 @@
     <meta name="description" content="Phishing Websites detection with Random Forest, along with the breakdown of most important features, while detecting a phishing website.">
     <meta name="author" content="Rishabh Shukla">
     <meta name="keywords" content="projects">
-    <link rel="canonical" href="http://rishy.github.io//projects/2015/05/08/phishing-websites-detection/">
+    <link rel="canonical" href="http://localhost:4000/projects/2015/05/08/phishing-websites-detection/">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/pixyll.css" type="text/css">
@@ -27,7 +27,7 @@
     <meta property="og:type" content="article">
     <meta property="og:title" content="Phishing Websites Detection">
     <meta property="og:description" content="I pour out some of my random thoughts regarding Data Science and Machine Learning here">
-    <meta property="og:url" content="http://rishy.github.io//projects/2015/05/08/phishing-websites-detection/">
+    <meta property="og:url" content="http://localhost:4000/projects/2015/05/08/phishing-websites-detection/">
     <meta property="og:site_name" content="Rishabh Shukla">
 
     <!-- Icons -->
@@ -52,7 +52,7 @@
     <header class="site-header px2 px-responsive">
   <div class="mt2 wrap">
     <div class="measure">
-      <a href="http://rishy.github.io/" class="site-title">Rishabh Shukla</a>
+      <a href="http://localhost:4000" class="site-title">Rishabh Shukla</a>
       <nav class="site-nav right">
         <a href="/about/">About</a>
 <a href="/contact/">Contact</a>
@@ -100,7 +100,7 @@
   <h1>Phishing Websites Detection</h1>
   <span class="post-meta">May 8, 2015</span><br>
   
-  <span class="post-meta small">11 minute read</span>
+  <span class="post-meta small">13 minute read</span>
 </div>
 
 <article class="post-content">
@@ -112,28 +112,50 @@
 
 <p>We&rsquo;ll start with loading the <a href="https://github.com/rishy/phishing-websites/blob/master/Datasets/phising.csv">csv</a> file, in our R Script and setting the new column names.</p>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>caret<span class="p">)</span>
-<span class="kn">library</span><span class="p">(</span>doMC<span class="p">)</span>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22</pre></td><td class="code"><pre><span class="n">library</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">doMC</span><span class="p">)</span><span class="w">
 
-<span class="c1"># Register 4 cores for parallel computing</span>
-registerDoMC<span class="p">(</span><span class="m">4</span><span class="p">)</span>
+</span><span class="c1"># Register 4 cores for parallel computing
+</span><span class="n">registerDoMC</span><span class="p">(</span><span class="m">4</span><span class="p">)</span><span class="w">
 
-<span class="c1"># Read the data from csv file</span>
-data <span class="o">&lt;-</span> read.csv<span class="p">(</span><span class="s">&#39;Datasets/phising.csv&#39;</span><span class="p">,</span> header <span class="o">=</span> <span class="bp">F</span><span class="p">,</span>
-                colClasses <span class="o">=</span> <span class="s">&quot;factor&quot;</span><span class="p">)</span>
+</span><span class="c1"># Read the data from csv file
+</span><span class="n">data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s1">'Datasets/phising.csv'</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w">
+                </span><span class="n">colClasses</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"factor"</span><span class="p">)</span><span class="w">
 
-<span class="c1"># Names list for the features</span>
-names <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;has_ip&quot;</span><span class="p">,</span> <span class="s">&quot;long_url&quot;</span><span class="p">,</span> <span class="s">&quot;short_service&quot;</span><span class="p">,</span> <span class="s">&quot;has_at&quot;</span><span class="p">,</span>
-           <span class="s">&quot;double_slash_redirect&quot;</span><span class="p">,</span> <span class="s">&quot;pref_suf&quot;</span><span class="p">,</span> <span class="s">&quot;has_sub_domain&quot;</span><span class="p">,</span>
-           <span class="s">&quot;ssl_state&quot;</span><span class="p">,</span> <span class="s">&quot;long_domain&quot;</span><span class="p">,</span> <span class="s">&quot;favicon&quot;</span><span class="p">,</span> <span class="s">&quot;port&quot;</span><span class="p">,</span>
-           <span class="s">&quot;https_token&quot;</span><span class="p">,</span> <span class="s">&quot;req_url&quot;</span><span class="p">,</span> <span class="s">&quot;url_of_anchor&quot;</span><span class="p">,</span> <span class="s">&quot;tag_links&quot;</span><span class="p">,</span>
-           <span class="s">&quot;SFH&quot;</span><span class="p">,</span> <span class="s">&quot;submit_to_email&quot;</span><span class="p">,</span> <span class="s">&quot;abnormal_url&quot;</span><span class="p">,</span> <span class="s">&quot;redirect&quot;</span><span class="p">,</span>
-           <span class="s">&quot;mouseover&quot;</span><span class="p">,</span> <span class="s">&quot;right_click&quot;</span><span class="p">,</span> <span class="s">&quot;popup&quot;</span><span class="p">,</span> <span class="s">&quot;iframe&quot;</span><span class="p">,</span>
-           <span class="s">&quot;domain_Age&quot;</span><span class="p">,</span> <span class="s">&quot;dns_record&quot;</span><span class="p">,</span> <span class="s">&quot;traffic&quot;</span><span class="p">,</span> <span class="s">&quot;page_rank&quot;</span><span class="p">,</span>
-           <span class="s">&quot;google_index&quot;</span><span class="p">,</span> <span class="s">&quot;links_to_page&quot;</span><span class="p">,</span> <span class="s">&quot;stats_report&quot;</span><span class="p">,</span> <span class="s">&quot;target&quot;</span><span class="p">)</span> 
+</span><span class="c1"># Names list for the features
+</span><span class="n">names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"has_ip"</span><span class="p">,</span><span class="w"> </span><span class="s2">"long_url"</span><span class="p">,</span><span class="w"> </span><span class="s2">"short_service"</span><span class="p">,</span><span class="w"> </span><span class="s2">"has_at"</span><span class="p">,</span><span class="w">
+           </span><span class="s2">"double_slash_redirect"</span><span class="p">,</span><span class="w"> </span><span class="s2">"pref_suf"</span><span class="p">,</span><span class="w"> </span><span class="s2">"has_sub_domain"</span><span class="p">,</span><span class="w">
+           </span><span class="s2">"ssl_state"</span><span class="p">,</span><span class="w"> </span><span class="s2">"long_domain"</span><span class="p">,</span><span class="w"> </span><span class="s2">"favicon"</span><span class="p">,</span><span class="w"> </span><span class="s2">"port"</span><span class="p">,</span><span class="w">
+           </span><span class="s2">"https_token"</span><span class="p">,</span><span class="w"> </span><span class="s2">"req_url"</span><span class="p">,</span><span class="w"> </span><span class="s2">"url_of_anchor"</span><span class="p">,</span><span class="w"> </span><span class="s2">"tag_links"</span><span class="p">,</span><span class="w">
+           </span><span class="s2">"SFH"</span><span class="p">,</span><span class="w"> </span><span class="s2">"submit_to_email"</span><span class="p">,</span><span class="w"> </span><span class="s2">"abnormal_url"</span><span class="p">,</span><span class="w"> </span><span class="s2">"redirect"</span><span class="p">,</span><span class="w">
+           </span><span class="s2">"mouseover"</span><span class="p">,</span><span class="w"> </span><span class="s2">"right_click"</span><span class="p">,</span><span class="w"> </span><span class="s2">"popup"</span><span class="p">,</span><span class="w"> </span><span class="s2">"iframe"</span><span class="p">,</span><span class="w">
+           </span><span class="s2">"domain_Age"</span><span class="p">,</span><span class="w"> </span><span class="s2">"dns_record"</span><span class="p">,</span><span class="w"> </span><span class="s2">"traffic"</span><span class="p">,</span><span class="w"> </span><span class="s2">"page_rank"</span><span class="p">,</span><span class="w">
+           </span><span class="s2">"google_index"</span><span class="p">,</span><span class="w"> </span><span class="s2">"links_to_page"</span><span class="p">,</span><span class="w"> </span><span class="s2">"stats_report"</span><span class="p">,</span><span class="w"> </span><span class="s2">"target"</span><span class="p">)</span><span class="w"> 
 
-<span class="c1"># Add column names</span>
-<span class="kp">names</span><span class="p">(</span>data<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">names</span></code></pre></div>
+</span><span class="c1"># Add column names
+</span><span class="nf">names</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">names</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>Here we are importing <a href="caret.r-forge.r-project.org">caret</a> and <a href="http://cran.r-project.org/web/packages/doMC/index.html">doMC</a> libraries and then registering <b>4 cores</b> for parallel processing. You can set the number of cores according to your machine.</p>
 
@@ -141,7 +163,8 @@ names <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</s
 
 <p>Now, first thing first, let&rsquo;s have a look at the <code>data</code>,</p>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r">str<span class="p">(</span>data<span class="p">)</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1</pre></td><td class="code"><pre><span class="n">str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <pre>
 'data.frame':   2456 obs. of  31 variables:
@@ -182,53 +205,92 @@ names <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</s
 
 <p>We&rsquo;ll now create a training and test set using caret&rsquo;s <code>createDataPartition</code> method. We&rsquo;ll use test set to validate the accuracy of our detection system.</p>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Set a random seed so we can reproduce the results</span>
-<span class="kp">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9</pre></td><td class="code"><pre><span class="c1"># Set a random seed so we can reproduce the results
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
 
-<span class="c1"># Create training and testing partitions</span>
-train_in <span class="o">&lt;-</span> createDataPartition<span class="p">(</span>y <span class="o">=</span> data<span class="o">$</span>target<span class="p">,</span>
-                        p <span class="o">=</span> <span class="m">0.75</span><span class="p">,</span> <span class="kt">list</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+</span><span class="c1"># Create training and testing partitions
+</span><span class="n">train_in</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">createDataPartition</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data</span><span class="o">$</span><span class="n">target</span><span class="p">,</span><span class="w">
+                        </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.75</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
 
-training <span class="o">&lt;-</span> data<span class="p">[</span>train_in<span class="p">,]</span>
-testing <span class="o">&lt;-</span> data<span class="p">[</span><span class="o">-</span>train_in<span class="p">,]</span></code></pre></div>
+</span><span class="n">training</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="n">train_in</span><span class="p">,]</span><span class="w">
+</span><span class="n">testing</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="n">train_in</span><span class="p">,]</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>Now, we are ready to try a few models on the dataset. Starting with a <code>Boosted logistic Regression</code> model. Let&rsquo;s see how that perform on our quest for the nearly perfect phishing detection system ;).</p>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1">################ Boosted Logistic Regression ################</span>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15</pre></td><td class="code"><pre><span class="c1">################ Boosted Logistic Regression ################
+</span><span class="w">
+</span><span class="c1"># trainControl for Boosted Logisitic Regression
+</span><span class="n">fitControl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'repeatedcv'</span><span class="p">,</span><span class="w"> </span><span class="n">repeats</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w">
+                           </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">verboseIter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
 
-<span class="c1"># trainControl for Boosted Logisitic Regression</span>
-fitControl <span class="o">&lt;-</span> trainControl<span class="p">(</span>method <span class="o">=</span> <span class="s">&#39;repeatedcv&#39;</span><span class="p">,</span> repeats <span class="o">=</span> <span class="m">5</span><span class="p">,</span>
-                           number <span class="o">=</span> <span class="m">5</span><span class="p">,</span> verboseIter <span class="o">=</span> <span class="bp">T</span><span class="p">)</span>
+</span><span class="c1"># Run a Boosted logisitic regression over the training set
+</span><span class="n">log.fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">training</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"LogitBoost"</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fitControl</span><span class="p">,</span><span class="w">
+                </span><span class="n">tuneLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w">
 
-<span class="c1"># Run a Boosted logisitic regression over the training set</span>
-log.fit <span class="o">&lt;-</span> train<span class="p">(</span>target <span class="o">~</span> <span class="m">.</span><span class="p">,</span>  data <span class="o">=</span> training<span class="p">,</span> 
-                method <span class="o">=</span> <span class="s">&quot;LogitBoost&quot;</span><span class="p">,</span> trControl <span class="o">=</span> fitControl<span class="p">,</span>
-                tuneLength <span class="o">=</span> <span class="m">5</span><span class="p">)</span>
+</span><span class="c1"># Predict the testing target
+</span><span class="n">log.predict</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">log.fit</span><span class="p">,</span><span class="w"> </span><span class="n">testing</span><span class="p">[,</span><span class="m">-31</span><span class="p">])</span><span class="w">
 
-<span class="c1"># Predict the testing target</span>
-log.predict <span class="o">&lt;-</span> predict<span class="p">(</span>log.fit<span class="p">,</span> testing<span class="p">[,</span><span class="m">-31</span><span class="p">])</span>
-
-confusionMatrix<span class="p">(</span>log.predict<span class="p">,</span> testing<span class="o">$</span>target<span class="p">)</span></code></pre></div>
+</span><span class="n">confusionMatrix</span><span class="p">(</span><span class="n">log.predict</span><span class="p">,</span><span class="w"> </span><span class="n">testing</span><span class="o">$</span><span class="n">target</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>We are using caret&rsquo;s <code>trainControl</code> method to find out the best performing parameters using repeated cross-validation. After creating a confusion Matrix of the predicted values and the real target values, I could get a prediction accuracy of <b>0.9357</b>, which is actually pretty good for a Boosted Logistic Regression model.</p>
 
 <p>But of course we have better choices for models, right? And there is no reason, for not using our one of the most favourite <code>SVM with an RBF Kernel</code>.</p>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1">################## SVM - RBF Kernel ####################</span>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15</pre></td><td class="code"><pre><span class="c1">################## SVM - RBF Kernel ####################
+</span><span class="w">
+</span><span class="c1"># trainControl for Radial SVM
+</span><span class="n">fitControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"repeatedcv"</span><span class="p">,</span><span class="w"> </span><span class="n">repeats</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w">
+                         </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">verboseIter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
 
-<span class="c1"># trainControl for Radial SVM</span>
-fitControl <span class="o">=</span> trainControl<span class="p">(</span>method <span class="o">=</span> <span class="s">&quot;repeatedcv&quot;</span><span class="p">,</span> repeats <span class="o">=</span> <span class="m">5</span><span class="p">,</span>
-                         number <span class="o">=</span> <span class="m">5</span><span class="p">,</span> verboseIter <span class="o">=</span> <span class="bp">T</span><span class="p">)</span>
+</span><span class="c1"># Run a RBF - SVM over the training set
+</span><span class="n">rbfsvm.fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">training</span><span class="p">,</span><span class="w">
+                    </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"svmRadial"</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fitControl</span><span class="p">,</span><span class="w">
+                    </span><span class="n">tuneLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w">
 
-<span class="c1"># Run a RBF - SVM over the training set</span>
-rbfsvm.fit <span class="o">&lt;-</span> train<span class="p">(</span>target <span class="o">~</span> <span class="m">.</span><span class="p">,</span>  data <span class="o">=</span> training<span class="p">,</span>
-                    method <span class="o">=</span> <span class="s">&quot;svmRadial&quot;</span><span class="p">,</span> trControl <span class="o">=</span> fitControl<span class="p">,</span>
-                    tuneLength <span class="o">=</span> <span class="m">5</span><span class="p">)</span>
+</span><span class="c1"># Predict the testing target
+</span><span class="n">rbfsvm.predict</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">rbfsvm.fit</span><span class="p">,</span><span class="w"> </span><span class="n">testing</span><span class="p">[,</span><span class="m">-31</span><span class="p">])</span><span class="w">
 
-<span class="c1"># Predict the testing target</span>
-rbfsvm.predict <span class="o">&lt;-</span> predict<span class="p">(</span>rbfsvm.fit<span class="p">,</span> testing<span class="p">[,</span><span class="m">-31</span><span class="p">])</span>
-
-confusionMatrix<span class="p">(</span>rbfsvm.predict<span class="p">,</span> testing<span class="o">$</span>target<span class="p">)</span></code></pre></div>
+</span><span class="n">confusionMatrix</span><span class="p">(</span><span class="n">rbfsvm.predict</span><span class="p">,</span><span class="w"> </span><span class="n">testing</span><span class="o">$</span><span class="n">target</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>Woah! I am getting a <b>0.9706</b> accuracy with a SVM and RBF Kernel. Looks like there is almost no escape for phishing websites now :D.</p>
 
@@ -236,43 +298,73 @@ confusionMatrix<span class="p">(</span>rbfsvm.predict<span class="p">,</span> te
 
 <p>So, let&rsquo;s fit a Tree bagging model on our dataset.</p>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1">################## TreeBag ###################</span>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14</pre></td><td class="code"><pre><span class="c1">################## TreeBag ###################
+</span><span class="w">
+</span><span class="c1"># trainControl for Treebag
+</span><span class="n">fitControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"repeatedcv"</span><span class="p">,</span><span class="w"> </span><span class="n">repeats</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w">
+                         </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">verboseIter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
 
-<span class="c1"># trainControl for Treebag</span>
-fitControl <span class="o">=</span> trainControl<span class="p">(</span>method <span class="o">=</span> <span class="s">&quot;repeatedcv&quot;</span><span class="p">,</span> repeats <span class="o">=</span> <span class="m">5</span><span class="p">,</span>
-                         number <span class="o">=</span> <span class="m">5</span><span class="p">,</span> verboseIter <span class="o">=</span> <span class="bp">T</span><span class="p">)</span>
+</span><span class="c1"># Run a Treebag classification over the training set
+</span><span class="n">treebag.fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">training</span><span class="p">,</span><span class="w">
+                     </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"treebag"</span><span class="p">,</span><span class="w"> </span><span class="n">importance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
 
-<span class="c1"># Run a Treebag classification over the training set</span>
-treebag.fit <span class="o">&lt;-</span> train<span class="p">(</span>target <span class="o">~</span> <span class="m">.</span><span class="p">,</span>  data <span class="o">=</span> training<span class="p">,</span>
-                     method <span class="o">=</span> <span class="s">&quot;treebag&quot;</span><span class="p">,</span> importance <span class="o">=</span> <span class="bp">T</span><span class="p">)</span>
+</span><span class="c1"># Predict the testing target
+</span><span class="n">treebag.predict</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">treebag.fit</span><span class="p">,</span><span class="w"> </span><span class="n">testing</span><span class="p">[,</span><span class="m">-31</span><span class="p">])</span><span class="w">
 
-<span class="c1"># Predict the testing target</span>
-treebag.predict <span class="o">&lt;-</span> predict<span class="p">(</span>treebag.fit<span class="p">,</span> testing<span class="p">[,</span><span class="m">-31</span><span class="p">])</span>
-
-confusionMatrix<span class="p">(</span>treebag.predict<span class="p">,</span> testing<span class="o">$</span>target<span class="p">)</span></code></pre></div>
+</span><span class="n">confusionMatrix</span><span class="p">(</span><span class="n">treebag.predict</span><span class="p">,</span><span class="w"> </span><span class="n">testing</span><span class="o">$</span><span class="n">target</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>Now, this is something, an accuracy of <b>0.9739</b> and we also get our variable importances :).
 But I am not going to show that, without fitting another tree model, the almighty(throw-anything-at-me) <code>Random Forests</code>.</p>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1">####################### Random Forest ########################</span>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15</pre></td><td class="code"><pre><span class="c1">####################### Random Forest ########################
+</span><span class="w">
+</span><span class="c1"># trainControl for Random Forest
+</span><span class="n">fitControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"repeatedcv"</span><span class="p">,</span><span class="w"> </span><span class="n">repeats</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w">
+                         </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">verboseIter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
 
-<span class="c1"># trainControl for Random Forest</span>
-fitControl <span class="o">=</span> trainControl<span class="p">(</span>method <span class="o">=</span> <span class="s">&quot;repeatedcv&quot;</span><span class="p">,</span> repeats <span class="o">=</span> <span class="m">5</span><span class="p">,</span>
-                         number <span class="o">=</span> <span class="m">5</span><span class="p">,</span> verboseIter <span class="o">=</span> <span class="bp">T</span><span class="p">)</span>
+</span><span class="c1"># Run a Random Forest classification over the training set
+</span><span class="n">rf.fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w">  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">training</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rf"</span><span class="p">,</span><span class="w">
+                     </span><span class="n">importance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fitControl</span><span class="p">,</span><span class="w">
+                     </span><span class="n">tuneLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w">
 
-<span class="c1"># Run a Random Forest classification over the training set</span>
-rf.fit <span class="o">&lt;-</span> train<span class="p">(</span>target <span class="o">~</span> <span class="m">.</span><span class="p">,</span>  data <span class="o">=</span> training<span class="p">,</span> method <span class="o">=</span> <span class="s">&quot;rf&quot;</span><span class="p">,</span>
-                     importance <span class="o">=</span> <span class="bp">T</span><span class="p">,</span> trControl <span class="o">=</span> fitControl<span class="p">,</span>
-                     tuneLength <span class="o">=</span> <span class="m">5</span><span class="p">)</span>
+</span><span class="c1"># Predict the testing target
+</span><span class="n">rf.predict</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">rf.fit</span><span class="p">,</span><span class="w"> </span><span class="n">testing</span><span class="p">[,</span><span class="m">-31</span><span class="p">])</span><span class="w">
 
-<span class="c1"># Predict the testing target</span>
-rf.predict <span class="o">&lt;-</span> predict<span class="p">(</span>rf.fit<span class="p">,</span> testing<span class="p">[,</span><span class="m">-31</span><span class="p">])</span>
-
-confusionMatrix<span class="p">(</span>rf.predict<span class="p">,</span> testing<span class="o">$</span>target<span class="p">)</span></code></pre></div>
+</span><span class="n">confusionMatrix</span><span class="p">(</span><span class="n">rf.predict</span><span class="p">,</span><span class="w"> </span><span class="n">testing</span><span class="o">$</span><span class="n">target</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>That&rsquo;s some coincidence(or-not), with mtry = 21, we are still getting an accuracy of <b>)0.9739</b> with our <code>Random Forest</code> model, which is actually pretty good, even for practical purposes. so, finally let&rsquo;s have a look at the variable importances of different features,</p>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r">plot<span class="p">(</span>varImp<span class="p">(</span>rf.fit<span class="p">))</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1</pre></td><td class="code"><pre><span class="n">plot</span><span class="p">(</span><span class="n">varImp</span><span class="p">(</span><span class="n">rf.fit</span><span class="p">))</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p><img src="https://raw.githubusercontent.com/rishy/phishing-websites/master/varImp1.png" alt="varImp"></p>
 
@@ -331,23 +423,19 @@ confusionMatrix<span class="p">(</span>rf.predict<span class="p">,</span> testin
 
   <div class="share-links">
     
-      <a class = "fa fa-facebook" href="https://facebook.com/sharer.php?u=http://rishy.github.io//projects/2015/05/08/phishing-websites-detection/" rel="nofollow" target="_blank" title="Share on Facebook"></a>
+      <a class = "fa fa-facebook" href="https://facebook.com/sharer.php?u=http://localhost:4000/projects/2015/05/08/phishing-websites-detection/" rel="nofollow" target="_blank" title="Share on Facebook"></a>
     
 
     
-      <a class="fa fa-twitter" href="https://twitter.com/intent/tweet?text=Phishing Websites Detection&url=http://rishy.github.io//projects/2015/05/08/phishing-websites-detection/" rel="nofollow" target="_blank" title="Share on Twitter"></a>
+      <a class="fa fa-twitter" href="https://twitter.com/intent/tweet?text=Phishing Websites Detection&url=http://localhost:4000/projects/2015/05/08/phishing-websites-detection/" rel="nofollow" target="_blank" title="Share on Twitter"></a>
     
 
     
-      <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://rishy.github.io//projects/2015/05/08/phishing-websites-detection/" rel="nofollow" target="_blank" title="Share on Google+"></a>
+      <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://localhost:4000/projects/2015/05/08/phishing-websites-detection/" rel="nofollow" target="_blank" title="Share on Google+"></a>
     
 
     
-      <a class="fa fa-linkedin" href="http://www.linkedin.com/shareArticle?url=http://rishy.github.io//projects/2015/05/08/phishing-websites-detection/&title=Phishing Websites Detection" rel="nofollow" target="_blank" title="Share on LinkedIn"></a>
-    
-
-    
-
+      <a class="fa fa-linkedin" href="http://www.linkedin.com/shareArticle?url=http://localhost:4000/projects/2015/05/08/phishing-websites-detection/&title=Phishing Websites Detection" rel="nofollow" target="_blank" title="Share on LinkedIn"></a>
     
 
     
@@ -355,7 +443,11 @@ confusionMatrix<span class="p">(</span>rf.predict<span class="p">,</span> testin
     
 
     
-      <a class = "fa fa-hacker-news" onclick="parent.postMessage('submit','*')" href="https://news.ycombinator.com/submitlink?u=http://rishy.github.io//projects/2015/05/08/phishing-websites-detection/&t=Phishing Websites Detection" rel="nofollow" target="_blank" title="Share on Hacker News"></a>
+
+    
+
+    
+      <a class = "fa fa-hacker-news" onclick="parent.postMessage('submit','*')" href="https://news.ycombinator.com/submitlink?u=http://localhost:4000/projects/2015/05/08/phishing-websites-detection/&t=Phishing Websites Detection" rel="nofollow" target="_blank" title="Share on Hacker News"></a>
     
 
 
@@ -366,14 +458,14 @@ confusionMatrix<span class="p">(</span>rf.predict<span class="p">,</span> testin
 
 
   <div class="py2 post-footer">
-  <img src="/images/me.jpg" alt="Rishabh" class="avatar" />
+  <!-- <img src="/images/me.jpg" alt="Rishabh" class="avatar" />
   <p>
     This is a web-log by Rishabh. He Loves Data. When he is not coding, he loves to
     listen to music, read books, trek and travel.
   </p>
   <p>
     Follow him on <a href="https://twitter.com/0_rishabh">Twitter</a>.
-  </p>
+  </p> -->
 </div>
 
 
@@ -382,6 +474,13 @@ confusionMatrix<span class="p">(</span>rf.predict<span class="p">,</span> testin
 
 
   <h3 class="related-post-title">Related Posts</h3>
+  
+    <div class="post ml2">
+      <a href="/ml/2016/10/12/dropout-with-theano/" class="post-link">
+        <h4 class="post-title">Dropout with Theano</h4>
+        <p class="post-summary">Implementing a Dropout Layer with Numpy and Theano along with all the caveats and tweaks.</p>
+      </a>
+    </div>
   
     <div class="post ml2">
       <a href="/projects/2015/06/10/electricity-demand/" class="post-link">
@@ -430,6 +529,16 @@ confusionMatrix<span class="p">(</span>rf.predict<span class="p">,</span> testin
 
 
 
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-50921176-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
 </body>
 <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 </html>

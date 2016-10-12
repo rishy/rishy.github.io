@@ -13,7 +13,7 @@ First part is the Data Analysis Part where we will be doing the basic data clean
 
 So let's start with basic imports and reading of data from the given dataset.
 
-{% highlight python %}
+{% highlight python linenos%}
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -127,11 +127,11 @@ Let's find out and remove these inconsistent rows so that all the columns can be
 
 The code below finds all the rows where "Power" column has a string value - "Power" and get the index of these rows. 
 
-```python
+{% highlight python linenos%}
 # Get the inconsistent rows indexes
 faulty_row_idx = sensor_data[sensor_data["Power"] == " Power"].index.tolist()
 faulty_row_idx
-```
+{% endhighlight %}
 
 <pre>
 [3784,
@@ -145,20 +145,20 @@ faulty_row_idx
 
 and now we can drop these rows from the dataframe
 
-```python
+{% highlight python linenos%}
 # Drop these rows from sensor_data dataframe
 sensor_data.drop(faulty_row_idx, inplace=True)
 
 # This should return an empty list now
 sensor_data[sensor_data["Power"] == " Power"].index.tolist()
-```
+{% endhighlight %}
 <pre>
   []
 </pre>
 
 <p>We have cleaned up the sensor_data and now all the columns can be converted to more appropriate data types.</p>
 
-{%highlight Python%}
+{% highlight python linenos %}
 # Type Conversion
 sensor_data[["Power", "Cost", "Voltage"]] = sensor_data[["Power",
                                 "Cost", "Voltage"]].astype(float)
@@ -185,7 +185,7 @@ dtype: object
 This is better now. We have got clearly defined datatypes of different columns now. Next step is to convert the weather_data Series to a dataframe so that we can work with it with more ease.
 </p>
 
-{% highlight python %}
+{% highlight python linenos%}
 # Create a dataframe out of weather dataset as well
 temperature_data = weather_data.to_frame()
 
@@ -211,7 +211,7 @@ temperature_data.dtypes
 Since now we have both of our dataframes in place, it'd be a good point to have a look at sum of the basic statistics of both of these data frames.
 </p>
 
-{%highlight python%}
+{% highlight python linenos %}
 sensor_data.describe()
 {%endhighlight%}
 
@@ -288,7 +288,7 @@ sensor_data.describe()
 </div>
 
 <br>
-{%highlight python%}
+{% highlight python linenos %}
 temperature_data.describe()
 {%endhighlight%}
 
@@ -351,7 +351,7 @@ As apparent from above statistics there is a good amount of variation in <b>Powe
 To get a better understanding of these variations we'll be plotting power and temperatures with the timestamps, so as to find out the peak times for both.<br>
 But before moving to visualizations we'll have to create respective grouped datasets from <b>sensor\_data</b> and <b>temperature\_data</b>, grouping by the "Hour" column. This way we can work on hourly basis.
 
-{% highlight python %}
+{% highlight python linenos%}
 # Group sensor_data by 'Hour' Column
 grouped_sensor_data = sensor_data.groupby(
                         ["Hour"], as_index = False).mean()
@@ -417,7 +417,7 @@ grouped_sensor_data
 </table>
 </div>
 
-{%highlight python%}
+{% highlight python linenos %}
 # Group temperature_data by "Hour"
 grouped_temperature_data = temperature_data.groupby(
                             ["Hour"], as_index = False).mean()
@@ -466,7 +466,7 @@ grouped_temperature_data
 
 ## Basic Visualizations:
 
-```python
+{% highlight python linenos%}
 # Generates all the visualizations right inside the ipython notebook
 %pylab inline
 plt.style.use('ggplot')
@@ -476,14 +476,14 @@ plt.hist(sensor_data.Power, bins=50)
 fig.suptitle('Power Histogram', fontsize = 20)
 plt.xlabel('Power', fontsize = 16)
 plt.ylabel('Count', fontsize = 16)
-```
+{% endhighlight %}
 
 ![power-histogram](../../../../../images/power-histogram.png)
 
 Looks like most of the time this house is consuming a limited amount of power. Although there is also a good amount of distribution in the range of <b>3.5kW - 5kW</b>, indicating a higher demand.<br/>
 Let's now plot the Power Distribution with the day hours.
 
-```python
+{% highlight python linenos%}
 fig = plt.figure(figsize=(13,7))
 plt.bar(grouped_sensor_data.Hour, grouped_sensor_data.Power)
 fig.suptitle('Power Distribution with Hours', fontsize = 20)
@@ -491,7 +491,7 @@ plt.xlabel('Hour', fontsize = 16)
 plt.ylabel('Power', fontsize = 16)
 plt.xticks(range(0, 24))
 plt.show()
-```
+{% endhighlight %}
 
 ![power-time-distribution](../../../../../images/power-time-distribution.png)
 
@@ -514,7 +514,7 @@ Similarily there is a slight oscillation in demand during 0900 which suddenly fa
 
 Let's further plot temperature with the Power to see if there is any correlation among these.
 
-```python
+{% highlight python linenos%}
 fig = plt.figure(figsize=(13,7))
 plt.bar(grouped_temperature_data.Temperature,
                     grouped_sensor_data.Power)
@@ -522,7 +522,7 @@ fig.suptitle('Power Distribution with Temperature', fontsize = 20)
 plt.xlabel('Temperature in Fahrenheit', fontsize = 16)
 plt.ylabel('Power', fontsize = 16)
 plt.show()
-```
+{% endhighlight %}
 
 ![power-temp-distribution](../../../../../images/power-temp-distribution.png)
 
@@ -532,11 +532,11 @@ There seems to be a direct correlation between temperature and the demand of pow
 
 We'll start with merging the <b>grouped\_sensor\_data</b> and <b>grouped\_temperature\_data</b> so that we can work on the complete dataset from a single dataframe.
 
-```python
+{% highlight python linenos%}
 # Merge grouped_sensor_data and grouped_temperature_data
 # using "Hour" as the key
 merged_data = grouped_sensor_data.merge(grouped_temperature_data)
-```
+{% endhighlight %}
 
 In previous visualization we saw that when temperature is low generally there is less demand of power. But that mainly relates to the cooling appliances in the home. We'll consider the following appliances:
 
@@ -566,7 +566,7 @@ During the office hours there's a very little increase in the Power demand, this
 
 Now, we'll be using simple <b>K-Means clustering</b> using <b>scikit-learn</b>. We are going to consider <b>Hour, Power and Temperature</b> feature from the original dataset. For that first of all we'll have to merge the sensor\_data dataframe with grouped\_temperature\_data dataframe.
 
-{%highlight python%}
+{% highlight python linenos %}
 # Complete merged dataset
 data =sensor_data.merge(grouped_temperature_data)
 
@@ -649,7 +649,7 @@ This looks like a pretty reasonable clustering. We can further assign the labels
 
 We'll create a data frame with these labels and merge it with predicted results.
 
-{%highlight python%}
+{% highlight python linenos %}
 # Create a dataframe with appliance labels
 label_df = pd.DataFrame({"Cluster": [0, 1, 2, 3],
                          "Appliances": ["Cooling System",
@@ -691,7 +691,7 @@ result.head(1)
 
 
 
-{%highlight python%}
+{% highlight python linenos %}
 result.tail(1)
 {%endhighlight%}
 
