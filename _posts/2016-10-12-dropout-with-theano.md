@@ -168,12 +168,16 @@ To be on the safe side, a value of `0.5`(as mentioned in the original [paper](ht
 ## Alternatives to Dropout
 Lately, there has been a lot of research for better regularization methods in DNNs. One of the things that I really like about Dropout is that it's conceptually very simple as well as an highly effective way to prevent overfitting. A few more methods, that are increasingly being used in DNNs now a days(I am omitting the standard L1/L2 regularization here):
 
-1. **Max-Norm:** Max-Norm puts a specific upper bound on the magnitude of weight matrices and if the magnitude exceeds this threshold then the values of weight matrices are clipped down. This is particularly helpful for exploding gradient problem.
+1. **Batch Normalization:**
+Batch Normalization primarily tackles the problem of _internal covariate shift_ by normalizing the weights in each mini-batch. So, in addition to simply using normalized weights at the beginning of the training process, Batch Normalization will keep on normalizing them during the whole training phase. This accelerates the optimization process and as a side product, might also eliminate the need of Dropout. Have a look at the original [paper](https://arxiv.org/pdf/1502.03167.pdf) for more in-depth explanation.
 
-2. **DropConnect:**
+2. **Max-Norm:** 
+Max-Norm puts a specific upper bound on the magnitude of weight matrices and if the magnitude exceeds this threshold then the values of weight matrices are clipped down. This is particularly helpful for exploding gradient problem.
+
+3. **DropConnect:**
 When training with Dropout, a randomly selected subset of activations are set to zero within each layer. DropConnect instead sets a randomly selected subset of weights within the network to zero. Each unit thus receives input from a random subset of units in the previous layer. We derive a bound on the generalization performance of both Dropout and DropConnect. - Abstract from the original [paper](https://cs.nyu.edu/~wanli/dropc/dropc.pdf).
 
-3. **ZoneOut(specific to RNNs):** 
+4. **ZoneOut(specific to RNNs):** 
 In each training step, ZoneOut keeps the value of some of the hidden units unchanged. So, instead of throwing out the information, it enforces a random number of hidden units to propogate the same information in next time step. 
 
 The reason I wanted to write about this, is because if you are working with a low level library like Theano, then sometimes using modules like `RandomStreams` might get a bit tricky. Although, for prototyping and even for production purposes, you should also consider other high level libraries like [Keras](https://keras.io/) and [TensorFlow](https://www.tensorflow.org/).
@@ -192,5 +196,6 @@ Suggested Readings:
 8. [DropConnect Paper](https://cs.nyu.edu/~wanli/dropc/dropc.pdf)
 9. [ZoneOut Paper](https://arxiv.org/abs/1606.01305)
 10. [Regularization in Neural Networks](https://github.com/cs231n/cs231n.github.io/blob/master/neural-networks-2.md#reg)
+11. [Batch Normalization Paper](https://arxiv.org/pdf/1502.03167.pdf)
 
 {% include disqus.html %}

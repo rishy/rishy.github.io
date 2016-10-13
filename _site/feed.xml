@@ -225,7 +225,12 @@ To be on the safe side, a value of &lt;code class=&quot;highlighter-rouge&quot;&
 
 &lt;ol&gt;
   &lt;li&gt;
-    &lt;p&gt;&lt;strong&gt;Max-Norm:&lt;/strong&gt; Max-Norm puts a specific upper bound on the magnitude of weight matrices and if the magnitude exceeds this threshold then the values of weight matrices are clipped down. This is particularly helpful for exploding gradient problem.&lt;/p&gt;
+    &lt;p&gt;&lt;strong&gt;Batch Normalization:&lt;/strong&gt;
+Batch Normalization primarily tackles the problem of &lt;em&gt;internal covariate shift&lt;/em&gt; by normalizing the weights in each mini-batch. So, in addition to simply using normalized weights at the beginning of the training process, Batch Normalization will keep on normalizing them during the whole training phase. This accelerates the optimization process and as a side product, might also eliminate the need of Dropout. Have a look at the original &lt;a href=&quot;https://arxiv.org/pdf/1502.03167.pdf&quot;&gt;paper&lt;/a&gt; for more in-depth explanation.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Max-Norm:&lt;/strong&gt; 
+Max-Norm puts a specific upper bound on the magnitude of weight matrices and if the magnitude exceeds this threshold then the values of weight matrices are clipped down. This is particularly helpful for exploding gradient problem.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;&lt;strong&gt;DropConnect:&lt;/strong&gt;
@@ -254,6 +259,7 @@ In each training step, ZoneOut keeps the value of some of the hidden units uncha
   &lt;li&gt;&lt;a href=&quot;https://cs.nyu.edu/~wanli/dropc/dropc.pdf&quot;&gt;DropConnect Paper&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1606.01305&quot;&gt;ZoneOut Paper&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/cs231n/cs231n.github.io/blob/master/neural-networks-2.md#reg&quot;&gt;Regularization in Neural Networks&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/pdf/1502.03167.pdf&quot;&gt;Batch Normalization Paper&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;!-- % if page.comments % --&gt;

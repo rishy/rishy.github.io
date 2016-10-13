@@ -100,7 +100,7 @@
   <h1>Dropout with Theano</h1>
   <span class="post-meta">Oct 12, 2016</span><br>
   
-  <span class="post-meta small">15 minute read</span>
+  <span class="post-meta small">16 minute read</span>
 </div>
 
 <article class="post-content">
@@ -321,7 +321,12 @@ To be on the safe side, a value of <code class="highlighter-rouge">0.5</code>(as
 
 <ol>
   <li>
-    <p><strong>Max-Norm:</strong> Max-Norm puts a specific upper bound on the magnitude of weight matrices and if the magnitude exceeds this threshold then the values of weight matrices are clipped down. This is particularly helpful for exploding gradient problem.</p>
+    <p><strong>Batch Normalization:</strong>
+Batch Normalization primarily tackles the problem of <em>internal covariate shift</em> by normalizing the weights in each mini-batch. So, in addition to simply using normalized weights at the beginning of the training process, Batch Normalization will keep on normalizing them during the whole training phase. This accelerates the optimization process and as a side product, might also eliminate the need of Dropout. Have a look at the original <a href="https://arxiv.org/pdf/1502.03167.pdf">paper</a> for more in-depth explanation.</p>
+  </li>
+  <li>
+    <p><strong>Max-Norm:</strong> 
+Max-Norm puts a specific upper bound on the magnitude of weight matrices and if the magnitude exceeds this threshold then the values of weight matrices are clipped down. This is particularly helpful for exploding gradient problem.</p>
   </li>
   <li>
     <p><strong>DropConnect:</strong>
@@ -350,6 +355,7 @@ In each training step, ZoneOut keeps the value of some of the hidden units uncha
   <li><a href="https://cs.nyu.edu/~wanli/dropc/dropc.pdf">DropConnect Paper</a></li>
   <li><a href="https://arxiv.org/abs/1606.01305">ZoneOut Paper</a></li>
   <li><a href="https://github.com/cs231n/cs231n.github.io/blob/master/neural-networks-2.md#reg">Regularization in Neural Networks</a></li>
+  <li><a href="https://arxiv.org/pdf/1502.03167.pdf">Batch Normalization Paper</a></li>
 </ol>
 
 <!-- % if page.comments % -->
