@@ -9,6 +9,8 @@ comments: true
 
 There are certain practices in **Deep Learning** that are highly recommended, in order to efficiently train **Deep Neural Networks**. In this post, I will be covering a few of these most commonly used practices, ranging from importance of quality training data, choice of hyperparameters to more general tips for faster prototyping of DNNs. Most of these practices, are validated by the research in academia and industry and are presented with mathematical and experimental proofs in research papers like [Efficient BackProp(Yann LeCun et al.)](http://yann.lecun.com/exdb/publis/pdf/lecun-98b.pdf) and [Practical Recommendations for Deep Architectures(Yoshua Bengio)](https://arxiv.org/pdf/1206.5533v2.pdf).
 
+As you'll notice, I haven't mentioned any mathematical proofs in this post. All the points suggested here, should be taken more of a summarization of the best practices for training DNNs. For more in-depth understanding, I highly recommend you to go through the above mentioned research papers and references provided at the end.
+
 ----
 
 ### High quality training data
@@ -48,7 +50,7 @@ Always initialize the weights with small `random numbers` to break the symmetry 
 Thankfully, there has been lot of research regarding the appropriate values of initial weights, which is really important for an efficient convergence. 
 To initialize the weights that are evenly distributed, a `uniform distribution` is probably one of the best choice. Furthermore, as shown in the [paper(Glorot and Bengio, 2010)](http://jmlr.org/proceedings/papers/v9/glorot10a/glorot10a.pdf), units with more incoming connections(fan_in) should have relatively smaller weights. 
 
-Thanks to all these thorough experiments, now we have a tested formulae that we can directly use for weight initialization; i.e. - weights drawn from `~ Uniform(-r, r)` where `r=sqrt(6/(fan_in+fan_out))` for `tanh` activations, and `r=4*(sqrt(6/fan_in+fan_out))` for `sigmoid` activations, where `fan_in` is the size of the previous layer and `fan_out` is the size of next layer.
+Thanks to all these thorough experiments, now we have a tested formula that we can directly use for weight initialization; i.e. - weights drawn from `~ Uniform(-r, r)` where `r=sqrt(6/(fan_in+fan_out))` for `tanh` activations, and `r=4*(sqrt(6/fan_in+fan_out))` for `sigmoid` activations, where `fan_in` is the size of the previous layer and `fan_out` is the size of next layer.
 
 ### Learning Rates
 
