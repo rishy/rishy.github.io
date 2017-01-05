@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>How to train your Deep Neural Network &#8211; Rishabh Shukla</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="List of commonly used practices for efficient training of Deep Neural Networks.">
+    <meta name="author" content="Rishabh Shukla">
+    <meta name="keywords" content="ml">
+    <link rel="canonical" href="http://rishy.github.io//ml/2017/01/05/how-to-train-your-dnn/">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css" type="text/css">
+
+    <!-- Fonts -->
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    
+
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="How to train your Deep Neural Network">
+    <meta property="og:description" content="A few reads about Machine Learning and Natural Language Processing">
+    <meta property="og:url" content="http://rishy.github.io//ml/2017/01/05/how-to-train-your-dnn/">
+    <meta property="og:site_name" content="Rishabh Shukla">
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="favicon-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+</head>
+
+<body class="animated fade-in-down">
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="http://rishy.github.io/" class="site-title">Rishabh Shukla</a>
+      <nav class="site-nav right">
+        <a href="/about/">About</a>
+<a href="/contact/">Contact</a>
+
+      </nav>
+      <div class="clearfix"></div>
+      
+        <div class="social-icons">
+  <div class="left">
+    
+      <a class="fa fa-github" href="https://github.com/rishy"></a>
+    
+    
+    
+      <a class="fa fa-twitter" href="https://twitter.com/0_rishabh"></a>
+    
+    
+    
+      <a class="fa fa-envelope" href="mailto:rishy@gmail.com"></a>
+    
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/rishabhshukla1"></a>
+    
+  </div>
+  <div class="right">
+    
+    
+    
+  </div>
+</div>
+<div class="clearfix"></div>
+
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        
+
+
+<div class="post-header mb2">
+  <h1>How to train your Deep Neural Network</h1>
+  <span class="post-meta">Jan 5, 2017</span><br>
+  
+  <span class="post-meta small">14 minute read</span>
+</div>
+
+<article class="post-content">
+  <p>There are certain practices in <strong>Deep Learning</strong> that are highly recommended, in order to efficiently train <strong>Deep Neural Networks</strong>. In this post, I will be covering a few of these most commonly used practices, ranging from importance of quality training data, choice of hyperparameters to more general tips for faster prototyping of DNNs. Most of these practices, are validated by the research in academia and industry and are presented with mathematical and experimental proofs in research papers like <a href="http://yann.lecun.com/exdb/publis/pdf/lecun-98b.pdf">Efficient BackProp(Yann LeCun et al.)</a> and <a href="https://arxiv.org/pdf/1206.5533v2.pdf">Practical Recommendations for Deep Architectures(Yoshua Bengio)</a>.</p>
+
+<hr />
+
+<h3 id="high-quality-training-data">High quality training data</h3>
+
+<p>A lot of ML practitioners are habitual of throwing raw training data in any <strong>Deep Neural Net(DNN)</strong>. And why not, any DNN would(presumably) still give good results, right? But, it’s not completely old school to say that - “given the right type of data, a fairly simple model will provide better and faster results than a complex DNN”(although, this might have exceptions). So, whether you are working with <strong>Computer Vision</strong>, <strong>Natural Language Processing</strong>, <strong>Statistical Modelling</strong>, etc. try to preprocess your raw data. A few measures one can take to get better training data:</p>
+
+<ul>
+  <li>Get your hands on as large a dataset as possible(DNNs are quite data-hungry: more is better)</li>
+  <li>Remove any training sample with corrupted data(short texts, highly distorted images, spurious output labels, features with lots of null values, etc.)</li>
+  <li>Data Augmentation - create new examples(in case of images - rescale, add noise, etc.)</li>
+</ul>
+
+<!-- ### Normalize input vectors
+
+A Deep learning model can converge much faster, if the empirical mean of input vectors lies near `0`. [Efficient BackProp](http://yann.lecun.com/exdb/publis/pdf/lecun-98b.pdf) elucidated this in detail. Basically, it boils down to the average polarity(positive/negative) of the product of input vector - `x` and weight -  `W`. Hence, during **backpropagation** all of these weights will either decrease or increase; consequently, loss will be optimized in a zig-zag fashion. -->
+
+<h3 id="choose-appropriate-activation-functions">Choose appropriate activation functions</h3>
+
+<p>One of the vital components of any Neural Net are <a href="https://en.wikipedia.org/wiki/Activation_function">activation functions</a>. <strong>Activations</strong> introduces the much desired <strong>non-linearity</strong> into the model. For years, <code class="highlighter-rouge">sigmoid</code> activation functions have been the preferable choice. But, a <code class="highlighter-rouge">sigmoid</code> function is inherently cursed by these two drawbacks - 1. Saturation of sigmoids at tails(further causing <a href="https://en.wikipedia.org/wiki/Vanishing_gradient_problem">vanishing gradient problem</a>). 2. <code class="highlighter-rouge">sigmoids</code> are not zero-centered.</p>
+
+<p>A better alternative is a <code class="highlighter-rouge">tanh</code> function - mathematically, <code class="highlighter-rouge">tanh</code> is just a rescaled and shifted <code class="highlighter-rouge">sigmoid</code>, <code class="highlighter-rouge">tanh(x) = 2*sigmoid(x) - 1</code>.
+ Although <code class="highlighter-rouge">tanh</code> can still suffer from the <strong>vanishing gradient problem</strong>, but the good news is - <code class="highlighter-rouge">tanh</code> is zero-centered. Hence, using <code class="highlighter-rouge">tanh</code> as activation function will result into faster convergence. I have found that using <code class="highlighter-rouge">tanh</code> as activations generally works better than sigmoid.</p>
+
+<p>You can further explore other alternatives like <a href="https://en.wikipedia.org/wiki/Rectifier_(neural_networks)"><code class="highlighter-rouge">ReLU</code></a>, <code class="highlighter-rouge">SoftSign</code>, etc. depending on the specific task, which have shown to ameliorate some of these issues.</p>
+
+<h3 id="number-of-hidden-units-and-layers">Number of Hidden Units and Layers</h3>
+
+<p>Keeping a larger number of hidden units than the optimal number, is generally a safe bet. Since, any regularization method will take care of superfluous units, at least to some extent. On the other hand, while keeping smaller numbers of hidden units(than the optimal number), there are higher chances of underfitting the model.</p>
+
+<p>Also, while employing <strong>unsupervised pre-trained representations</strong>(describe in later sections), the optimal number of hidden units are generally kept even larger. Since, pre-trained representation might contain a lot of irrelevant information in these representations(for the specific supervised task). By increasing the number of hidden units, model will have the required flexibility to filter out the most appropriate information out of these pre-trained representations.</p>
+
+<p>Selecting the optimal number of layers is relatively straight forward. As <a href="https://www.quora.com/profile/Yoshua-Bengio">@Yoshua-Bengio</a> mentioned on Quora - “You just keep on adding layers, until the test error doesn’t improve anymore”. ;)</p>
+
+<h3 id="weight-initialization">Weight Initialization</h3>
+
+<p>Always initialize the weights with small <code class="highlighter-rouge">random numbers</code> to break the symmetry between different units. But how small should weights be? What’s the recommended upper limit? What probability distribution to use for generating random numbers? Furthermore, while using <code class="highlighter-rouge">sigmoid</code> activation functions, if weights are initialized to very large numbers, then the sigmoid will <strong>saturate</strong>(tail regions), resulting into <strong>dead neurons</strong>. If weights are very small, then gradients will also be small. Therefore, it’s preferable to choose weights in an intermediate range, such that these are distributed evenly around a mean value.</p>
+
+<p>Thankfully, there has been lot of research regarding the appropriate values of initial weights, which is really important for an efficient convergence. 
+To initialize the weights that are evenly distributed, a <code class="highlighter-rouge">uniform distribution</code> is probably one of the best choice. Furthermore, as shown in the <a href="http://jmlr.org/proceedings/papers/v9/glorot10a/glorot10a.pdf">paper(Glorot and Bengio, 2010)</a>, units with more incoming connections(fan_in) should have relatively smaller weights.</p>
+
+<p>Thanks to all these thorough experiments, now we have a tested formulae that we can directly use for weight initialization; i.e. - weights drawn from <code class="highlighter-rouge">~ Uniform(-r, r)</code> where <code class="highlighter-rouge">r=sqrt(6/(fan_in+fan_out))</code> for <code class="highlighter-rouge">tanh</code> activations, and <code class="highlighter-rouge">r=4*(sqrt(6/fan_in+fan_out))</code> for <code class="highlighter-rouge">sigmoid</code> activations, where <code class="highlighter-rouge">fan_in</code> is the size of the previous layer and <code class="highlighter-rouge">fan_out</code> is the size of next layer.</p>
+
+<h3 id="learning-rates">Learning Rates</h3>
+
+<p>This is probably one of the most important hyperparameter, governing the learning process. Set the learning rate too small and your model might take ages to converge, make it too large and within initial few training examples, your loss might shoot up to sky. Generally, a learning rate of <code class="highlighter-rouge">0.01</code> is a safe bet, but this shouldn’t be taken as a stringent rule; since the optimal learning rate should be in accordance to the specific task.</p>
+
+<p>In contrast to, a fixed learning rate, gradually decreasing the learning rate, after each epoch or after a few thousand examples is another option. Although this might help in faster training, but requires another manual decision about the new learning rates. Generally, <strong>learning rate can be halved after each epoch</strong> - these kinds of strategies were quite common a few years back.</p>
+
+<p>Fortunately, now we have better <code class="highlighter-rouge">momentum based methods</code> to change the learning rate, based on the curvature of the error function. It might also help to set different learning rates for individual parameters in the model; since, some parameters might be learning at a relatively slower or faster rate.</p>
+
+<p>Lately, there has been a good amount of research on optimization methods, resulting into <code class="highlighter-rouge">adaptive learning rates</code>. At this moment, we have numerous options starting from good old <code class="highlighter-rouge">Momentum Method</code> to <code class="highlighter-rouge">Adagrad</code>, <code class="highlighter-rouge">Adam</code>(personal favourite ;)), <code class="highlighter-rouge">RMSProp</code> etc. Methods like <code class="highlighter-rouge">Adagrad</code> or <code class="highlighter-rouge">Adam</code>, effectively save us from manually choosing an <code class="highlighter-rouge">initial learning rate</code>, and given the right amount of time, the model will start to converge quite smoothly(of course, still selecting a good initial rate will further help).</p>
+
+<h3 id="hyperparameter-tuning-spun-grid-search---embrace-random-search">Hyperparameter Tuning: Spun Grid Search - Embrace Random Search</h3>
+
+<p><strong>Grid Search</strong> has been prevalent in classical machine learning. But, Grid Search is not at all efficient in finding optimal hyperparameters for DNNs. Primarily, because of the time taken by a DNN in trying out different hyperparameter combinations. As the number of hyperparameters keeps on increasing, computation required for Grid Search also increases exponentially.</p>
+
+<p>There are two ways to go about it:</p>
+<ol>
+  <li>Based on your prior experience, you can manually tune some common hyperparameters like learning rate, number of layers, etc.</li>
+  <li>Instead of Grid Search, use <strong>Random Search/Random Sampling</strong> for choosing optimal hyperparameters. A combination of hyperparameters is generally choosen from a <strong>uniform distribution</strong> within the desired range. It is also possible to add some prior knowledge to further decrease the search space(like learning rate shouldn’t be too large or too small). Random Search has been found to be way more efficient compared to Grid Search.</li>
+</ol>
+
+<h3 id="learning-methods">Learning Methods</h3>
+
+<p>Good old <strong>Stochastic Gradient Descent</strong> might not be as efficient for DNNs(again, not a stringent rule), lately there have been a lot of research to develop more flexible optimization algorithms. For e.g.: <code class="highlighter-rouge">Adagrad</code>, <code class="highlighter-rouge">Adam</code>, <code class="highlighter-rouge">AdaDelta</code>, <code class="highlighter-rouge">RMSProp</code>, etc. In addition to providing <strong>adaptive learning rates</strong>, these sophisticated methods also use <strong>different rates for different model parameters</strong> and this generally results into a smoother convergence. It’s good to consider these as hyper-parameters and one should always try out a few of these on a subset of training data.</p>
+
+<h3 id="keep-dimensions-of-weights-in-the-exponential-power-of-2">Keep dimensions of weights in the exponential power of 2</h3>
+
+<p>Even, when dealing with <strong>state-of-the-art</strong> Deep Learning Models with latest hardware resources, <strong>memory management</strong> is still done at the byte level; So, it’s always good to keep the size of your parameters as <code class="highlighter-rouge">64</code>, <code class="highlighter-rouge">128</code>, <code class="highlighter-rouge">512</code>, <code class="highlighter-rouge">1024</code>(all powers of <code class="highlighter-rouge">2</code>). This might help in sharding the matrices, weights, etc. resulting into slight boost in learning efficiency. This becomes even more significant when dealing with <strong>GPUs</strong>.</p>
+
+<h3 id="unsupervised-pretraining">Unsupervised Pretraining</h3>
+
+<p>Doesn’t matter whether you are working with NLP, Computer Vision, Speech Recognition, etc. <strong>Unsupervised Pretraining</strong> always help the training of your supervised or other unsupervised models. <strong>Word Vectors</strong> in NLP are ubiquitous; you can use <a href="http://image-net.org/">ImageNet</a> dataset to pretrain your model in an unsupervised manner, for a 2-class supervised classification; or audio samples from a much larger domain to further use that information for a speaker disambiguation model.</p>
+
+<h3 id="mini-batch-vs-stochastic-learning">Mini-Batch vs. Stochastic Learning</h3>
+
+<p>Major objective of training a model is to learn appropriate parameters, that results into an optimal mapping from inputs to outputs. These parameters are tuned with each training sample, irrespective of your decision to use <strong>batch</strong>, <strong>mini-batch</strong> or <strong>stochastic learning</strong>. While employing a stochastic learning approach, gradients of weights are tuned after each training sample, introducing noise into gradients(hence the word ‘stochastic’). This has a very desirable effect; i.e. - with the introduction of <strong>noise</strong> during the training, the model becomes less prone to overfitting.</p>
+
+<p>However, going through the stochastic learning approach might be relatively less efficient; since now a days machines have far more computation power. Stochastic learning might effectively waste a large portion of this. If we are capable of computing <strong>Matrix-Matrix multiplication</strong>, then why should we limit ourselves, to iterate through the multiplications of individual pairs of <strong>Vectors</strong>? Therefore, for greater throughput/faster learning, it’s recommended to use mini-batches instead of stochastic learning.</p>
+
+<p>But, selecting an appropriate batch size is equally important; so that we can still retain some noise(by not using a huge batch) and simultaneously use the computation power of machines more effectively. Commonly, a batch of <code class="highlighter-rouge">16</code> to <code class="highlighter-rouge">128</code> examples is a good choice(exponential of <code class="highlighter-rouge">2</code>). Usually, batch size is selected, once you have already found more important hyperparameters(by <strong>manual search</strong> or <strong>random search</strong>). Nevertheless, there are scenarios when the model is getting the training data as a stream(<a href="https://en.wikipedia.org/wiki/Online_machine_learning">online learning</a>), then resorting to Stochastic Learning is a good option.</p>
+
+<h3 id="shuffling-training-examples">Shuffling training examples</h3>
+
+<p>This comes from <strong>Information Theory</strong> - “Learning that an unlikely event has occurred is more informative than learning that a likely event has occurred”. Similarly, randomizing the order of training examples(in different epochs, or mini-batches) will result in faster convergence. A slight boost is always noticed when the model doesn’t see a lot of examples in the same order.</p>
+
+<h3 id="dropout-for-regularization">Dropout for Regularization</h3>
+
+<p>Considering, millions of parameters to be learned, regularization becomes an imperative requisite to prevent <strong>overfitting</strong> in DNNs. You can keep on using <strong>L1/L2</strong> regularization as well, but <strong>Dropout</strong> is preferable to check overfitting in DNNs. Dropout is trivial to implement and generally results into faster learning. A default value of <code class="highlighter-rouge">0.5</code> is a good choice, although this depends on the specific task,. If the model is less complex, then a dropout of <code class="highlighter-rouge">0.2</code> might also suffice.</p>
+
+<p>Dropout should be turned off, during the test phase, and weights should be scaled accordingly, as done in the <a href="https://www.cs.toronto.edu/~hinton/absps/JMLRdropout.pdf">original paper</a>. Just allow a model with Dropout regularization, a little bit more training time; and the error will surely go down.</p>
+
+<h3 id="number-of-epochstraining-iterations">Number of Epochs/Training Iterations</h3>
+
+<p>“Training a Deep Learning Model for multiple epochs will result in a better model” - we have heard it a couple of times, but how do we quantify “many”?
+Turns out, there is a simple strategy for this - Just keep on training your model for a fixed amount of examples/epochs, let’s say <code class="highlighter-rouge">20,000</code> examples or <code class="highlighter-rouge">1</code> epoch. After each set of these examples compare the <strong>test error</strong> with <strong>train error</strong>, if the gap is decreasing, then keep on training. In addition to this, after each such set, save a copy of your model parameters(so that you can choose from multiple models once it is trained).</p>
+
+<h3 id="visualize">Visualize</h3>
+
+<p>There are a thousand ways in which the training of a deep learning model might go wrong. I guess we have all been there, when the model is being trained for hours or days and only after the training is finished, we realize something went wrong. In order to save yourself from bouts of hysteria, in such situations(which might be quite justified ;)) - <strong>always visualize the training process</strong>. Most obvious step you can take is to <strong>print/save logs</strong> of <code class="highlighter-rouge">loss</code> values, <code class="highlighter-rouge">train error</code> or <code class="highlighter-rouge">test error</code>, etc.</p>
+
+<p>In addition to this, another good practice is to use a visualization library to plot histograms of weights after few training examples or between epochs. This might help in keeping track of some of the common problems in Deep Learning Models like <strong>Vanishing Gradient</strong>, <strong>Exploding Gradient</strong> etc.</p>
+
+<h3 id="multi-core-machines-gpus">Multi-Core machines, GPUs</h3>
+
+<p>Advent of GPUs, libraries that provide vectorized operations, machines with more computation power, are probably some of the most significant factors in the success of Deep Learning. If you think, you are patient as a stone, you might try running a DNN on your laptop(which can’t even open 10 tabs in your Chrome browser) and wait for ages to get your results. Or you can play smart(and expensively :z) and get a descent hardware with at least <strong>multiple CPU cores</strong> and a <strong>few hundred GPU cores</strong>. GPUs have revolutionized the Deep Learning research(no wonder Nvidia’s stocks are shooting up ;)), primarily because of their ability to perform Matrix Operations at a larger scale.</p>
+
+<p>So, instead of taking weeks on a normal machine, these parallelization techniques, will bring down the training time to days, if not hours.</p>
+
+<h3 id="use-libraries-with-gpu-and-automatic-differentiation-support">Use libraries with GPU and Automatic Differentiation Support</h3>
+
+<p>Thankfully, for rapid prototyping we have some really descent libraries like <a href="http://deeplearning.net/software/theano/">Theano</a>, <a href="https://www.tensorflow.org/">Tensorflow</a>, <a href="https://keras.io/">Keras</a>, etc. Almost all of these DL libraries provide <strong>support for GPU computation</strong> and <strong>Automatic Differentiation</strong>. So, you don’t have to dive into core GPU programming(unless you want to - it’s definitely fun :)); nor you have to write your own differentiation code, which might get a little bit taxing in really complex models(although you should be able to do that, if required). Tensorflow further provides support for training your models on a <strong>distributed architecture</strong>(if you can afford it).</p>
+
+<p>This is not at all an exhaustive list of practices, to train a DNN. In order to include just the most common practices, I have tried to exclude a few concepts like Normalization of inputs, Batch/Layer Normalization, Gradient Check, etc. Although feel free to add anything in the comment section and I’ll be more than happy to update it in the post. :)</p>
+
+<h3 id="references">References:</h3>
+<ol>
+  <li><a href="http://yann.lecun.com/exdb/publis/pdf/lecun-98b.pdf">Efficient BackProp(Yann LeCun et al.)</a></li>
+  <li><a href="https://arxiv.org/pdf/1206.5533v2.pdf">Practical Recommendations for Deep Architectures(Yoshua Bengio)</a></li>
+  <li><a href="http://jmlr.org/proceedings/papers/v9/glorot10a/glorot10a.pdf">Understanding the difficulty of training deep feedforward neural networks(Glorot and Bengio, 2010)</a></li>
+  <li><a href="https://www.cs.toronto.edu/~hinton/absps/JMLRdropout.pdf">Dropout: A Simple Way to Prevent Neural Networks from Overfitting</a></li>
+  <li><a href="https://medium.com/@karpathy/yes-you-should-understand-backprop-e2f06eab496b#.yd17cx8ml">Andrej Karpathy - Yes you should understand backprop(Medium)</a></li>
+</ol>
+
+<!-- % if page.comments % -->
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'rishabhshukla';
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+<!-- % endif % -->
+
+</article>
+
+
+  <div class="share-page">
+  Share this post!
+
+  <div class="share-links">
+    
+      <a class = "fa fa-facebook" href="https://facebook.com/sharer.php?u=http://rishy.github.io//ml/2017/01/05/how-to-train-your-dnn/" rel="nofollow" target="_blank" title="Share on Facebook"></a>
+    
+
+    
+      <a class="fa fa-twitter" href="https://twitter.com/intent/tweet?text=How to train your Deep Neural Network&url=http://rishy.github.io//ml/2017/01/05/how-to-train-your-dnn/" rel="nofollow" target="_blank" title="Share on Twitter"></a>
+    
+
+    
+      <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://rishy.github.io//ml/2017/01/05/how-to-train-your-dnn/" rel="nofollow" target="_blank" title="Share on Google+"></a>
+    
+
+    
+      <a class="fa fa-linkedin" href="http://www.linkedin.com/shareArticle?url=http://rishy.github.io//ml/2017/01/05/how-to-train-your-dnn/&title=How to train your Deep Neural Network" rel="nofollow" target="_blank" title="Share on LinkedIn"></a>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+      <a class = "fa fa-hacker-news" onclick="parent.postMessage('submit','*')" href="https://news.ycombinator.com/submitlink?u=http://rishy.github.io//ml/2017/01/05/how-to-train-your-dnn/&t=How to train your Deep Neural Network" rel="nofollow" target="_blank" title="Share on Hacker News"></a>
+    
+
+
+  </div>
+</div>
+
+
+
+
+  <div class="py2 post-footer">
+  <!-- <img src="/images/me.jpg" alt="Rishabh" class="avatar" />
+  <p>
+    This is a web-log by Rishabh. He Loves Data. When he is not coding, he loves to
+    listen to music, read books, trek and travel.
+  </p>
+  <p>
+    Follow him on <a href="https://twitter.com/0_rishabh">Twitter</a>.
+  </p> -->
+</div>
+
+
+
+
+
+
+  <h3 class="related-post-title">Related Posts</h3>
+  
+    <div class="post ml2">
+      <a href="/ml/2016/10/12/dropout-with-theano/" class="post-link">
+        <h4 class="post-title">Dropout with Theano</h4>
+        <p class="post-summary">Implementing a Dropout Layer with Numpy and Theano along with all the caveats and tweaks.</p>
+      </a>
+    </div>
+  
+    <div class="post ml2">
+      <a href="/ml/2015/07/28/l1-vs-l2-loss/" class="post-link">
+        <h4 class="post-title">L1 vs. L2 Loss function</h4>
+        <p class="post-summary">Comparison of performances of L1 and L2 loss functions with and without outliers in a dataset.</p>
+      </a>
+    </div>
+  
+    <div class="post ml2">
+      <a href="/stats/2015/07/21/normal-distributions/" class="post-link">
+        <h4 class="post-title">Normal/Gaussian Distributions</h4>
+        <p class="post-summary">Statistical Properties of Normal/Gaussian Distribution and why it is one of the most commonly used probability distribution in statistics.</p>
+      </a>
+    </div>
+  
+    <div class="post ml2">
+      <a href="/projects/2015/06/10/electricity-demand/" class="post-link">
+        <h4 class="post-title">Electricity Demand Analysis and Appliance Detection</h4>
+        <p class="post-summary">Analysis of Electricity demand from a house on a time-series dataset. An appliance detection systems is also created using K-Means Clustering based on the electricity demand.</p>
+      </a>
+    </div>
+  
+    <div class="post ml2">
+      <a href="/projects/2015/05/08/phishing-websites-detection/" class="post-link">
+        <h4 class="post-title">Phishing Websites Detection</h4>
+        <p class="post-summary">Phishing Websites detection with Random Forest, along with the breakdown of most important features, while detecting a phishing website.</p>
+      </a>
+    </div>
+  
+    <div class="post ml2">
+      <a href="/projects/2014/05/19/gsoc-selection/" class="post-link">
+        <h4 class="post-title">Google Summer of Code 2014</h4>
+        <p class="post-summary">Got Selected for Google Summer of Code 2014, with Mifos as my mentoring organization.</p>
+      </a>
+    </div>
+  
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+  <div class="p2 wrap">
+    <div class="measure mt1 center">
+      <small>
+      	You are free to use the Source Code available at <a href="https://github.com/rishy/rishy.github.io">Github</a>.<br/>
+        Theme by <a href="http://johnotander.com">John Otander</a> (<a href="https://twitter.com/4lpine">@4lpine</a>).
+      </small>
+    </div>
+  </div>
+</footer>
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-50921176-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+</html>
