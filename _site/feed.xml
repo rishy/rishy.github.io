@@ -14,7 +14,7 @@
 
 &lt;hr /&gt;
 
-&lt;h3 id=&quot;high-quality-training-data&quot;&gt;High quality training data&lt;/h3&gt;
+&lt;h3 id=&quot;training-data&quot;&gt;Training data&lt;/h3&gt;
 
 &lt;p&gt;A lot of ML practitioners are habitual of throwing raw training data in any &lt;strong&gt;Deep Neural Net(DNN)&lt;/strong&gt;. And why not, any DNN would(presumably) still give good results, right? But, it’s not completely old school to say that - “given the right type of data, a fairly simple model will provide better and faster results than a complex DNN”(although, this might have exceptions). So, whether you are working with &lt;strong&gt;Computer Vision&lt;/strong&gt;, &lt;strong&gt;Natural Language Processing&lt;/strong&gt;, &lt;strong&gt;Statistical Modelling&lt;/strong&gt;, etc. try to preprocess your raw data. A few measures one can take to get better training data:&lt;/p&gt;
 

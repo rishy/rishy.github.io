@@ -13,7 +13,7 @@ As you'll notice, I haven't mentioned any mathematical proofs in this post. All 
 
 ----
 
-### High quality training data
+### Training data
 
 A lot of ML practitioners are habitual of throwing raw training data in any **Deep Neural Net(DNN)**. And why not, any DNN would(presumably) still give good results, right? But, it's not completely old school to say that - "given the right type of data, a fairly simple model will provide better and faster results than a complex DNN"(although, this might have exceptions). So, whether you are working with **Computer Vision**, **Natural Language Processing**, **Statistical Modelling**, etc. try to preprocess your raw data. A few measures one can take to get better training data:
 
