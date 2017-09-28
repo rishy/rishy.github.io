@@ -63,7 +63,7 @@ Fortunately, now we have better `momentum based methods` to change the learning 
 Lately, there has been a good amount of research on optimization methods, resulting into `adaptive learning rates`. At this moment, we have numerous options starting from good old `Momentum Method` to `Adagrad`, `Adam`(personal favourite ;)), `RMSProp` etc. Methods like `Adagrad` or `Adam`, effectively save us from manually choosing an `initial learning rate`, and given the right amount of time, the model will start to converge quite smoothly(of course, still selecting a good initial rate will further help).
 
 
-### Hyperparameter Tuning: Spun Grid Search - Embrace Random Search
+### Hyperparameter Tuning: Shun Grid Search - Embrace Random Search
 
 **Grid Search** has been prevalent in classical machine learning. But, Grid Search is not at all efficient in finding optimal hyperparameters for DNNs. Primarily, because of the time taken by a DNN in trying out different hyperparameter combinations. As the number of hyperparameters keeps on increasing, computation required for Grid Search also increases exponentially.
 
