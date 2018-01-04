@@ -1,8 +1,8 @@
 # Site settings
 title:       Rishabh Shukla
-email:       rishy@gmail.com
+email:       rishy.s13@gmail.com
 author:      Rishabh Shukla
-description: "A few reads about Machine Learning and Natural Language Processing"
+description: "About Deep Learning and Natural Language Processing"
 baseurl:     ""
 url:         "http://rishy.github.io/"
 
